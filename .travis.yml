@@ -1,0 +1,28 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+
+# install dependencies, e.g. pip install -r requirements.txt
+install:
+  - pip install Flask
+  - pip install coverage coveralls
+
+before_script:
+  - touch dataserv.db
+  - touch dataserv_test.db
+  - mkdir data
+
+# run tests, e.g. python setup.py test
+script:
+  - coverage run --source="dataserv" setup.py test
+
+# run coverage
+after_success:
+  - coveralls
+
+# post to slack
+notifications:
+  slack: storjcommunity:TZfUO9ycY8R9UYwztWZTo0jk
+  email: false
