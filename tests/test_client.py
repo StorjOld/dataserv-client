@@ -1,7 +1,7 @@
 import os
 import unittest
 import time
-from multiprocessing import Process
+from multiprocessing import Process, freeze_support
 from dataserv_client import client
 import dataserv
 from dataserv.app import app, db
@@ -17,30 +17,26 @@ address_gamma = "1DauYnqSjZbRSfUoderYgTLdjCjBuyENWA"
 
 
 def start_test_server():
-    try:  # remove previous db file
-        os.remove(dbpath)
-    except OSError:
-        pass  # file does not exist
-
-    # create schema
-    db.create_all()
-
-    # start server
-    app.run(host=host, port=int(port), debug=True)
+    db.create_all()  # create schema
+    app.run(host=host, port=int(port), debug=True)  # start server
 
 
 class TestClient(unittest.TestCase):
 
     def setUp(self):
+        try:  # remove previous db file
+            os.remove(dbpath)
+        except OSError:
+            pass  # file does not exist
+
         self.server = Process(target=start_test_server)
         self.server.start()
-        time.sleep(5)
-        print("SERVER PID:", self.server.pid)
+        time.sleep(30)
 
     def tearDown(self):
         self.server.terminate()
         self.server.join()
-        time.sleep(5)
+        time.sleep(10)
 
     def test_register(self):
         self.assertTrue(client.register(address_alpha, url=url))
@@ -63,4 +59,5 @@ class TestClient(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    freeze_support()  # because python setup.py test ...
     unittest.main()
