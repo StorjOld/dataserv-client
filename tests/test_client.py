@@ -1,25 +1,23 @@
-"""
 import os
 import unittest
-from multiprocessing import Process
-from dataserv.app import app, db
-import client
 import time
+from multiprocessing import Process
+from dataserv_client import client
+import dataserv
+from dataserv.app import app, db
 
 
-port = "8000"
-host="127.0.0.1"
+port = "5000"
+host = "127.0.0.1"
 url = "http://%s:%s" % (host, port)
-dbpath = 'dataserv.db'  # TODO get from config
+dbpath = os.path.join(os.path.dirname(dataserv.__file__), 'dataserv.db')
 address_alpha = "13wENBbYbNW9KczZSQXyVogzB15jyVmmKS"
 address_beta = "15JPEyzUgBKYJSrtHQ9g5kVbm8hghLhv1b"
 address_gamma = "1DauYnqSjZbRSfUoderYgTLdjCjBuyENWA"
 
 
 def start_test_server():
-
-    # remove previous db
-    try:
+    try:  # remove previous db file
         os.remove(dbpath)
     except OSError:
         pass  # file does not exist
@@ -37,10 +35,12 @@ class TestClient(unittest.TestCase):
         self.server = Process(target=start_test_server)
         self.server.start()
         time.sleep(5)
+        print("SERVER PID:", self.server.pid)
 
     def tearDown(self):
         self.server.terminate()
         self.server.join()
+        time.sleep(5)
 
     def test_register(self):
         self.assertTrue(client.register(address_alpha, url=url))
@@ -64,4 +64,3 @@ class TestClient(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-"""

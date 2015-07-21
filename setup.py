@@ -29,6 +29,7 @@ setup(
     download_url = DOWNLOAD_URL,
     test_suite="tests",
     install_requires=[
+        'dataserv == 1.0.1',
     ],
     tests_require=[
         'coverage',
