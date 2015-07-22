@@ -2,10 +2,20 @@
 dataserv-client
 ###############
 
-[![Build Status](https://travis-ci.org/Storj/dataserv-client.svg?branch=master)](https://travis-ci.org/Storj/dataserv-client)
-[![Coverage Status](https://coveralls.io/repos/Storj/dataserv-client/badge.svg)](https://coveralls.io/r/Storj/dataserv-client)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/storj/dataserv-client/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/storj/dataserv-client.svg)](https://github.com/storj/dataserv-client/issues)
+|BuildLink|_ |CoverageLink|_ |LicenseLink|_ |IssuesLink|_
+
+
+.. |BuildLink| image:: https://travis-ci.org/Storj/dataserv-client.svg?branch=master
+.. _BuildLink: https://travis-ci.org/Storj/dataserv-client
+
+.. |CoverageLink| image:: https://coveralls.io/repos/Storj/dataserv-client/badge.svg
+.. _CoverageLink: https://coveralls.io/r/Storj/dataserv-client
+
+.. |LicenseLink| image:: https://img.shields.io/badge/license-MIT-blue.svg
+.. _LicenseLink: https://raw.githubusercontent.com/Storj/dataserv-client
+
+.. |IssuesLink| image:: https://img.shields.io/github/issues/Storj/dataserv-client.svg
+.. _IssuesLink: https://github.com/Storj/dataserv-client
 
 
 Setup
