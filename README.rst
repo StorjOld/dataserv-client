@@ -21,8 +21,8 @@ dataserv-client
 Setup
 #####
 
-1. Download and install [Python 3.4](https://www.python.org/downloads/release/python-343/)
-2. Download the [client](https://github.com/Storj/dataserv-client/blob/master/client.py)
+1. Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_ 
+2. Download the `client <https://github.com/Storj/dataserv-client/blob/master/client.py>`_ 
 3. Run the script
 
 Usage
