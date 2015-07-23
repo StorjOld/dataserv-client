@@ -28,37 +28,37 @@ Setup
 Usage
 #####
 
-show programm help:
+Show programm help:
 
 ::
 
     $ ./client.py --help
 
-show command help:
+Show command help:
 
 ::
 
     $ ./client.py <COMMAND> --help
 
-register address with default node:
+Register address with default node:
 
 ::
 
     $ ./client.py register <YOUR_BITCOIN_ADDRESS>
 
-register address with custom node:
+Register address with custom node:
 
 ::
 
     $ ./client.py register <YOUR_BITCOIN_ADDRESS> --url=<FARMER_URL>
 
-continuously ping default node in 15 sec intervals:
+Continuously ping default node in 15 sec intervals:
 
 ::
 
     $ ./client.py poll <YOUR_BITCOIN_ADDRESS>
 
-continuously ping custom node in 15 sec intervals:
+Continuously ping custom node in 15 sec intervals:
 
 ::
 
