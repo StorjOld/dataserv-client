@@ -7,10 +7,15 @@ import urllib
 import urllib.error
 import urllib.request
 import argparse
+import datetime
+from datetime import timedelta
 
 
 DEFAULT_URL = "http://104.236.104.117"
 DEFAULT_DELAY = 15
+
+
+_now = datetime.datetime.now
 
 
 class DataservClientException(Exception):
@@ -98,10 +103,18 @@ def ping(address, url=DEFAULT_URL):
         raise ConnectionError(url)
 
 
-def poll(address, register=False, url=DEFAULT_URL, delay=DEFAULT_DELAY):
-    if(register):
+def poll(address, register_address=False, url=DEFAULT_URL,
+         delay=DEFAULT_DELAY, limit=None):
+    """TODO doc string"""
+    stop_time = _now() + datetime.timedelta(seconds=limit) if limit else None
+
+    if(register_address):
         register(address)
-    while ping(address):
+
+    while True:
+        ping(address)
+        if stop_time and _now() >= stop_time:
+            return True
         time.sleep(delay)
 
 

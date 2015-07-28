@@ -100,6 +100,28 @@ class TestClientPing(unittest.TestCase):
         self.assertRaises(client.ConnectionError, callback)
 
 
+class TestClientPoll(unittest.TestCase):
+
+    def setUp(self):
+        try:  # remove previous db file
+            os.remove(dbpath)
+        except OSError:
+            pass  # file does not exist
+
+        self.server = Process(target=start_test_server)
+        self.server.start()
+        time.sleep(15)
+
+    def tearDown(self):
+        self.server.terminate()
+        self.server.join()
+        time.sleep(5)
+
+    def test_poll(self):
+        self.assertTrue(client.poll(address_alpha, register_address=True,
+                                    url=url, limit=60))
+
+
 if __name__ == '__main__':
     freeze_support()  # because python setup.py test ...
     unittest.main()
