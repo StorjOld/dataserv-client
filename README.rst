@@ -15,7 +15,7 @@ dataserv-client
 .. _LicenseLink: https://raw.githubusercontent.com/Storj/dataserv-client
 
 .. |IssuesLink| image:: https://img.shields.io/github/issues/Storj/dataserv-client.svg
-.. _IssuesLink: https://github.com/Storj/dataserv-client
+.. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
 Setup

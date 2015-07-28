@@ -41,6 +41,9 @@ class TestClient(unittest.TestCase):
     def test_register(self):
         self.assertTrue(client.register(address_alpha, url=url))
 
+    def test_ping(self):
+        self.assertTrue(client.ping(address_alpha, url=url))
+
     def test_already_registered(self):
         def callback():
             client.register(address_beta, url=url)

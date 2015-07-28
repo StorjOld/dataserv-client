@@ -80,9 +80,9 @@ def register(address, url=DEFAULT_URL):
 def ping(address, url=DEFAULT_URL):
     """Attempt keep-alive with the server."""
     try:
+        print("Pinging {0} with address {1}.".format(url, address))
         api_call = "{0}/api/ping/{1}".format(url, address)
         urllib.request.urlopen(api_call)
-        print("Pinging {0} with address {1}.".format(url, address))
         return True
 
     except urllib.error.HTTPError as e:
