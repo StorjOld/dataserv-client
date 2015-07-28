@@ -122,7 +122,7 @@ class TestClientPoll(unittest.TestCase):
                                     url=url, limit=60))
 
 
-class TestClientArgs(unittest.TestCase):
+class TestClientCliArgs(unittest.TestCase):
 
     def setUp(self):
         try:  # remove previous db file
@@ -139,12 +139,26 @@ class TestClientArgs(unittest.TestCase):
         self.server.join()
         time.sleep(5)
 
-    # TODO register and ping commands
-
     def test_poll(self):
         args = [
-            "poll", address_alpha, "--register_address", "--delay=5", "--url=" + url, "--limit=60" 
+            "poll", 
+            address_alpha, 
+            "--register_address",
+            "--delay=5",
+            "--url=" + url,
+            "--limit=60" 
         ]
+        self.assertTrue(client.main(args))
+
+    def test_register(self):
+        args = [ "ping", address_alpha, "--url=" + url ]
+        self.assertTrue(client.main(args))
+
+    def test_ping(self):
+        args = [ "register", address_alpha, "--url=" + url ]
+        self.assertTrue(client.main(args))
+
+        args = [ "ping", address_alpha, "--url=" + url ]
         self.assertTrue(client.main(args))
 
 
