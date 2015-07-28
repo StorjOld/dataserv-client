@@ -109,10 +109,10 @@ def poll(address, register_address=False, url=DEFAULT_URL,
     stop_time = _now() + datetime.timedelta(seconds=limit) if limit else None
 
     if(register_address):
-        register(address)
+        register(address, url=url)
 
     while True:
-        ping(address)
+        ping(address, url=url)
         if stop_time and _now() >= stop_time:
             return True
         time.sleep(delay)
