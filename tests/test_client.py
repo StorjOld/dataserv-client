@@ -21,7 +21,7 @@ def start_test_server():
     app.run(host=host, port=int(port), debug=True)  # start server
 
 
-class TestClient(unittest.TestCase):
+class TestClientRegister(unittest.TestCase):
 
     def setUp(self):
         try:  # remove previous db file
@@ -41,17 +41,13 @@ class TestClient(unittest.TestCase):
     def test_register(self):
         self.assertTrue(client.register(address_alpha, url=url))
 
-    def test_ping(self):
-        self.assertTrue(client.register(address_alpha, url=url))
-        self.assertTrue(client.ping(address_alpha, url=url))
-
     def test_already_registered(self):
         def callback():
             client.register(address_beta, url=url)
             client.register(address_beta, url=url)
         self.assertRaises(client.AddressAlreadyRegistered, callback)
 
-    def test_register_invalid_address(self):
+    def test_invalid_address(self):
         def callback():
             client.register("xyz", url=url)
         self.assertRaises(client.InvalidAddress, callback)
@@ -66,10 +62,42 @@ class TestClient(unittest.TestCase):
             client.register(address_beta, url="http://doesnt.exist.com")
         self.assertRaises(client.ConnectionError, callback)
 
-    def test_ping_invalid_address(self):
+
+class TestClientPing(unittest.TestCase):
+
+    def setUp(self):
+        try:  # remove previous db file
+            os.remove(dbpath)
+        except OSError:
+            pass  # file does not exist
+
+        self.server = Process(target=start_test_server)
+        self.server.start()
+        time.sleep(15)
+
+    def tearDown(self):
+        self.server.terminate()
+        self.server.join()
+        time.sleep(5)
+
+    def test_ping(self):
+        self.assertTrue(client.register(address_alpha, url=url))
+        self.assertTrue(client.ping(address_alpha, url=url))
+
+    def test_invalid_address(self):
         def callback():
             client.ping("xyz", url=url)
         self.assertRaises(client.InvalidAddress, callback)
+
+    def test_invalid_farmer(self):
+        def callback():
+            client.ping(address_alpha, url=url + "/xyz")
+        self.assertRaises(client.FarmerNotFound, callback)
+
+    def test_connection_error(self):
+        def callback():
+            client.ping(address_alpha, url="http://doesnt.exist.com")
+        self.assertRaises(client.ConnectionError, callback)
 
 
 if __name__ == '__main__':
