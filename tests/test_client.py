@@ -122,6 +122,32 @@ class TestClientPoll(unittest.TestCase):
                                     url=url, limit=60))
 
 
+class TestClientArgs(unittest.TestCase):
+
+    def setUp(self):
+        try:  # remove previous db file
+            os.remove(dbpath)
+        except OSError:
+            pass  # file does not exist
+
+        self.server = Process(target=start_test_server)
+        self.server.start()
+        time.sleep(15)
+
+    def tearDown(self):
+        self.server.terminate()
+        self.server.join()
+        time.sleep(5)
+
+    # TODO register and ping commands
+
+    def test_poll(self):
+        args = [
+            "poll", address_alpha, "--register_address", "--delay=5", "--url=" + url, "--limit=60" 
+        ]
+        self.assertTrue(client.main(args))
+
+
 if __name__ == '__main__':
     freeze_support()  # because python setup.py test ...
     unittest.main()

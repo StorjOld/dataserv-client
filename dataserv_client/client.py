@@ -15,6 +15,7 @@ DEFAULT_URL = "http://104.236.104.117"
 DEFAULT_DELAY = 15
 
 
+_timedelta = datetime.timedelta
 _now = datetime.datetime.now
 
 
@@ -106,7 +107,7 @@ def ping(address, url=DEFAULT_URL):
 def poll(address, register_address=False, url=DEFAULT_URL,
          delay=DEFAULT_DELAY, limit=None):
     """TODO doc string"""
-    stop_time = _now() + datetime.timedelta(seconds=limit) if limit else None
+    stop_time = _now() + _timedelta(seconds=int(limit)) if limit else None
 
     if(register_address):
         register(address, url=url)
@@ -115,10 +116,10 @@ def poll(address, register_address=False, url=DEFAULT_URL,
         ping(address, url=url)
         if stop_time and _now() >= stop_time:
             return True
-        time.sleep(delay)
+        time.sleep(int(delay))
 
 
-def _parse_args():
+def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
         def error(self, message):
             sys.stderr.write('error: %s\n' % message)
@@ -178,26 +179,34 @@ def _parse_args():
         help="Deley between each ping."
     )
     poll_parser.add_argument(
-        '--register', action='store_true',
+        "--limit", default=None,
+        help="Limit poll time in seconds."
+    )
+    poll_parser.add_argument(
+        '--register_address', action='store_true',
         help="Register address before polling."
     )
 
     # get values
-    arguments = vars(parser.parse_args())
+    arguments = vars(parser.parse_args(args=args))
     command_name = arguments.pop("command")
     if not command_name:
         parser.error("No command given!")
     return command_name, arguments
 
 
-if __name__ == "__main__":
-    command_name, arguments = _parse_args()
+def main(args):
+    command_name, arguments = _parse_args(args)
     commands = {
         "register": register,
         "ping": ping,
         "poll": poll
     }
     try:
-        commands[command_name](**arguments)
+        return commands[command_name](**arguments)
     except DataservClientException as e:
         print(e)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
