@@ -52,6 +52,16 @@ class TestClient(unittest.TestCase):
             client.register("xyz", url=url)
         self.assertRaises(client.InvalidAddress, callback)
 
+    def test_invalid_farmer(self):
+        def callback():
+            client.register(address_beta, url=url + "/xyz")
+        self.assertRaises(client.FarmerNotFound, callback)
+
+    def test_connection_error(self):
+        def callback():
+            client.register(address_beta, url="http://doesnt.exist.com")
+        self.assertRaises(client.ConnectionError, callback)
+
     def test_ping_invalid_address(self):
         def callback():
             client.ping("xyz", url=url)
