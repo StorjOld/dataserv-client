@@ -208,6 +208,7 @@ def main(args):
         return command_function(**arguments)
     except DataservClientException as e:
         print(e)
+        return None
 
 
 if __name__ == "__main__":

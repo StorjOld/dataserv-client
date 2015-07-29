@@ -16,18 +16,18 @@ address_beta = "15JPEyzUgBKYJSrtHQ9g5kVbm8hghLhv1b"
 address_gamma = "1DauYnqSjZbRSfUoderYgTLdjCjBuyENWA"
 
 
-def start_test_server():
-    db.create_all()  # create schema
-    app.run(host=host, port=int(port), debug=True)  # start server
-
-
 class AbstractTestSetup(object):
 
     def setUp(self):
-        try:  # remove previous db file
+        # remove previous db file
+        try:
             os.remove(dbpath)
         except OSError:
             pass  # file does not exist
+
+        def start_test_server():
+            db.create_all()  # create schema
+            app.run(host=host, port=int(port), debug=True)  # start server
 
         self.server = Process(target=start_test_server)
         self.server.start()
@@ -118,6 +118,27 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
         args = [ "ping", address_alpha, "--url=" + url ]
         self.assertTrue(client.main(args))
+
+    def test_no_command_error(self):
+        def callback():
+            client.main([])
+        self.assertRaises(SystemExit, callback)
+
+    def test_input_error(self):
+        def callback():
+            client.main([
+                "poll", 
+                address_alpha, 
+                "--register_address",
+                "--delay=5",
+                "--url=" + url,
+                "--limit=xyz" 
+            ])
+        self.assertRaises(ValueError, callback)
+    
+    def test_client_error(self):
+        args = [ "register", "xyz", "--url=" + url ]
+        self.assertTrue(client.main(args) == None)
 
 
 if __name__ == '__main__':
