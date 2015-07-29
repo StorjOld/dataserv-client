@@ -67,6 +67,7 @@ def register(address, url=DEFAULT_URL):
         if response.code == 200:
             print("Address {0} now registered on {1}.".format(address, url))
             return True
+        return False
 
     except urllib.error.HTTPError as e:
         if e.code == 409:
@@ -203,7 +204,8 @@ def main(args):
         "poll": poll
     }
     try:
-        return commands[command_name](**arguments)
+        command_function = commands[command_name]
+        return command_function(**arguments)
     except DataservClientException as e:
         print(e)
 

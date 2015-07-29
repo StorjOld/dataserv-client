@@ -151,7 +151,7 @@ class TestClientCliArgs(unittest.TestCase):
         self.assertTrue(client.main(args))
 
     def test_register(self):
-        args = [ "ping", address_alpha, "--url=" + url ]
+        args = [ "register", address_alpha, "--url=" + url ]
         self.assertTrue(client.main(args))
 
     def test_ping(self):
