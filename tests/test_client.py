@@ -21,7 +21,7 @@ def start_test_server():
     app.run(host=host, port=int(port), debug=True)  # start server
 
 
-class TestClientRegister(unittest.TestCase):
+class AbstractTestSetup(object):
 
     def setUp(self):
         try:  # remove previous db file
@@ -37,6 +37,9 @@ class TestClientRegister(unittest.TestCase):
         self.server.terminate()
         self.server.join()
         time.sleep(5)
+
+
+class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
         self.assertTrue(client.register(address_alpha, url=url))
@@ -63,22 +66,7 @@ class TestClientRegister(unittest.TestCase):
         self.assertRaises(client.ConnectionError, callback)
 
 
-class TestClientPing(unittest.TestCase):
-
-    def setUp(self):
-        try:  # remove previous db file
-            os.remove(dbpath)
-        except OSError:
-            pass  # file does not exist
-
-        self.server = Process(target=start_test_server)
-        self.server.start()
-        time.sleep(15)
-
-    def tearDown(self):
-        self.server.terminate()
-        self.server.join()
-        time.sleep(5)
+class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
         self.assertTrue(client.register(address_alpha, url=url))
@@ -100,44 +88,14 @@ class TestClientPing(unittest.TestCase):
         self.assertRaises(client.ConnectionError, callback)
 
 
-class TestClientPoll(unittest.TestCase):
-
-    def setUp(self):
-        try:  # remove previous db file
-            os.remove(dbpath)
-        except OSError:
-            pass  # file does not exist
-
-        self.server = Process(target=start_test_server)
-        self.server.start()
-        time.sleep(15)
-
-    def tearDown(self):
-        self.server.terminate()
-        self.server.join()
-        time.sleep(5)
+class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
         self.assertTrue(client.poll(address_alpha, register_address=True,
                                     url=url, limit=60))
 
 
-class TestClientCliArgs(unittest.TestCase):
-
-    def setUp(self):
-        try:  # remove previous db file
-            os.remove(dbpath)
-        except OSError:
-            pass  # file does not exist
-
-        self.server = Process(target=start_test_server)
-        self.server.start()
-        time.sleep(15)
-
-    def tearDown(self):
-        self.server.terminate()
-        self.server.join()
-        time.sleep(5)
+class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
         args = [
