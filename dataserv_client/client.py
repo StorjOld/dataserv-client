@@ -16,7 +16,9 @@ _now = datetime.datetime.now
 
 class ClientApi(object):
 
-    def __init__(self, address, url=common.DEFAULT_URL):
+    def __init__(self, address, url=common.DEFAULT_URL,
+                 max_size=common.DEFAULT_MAX_SIZE,
+                 store_path=common.DEFAULT_STORE_PATH):
         self.url = url
         self.address = address  # FIXME check it address is valid client side
 

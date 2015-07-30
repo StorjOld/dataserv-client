@@ -149,8 +149,9 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(ValueError, callback)
 
     def test_client_error(self):
-        args = ["xyz", "--url=" + url, "register"]
-        self.assertTrue(cli.main(args) is None)
+        def callback():
+            cli.main(["xyz", "--url=" + url, "register"])
+        self.assertRaises(exceptions.InvalidAddress, callback)
 
 
 if __name__ == '__main__':

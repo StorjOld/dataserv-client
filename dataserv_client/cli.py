@@ -71,7 +71,7 @@ def _parse_args(args):
     return command_name, arguments
 
 
-def main(args):  # TODO move to cli
+def main(args):
     command_name, arguments = _parse_args(args)
     api = client.ClientApi(arguments.pop("address"), url=arguments.pop("url"))
     return getattr(api, command_name)(**arguments)
