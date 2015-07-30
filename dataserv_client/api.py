@@ -16,7 +16,7 @@ _timedelta = datetime.timedelta
 _now = datetime.datetime.now
 
 
-class ClientApi(object):
+class Client(object):
 
     def __init__(self, address, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,

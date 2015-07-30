@@ -1,7 +1,7 @@
 import sys
 import argparse
 from dataserv_client import common
-from dataserv_client import client
+from dataserv_client import api
 
 
 def _add_programm_args(parser):
@@ -105,11 +105,11 @@ def _parse_args(args):
 
 def main(args):
     command_name, arguments = _parse_args(args)
-    api = client.ClientApi(
+    client = api.Client(
         arguments.pop("address"),
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
     )
-    return getattr(api, command_name)(**arguments)
+    return getattr(client, command_name)(**arguments)

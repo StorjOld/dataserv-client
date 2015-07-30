@@ -4,7 +4,7 @@ import time
 import dataserv
 from multiprocessing import Process, freeze_support
 from dataserv_client import cli
-from dataserv_client import client
+from dataserv_client import api
 from dataserv_client import exceptions
 from dataserv.app import app, db
 
@@ -44,80 +44,79 @@ class AbstractTestSetup(object):
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
-        api = client.ClientApi(address_alpha, url=url)
-        self.assertTrue(api.register())
+        client = api.Client(address_alpha, url=url)
+        self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
-            api = client.ClientApi(address_alpha, url=url)
-            api.register()
-            api.register()
+            client = api.Client(address_alpha, url=url)
+            client.register()
+            client.register()
         self.assertRaises(exceptions.AddressAlreadyRegistered, callback)
 
     def test_invalid_address(self):
         def callback():
-            api = client.ClientApi("xyz", url=url)
-            api.register()
+            client = api.Client("xyz", url=url)
+            client.register()
         self.assertRaises(exceptions.InvalidAddress, callback)
 
     def test_invalid_farmer(self):
         def callback():
-            api = client.ClientApi(address_beta, url=url + "/xyz")
-            api.register()
+            client = api.Client(address_beta, url=url + "/xyz")
+            client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_connection_error(self):
         def callback():
-            api = client.ClientApi(address_beta, url="http://doesnt.exist.com")
-            api.register()
+            client = api.Client(address_beta, url="http://doesnt.exist.com")
+            client.register()
         self.assertRaises(exceptions.ConnectionError, callback)
 
 
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
-        api = client.ClientApi(address_alpha, url=url)
-        self.assertTrue(api.register())
-        self.assertTrue(api.ping())
+        client = api.Client(address_alpha, url=url)
+        self.assertTrue(client.register())
+        self.assertTrue(client.ping())
 
     def test_invalid_address(self):
         def callback():
-            api = client.ClientApi("xyz", url=url)
-            api.ping()
+            client = api.Client("xyz", url=url)
+            client.ping()
         self.assertRaises(exceptions.InvalidAddress, callback)
 
     def test_invalid_farmer(self):
         def callback():
-            api = client.ClientApi(address_alpha, url=url + "/xyz")
-            api.ping()
+            client = api.Client(address_alpha, url=url + "/xyz")
+            client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_connection_error(self):
         def callback():
-            api = client.ClientApi(address_alpha,
-                                   url="http://doesnt.exist.com")
-            api.ping()
+            client = api.Client(address_alpha, url="http://doesnt.exist.com")
+            client.ping()
         self.assertRaises(exceptions.ConnectionError, callback)
 
 
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
-        api = client.ClientApi(address_alpha, url=url)
-        self.assertTrue(api.poll(register_address=True, limit=60))
+        client = api.Client(address_alpha, url=url)
+        self.assertTrue(client.poll(register_address=True, limit=60))
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_build(self):
-        api = client.ClientApi(address_alpha, url=url, debug=True,
-                               max_size=1024*1024*256)  # 256MB
-        hashes = api.build(cleanup=True)
+        client = api.Client(address_alpha, url=url, debug=True,
+                            max_size=1024*1024*256)  # 256MB
+        hashes = client.build(cleanup=True)
         self.assertTrue(len(hashes) == 2)
 
-        api = client.ClientApi(address_alpha, url=url, debug=True,
-                               max_size=1024*1024*512)  # 512MB
-        hashes = api.build(cleanup=True)
+        client = api.Client(address_alpha, url=url, debug=True,
+                            max_size=1024*1024*512)  # 512MB
+        hashes = client.build(cleanup=True)
         self.assertTrue(len(hashes) == 4)
 
 
@@ -162,7 +161,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             ])
         self.assertRaises(ValueError, callback)
 
-    def test_client_error(self):
+    def test_api_error(self):
         def callback():
             cli.main(["xyz", "--url=" + url, "register"])
         self.assertRaises(exceptions.InvalidAddress, callback)
