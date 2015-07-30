@@ -7,7 +7,6 @@ import urllib.error
 import urllib.request
 import datetime
 from dataserv_client import exceptions
-from dataserv_client import cli
 from dataserv_client import common
 
 
@@ -31,7 +30,7 @@ class ClientApi(object):
                 print("Address {0} now registered on {1}.".format(self.address,
                                                                   self.url))
                 return True
-            return False
+            return False  # pragma: no cover
 
         except urllib.error.HTTPError as e:
             if e.code == 409:
@@ -41,10 +40,10 @@ class ClientApi(object):
                 raise exceptions.FarmerNotFound(self.url)
             elif e.code == 400:
                 raise exceptions.InvalidAddress(self.address)
-            elif e.code == 500:
-                raise exceptions.FarmerError(self.url)
+            elif e.code == 500:  # pragma: no cover
+                raise exceptions.FarmerError(self.url)  # pragma: no cover
             else:
-                raise e
+                raise e  # pragma: no cover
         except urllib.error.URLError:
             raise exceptions.ConnectionError(self.url)
 
@@ -82,14 +81,3 @@ class ClientApi(object):
             if stop_time and _now() >= stop_time:
                 return True
             time.sleep(int(delay))
-
-
-def main(args):
-    try:
-        command_name, arguments = cli.parse_args(args)
-        api = ClientApi(arguments.pop("address"), url=arguments.pop("url"))
-        return getattr(api, command_name)(**arguments)
-    except exceptions.DataservClientException as e:
-        print("THIS FUCKING EXCEPTION")
-        print(e)
-        return None

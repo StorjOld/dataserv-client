@@ -21,8 +21,8 @@ class FarmerNotFound(DataservClientException):
 class FarmerError(DataservClientException):
 
     def __init__(self, url):
-        msg = "Farmer error at {0}!".format(url)
-        super(FarmerError, self).__init__(msg)
+        msg = "Farmer error at {0}!".format(url)  # pragma: no cover
+        super(FarmerError, self).__init__(msg)  # pragma: no cover
 
 
 class InvalidAddress(DataservClientException):

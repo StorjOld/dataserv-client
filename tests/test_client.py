@@ -2,6 +2,7 @@ import os
 import unittest
 import time
 from multiprocessing import Process, freeze_support
+from dataserv_client import cli
 from dataserv_client import client
 from dataserv_client import exceptions
 import dataserv
@@ -117,27 +118,27 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--delay=5",
             "--limit=60"
         ]
-        self.assertTrue(client.main(args))
+        self.assertTrue(cli.main(args))
 
     def test_register(self):
         args = [address_alpha, "--url=" + url, "register"]
-        self.assertTrue(client.main(args))
+        self.assertTrue(cli.main(args))
 
     def test_ping(self):
         args = [address_alpha, "--url=" + url, "register"]
-        self.assertTrue(client.main(args))
+        self.assertTrue(cli.main(args))
 
         args = [address_alpha, "--url=" + url, "ping"]
-        self.assertTrue(client.main(args))
+        self.assertTrue(cli.main(args))
 
     def test_no_command_error(self):
         def callback():
-            client.main([])
+            cli.main([address_alpha])
         self.assertRaises(SystemExit, callback)
 
     def test_input_error(self):
         def callback():
-            client.main([
+            cli.main([
                 address_alpha,
                 "--url=" + url,
                 "poll",
@@ -149,9 +150,9 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_client_error(self):
         args = ["xyz", "--url=" + url, "register"]
-        self.assertTrue(client.main(args) is None)
+        self.assertTrue(cli.main(args) is None)
 
 
 if __name__ == '__main__':
-    freeze_support()  # because python setup.py test ...
+    freeze_support()  # for windows ...
     unittest.main()

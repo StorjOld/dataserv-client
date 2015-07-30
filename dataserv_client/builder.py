@@ -11,6 +11,7 @@ my_max_size = 1024*1024*1024  # 1 GB
 
 
 class Builder:
+
     def __init__(self, address, shard_size, max_size):
         self.address = address
         self.shard_size = shard_size
