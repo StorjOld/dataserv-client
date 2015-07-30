@@ -5,21 +5,42 @@ from dataserv_client import client
 
 
 def _add_programm_args(parser):
+    # address
     parser.add_argument("address", help="Required bitcoin address.")
+
+    # url
     parser.add_argument(
         "--url", default=common.DEFAULT_URL,
         help="Url of the farmer (default: {0}).".format(common.DEFAULT_URL)
     )
 
+    # max_size
+    default = common.DEFAULT_MAX_SIZE
+    parser.add_argument(
+        "--max_size", default=default,
+        help="Maximum data size in bytes. (default: {0}).".format(default)
+    )
+
+    # store_path
+    default = common.DEFAULT_STORE_PATH
+    parser.add_argument(
+        "--store_path", default=default,
+        help="Storage path. (default: {0}).".format(default)
+    )
+
+    # debug
+    parser.add_argument('--debug', action='store_true',
+                        help="Show debug information.")
+
 
 def _add_register(command_parser):
-    register_parser = command_parser.add_parser(
+    register_parser = command_parser.add_parser(  # NOQA
         "register", help="Register a bitcoin address with farmer."
     )
 
 
 def _add_ping(command_parser):
-    ping_parser = command_parser.add_parser(
+    ping_parser = command_parser.add_parser(  # NOQA
         "ping", help="Ping farmer with given address."
     )
 
@@ -39,6 +60,16 @@ def _add_poll(command_parser):
         '--register_address', action='store_true',
         help="Register address before polling."
     )
+
+
+def _add_build(command_parser):
+    build_parser = command_parser.add_parser(
+        "build", help="Fill the farmer with data up to their max."
+    )
+
+    # cleanup
+    build_parser.add_argument('--cleanup', action='store_true',
+                              help="Remove generated files.")
 
 
 def _parse_args(args):
@@ -62,6 +93,7 @@ def _parse_args(args):
     _add_register(command_parser)
     _add_ping(command_parser)
     _add_poll(command_parser)
+    _add_build(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))
@@ -73,5 +105,11 @@ def _parse_args(args):
 
 def main(args):
     command_name, arguments = _parse_args(args)
-    api = client.ClientApi(arguments.pop("address"), url=arguments.pop("url"))
+    api = client.ClientApi(
+        arguments.pop("address"),
+        url=arguments.pop("url"),
+        debug=arguments.pop("debug"),
+        max_size=arguments.pop("max_size"),
+        store_path=arguments.pop("store_path"),
+    )
     return getattr(api, command_name)(**arguments)

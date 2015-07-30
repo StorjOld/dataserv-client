@@ -29,9 +29,10 @@ setup(
     download_url = DOWNLOAD_URL,
     test_suite="tests",
     install_requires=[
+        'RandomIO == 0.2.1',
+        'dataserv == 1.0.1',  # FIXME why do test only work when its here?
     ],
     tests_require=[
-        'dataserv == 1.0.1',
         'coverage',
         'coveralls'
     ],

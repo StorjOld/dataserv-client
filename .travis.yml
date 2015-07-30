@@ -7,6 +7,7 @@ python:
 install:
   - pip install Flask
   - pip install dataserv
+  - pip install RandomIO
   - pip install coverage coveralls
 
 before_script:

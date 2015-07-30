@@ -1,11 +1,11 @@
 import os
 import unittest
 import time
+import dataserv
 from multiprocessing import Process, freeze_support
 from dataserv_client import cli
 from dataserv_client import client
 from dataserv_client import exceptions
-import dataserv
 from dataserv.app import app, db
 
 
@@ -105,6 +105,20 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         api = client.ClientApi(address_alpha, url=url)
         self.assertTrue(api.poll(register_address=True, limit=60))
+
+
+class TestClientBuild(AbstractTestSetup, unittest.TestCase):
+
+    def test_build(self):
+        api = client.ClientApi(address_alpha, url=url, debug=True,
+                               max_size=1024*1024*256)  # 256MB
+        hashes = api.build(cleanup=True)
+        self.assertTrue(len(hashes) == 2)
+
+        api = client.ClientApi(address_alpha, url=url, debug=True,
+                               max_size=1024*1024*512)  # 512MB
+        hashes = api.build(cleanup=True)
+        self.assertTrue(len(hashes) == 4)
 
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):

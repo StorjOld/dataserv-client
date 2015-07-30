@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import os
 import time
 import urllib
 import urllib.error
@@ -8,6 +9,7 @@ import urllib.request
 import datetime
 from dataserv_client import exceptions
 from dataserv_client import common
+from dataserv_client import builder
 
 
 _timedelta = datetime.timedelta
@@ -16,11 +18,22 @@ _now = datetime.datetime.now
 
 class ClientApi(object):
 
-    def __init__(self, address, url=common.DEFAULT_URL,
+    def __init__(self, address, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH):
         self.url = url
-        self.address = address  # FIXME check it address is valid client side
+        self.debug = debug
+        self.address = address
+        self.max_size = int(max_size)
+        self.store_path = store_path
+        self._mkdir_recursive(store_path)
+
+    def _mkdir_recursive(self, path):
+        sub_path = os.path.dirname(path)
+        if not os.path.exists(sub_path):
+            self._mkdir_recursive(sub_path)
+        if not os.path.exists(path):
+            os.mkdir(path)
 
     def register(self):
         """Attempt to register the config address."""
@@ -63,10 +76,10 @@ class ClientApi(object):
                 raise exceptions.InvalidAddress(self.address)
             elif e.code == 404:
                 raise exceptions.FarmerNotFound(self.url)
-            elif e.code == 500:
-                raise exceptions.FarmerError(self.url)
+            elif e.code == 500:  # pragma: no cover
+                raise exceptions.FarmerError(self.url)  # pragma: no cover
             else:
-                raise e
+                raise e  # pragma: no cover
         except urllib.error.URLError:
             raise exceptions.ConnectionError(self.url)
 
@@ -83,3 +96,9 @@ class ClientApi(object):
             if stop_time and _now() >= stop_time:
                 return True
             time.sleep(int(delay))
+
+    def build(self, cleanup=False):
+        bucket = builder.Builder(self.address, common.SHARD_SIZE,
+                                 self.max_size)
+        return bucket.build(self.store_path, debug=self.debug, cleanup=cleanup)
+
