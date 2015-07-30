@@ -1,0 +1,4 @@
+DEFAULT_URL = "http://104.236.104.117"
+DEFAULT_DELAY = 15
+
+
