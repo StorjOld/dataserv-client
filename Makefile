@@ -36,7 +36,7 @@ test:
 	# import pudb; pu.db # set break point
 
 
-publish: test
+publish:
 	env/py3/bin/python setup.py register sdist upload
 
 

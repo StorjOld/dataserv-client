@@ -29,6 +29,7 @@ setup(
     scripts=['dataserv_client/bin/dataserv-client.py'],
     download_url = DOWNLOAD_URL,
     test_suite="tests",
+    package_data={'': ['version.txt']},
     install_requires=[
         'RandomIO == 0.2.1',
         'dataserv == 1.0.1',  # FIXME why do test only work when its here?
