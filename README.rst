@@ -30,7 +30,7 @@ Linux Setup
 Windows Setup
 #############
 
-Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_ 
+Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_
 TODO add pycrypto instructions
 
 ::
@@ -42,38 +42,50 @@ TODO add pycrypto instructions
 Usage
 #####
 
-Show programm help:
+Show programm help and optional arguments:
 
 ::
 
-    $ ./client.py --help
+    $ dataserv-client --help
 
-Show command help:
 
-::
-
-    $ ./client.py <COMMAND> --help
-
-Register address with default node:
+Show command help and optional arguments:
 
 ::
 
-    $ ./client.py register <YOUR_BITCOIN_ADDRESS>
+    $ dataserv-client <COMMAND> --help
 
-Register address with custom node:
 
-::
-
-    $ ./client.py register <YOUR_BITCOIN_ADDRESS> --url=<FARMER_URL>
-
-Continuously ping default node in 15 sec intervals:
+Show version number
 
 ::
 
-    $ ./client.py poll <YOUR_BITCOIN_ADDRESS>
+    $ dataserv-client verison
 
-Continuously ping custom node in 15 sec intervals:
+
+Register address:
 
 ::
 
-    $ ./client.py poll <YOUR_BITCOIN_ADDRESS> --url=<FARMER_URL>
+    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> register
+
+
+Ping address:
+
+::
+
+    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> ping
+
+
+Poll address:
+
+::
+
+    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> poll
+
+
+Build:
+
+::
+
+    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> build
