@@ -36,7 +36,7 @@ TODO add pycrypto instructions
 ::
 
     $ pip install dataserv-client
-    $ dataserv-client version
+    $ dataserv-client.py version
 
 
 Usage
@@ -46,46 +46,46 @@ Show programm help and optional arguments:
 
 ::
 
-    $ dataserv-client --help
+    $ dataserv-client.py --help
 
 
 Show command help and optional arguments:
 
 ::
 
-    $ dataserv-client <COMMAND> --help
+    $ dataserv-client.py <COMMAND> --help
 
 
 Show version number
 
 ::
 
-    $ dataserv-client verison
+    $ dataserv-client.py verison
 
 
 Register address:
 
 ::
 
-    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> register
+    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> register
 
 
 Ping address:
 
 ::
 
-    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> ping
+    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> ping
 
 
 Poll address:
 
 ::
 
-    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> poll
+    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> poll
 
 
 Build:
 
 ::
 
-    $ dataserv-client --address=<YOUR_BITCOIN_ADDRESS> build
+    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> build

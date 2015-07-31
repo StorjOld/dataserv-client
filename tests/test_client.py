@@ -150,7 +150,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
         args = [
-            address_alpha,
+            "--address=" + address_alpha,
             "--url=" + url,
             "poll",
             "--register_address",
@@ -160,25 +160,25 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
-        args = [address_alpha, "--url=" + url, "register"]
+        args = ["--address=" + address_alpha, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
-        args = [address_alpha, "--url=" + url, "register"]
+        args = ["--address=" + address_alpha, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
-        args = [address_alpha, "--url=" + url, "ping"]
+        args = ["--address=" + address_alpha, "--url=" + url, "ping"]
         self.assertTrue(cli.main(args))
 
     def test_no_command_error(self):
         def callback():
-            cli.main([address_alpha])
+            cli.main(["--address=" + address_alpha])
         self.assertRaises(SystemExit, callback)
 
     def test_input_error(self):
         def callback():
             cli.main([
-                address_alpha,
+                "--address=" + address_alpha,
                 "--url=" + url,
                 "poll",
                 "--register_address",
@@ -189,7 +189,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_api_error(self):
         def callback():
-            cli.main(["xyz", "--url=" + url, "register"])
+            cli.main(["--address=xyz", "--url=" + url, "register"])
         self.assertRaises(exceptions.InvalidAddress, callback)
 
 

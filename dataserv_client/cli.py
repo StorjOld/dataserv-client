@@ -6,7 +6,9 @@ from dataserv_client import api
 
 def _add_programm_args(parser):
     # address
-    parser.add_argument("address", help="Required bitcoin address.")
+    parser.add_argument(
+        "--address", default=None, help="Required bitcoin address."
+    )
 
     # url
     parser.add_argument(
