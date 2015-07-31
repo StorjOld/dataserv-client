@@ -41,7 +41,7 @@ class Client(object):
 
     def _ensure_address_given(self):
         if not self.address:  # TODO ensure address is valid
-            raise Exception("Address not given!")
+            raise exceptions.AddressRequired()
 
     def version(self):
         print(__version__)

@@ -72,6 +72,11 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
             client.register()
         self.assertRaises(exceptions.ConnectionError, callback)
 
+    def test_address_required(self):
+        def callback():
+            api.Client().register()
+        self.assertRaises(exceptions.AddressRequired, callback)
+
 
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
@@ -98,12 +103,22 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
             client.ping()
         self.assertRaises(exceptions.ConnectionError, callback)
 
+    def test_address_required(self):
+        def callback():
+            api.Client().ping()
+        self.assertRaises(exceptions.AddressRequired, callback)
+
 
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
         client = api.Client(address_alpha, url=url)
         self.assertTrue(client.poll(register_address=True, limit=60))
+
+    def test_address_required(self):
+        def callback():
+            api.Client().poll()
+        self.assertRaises(exceptions.AddressRequired, callback)
 
 
 class TestClientVersion(AbstractTestSetup, unittest.TestCase):
@@ -126,6 +141,10 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         hashes = client.build(cleanup=True)
         self.assertTrue(len(hashes) == 4)
 
+    def test_address_required(self):
+        def callback():
+            api.Client().build()
+        self.assertRaises(exceptions.AddressRequired, callback)
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 

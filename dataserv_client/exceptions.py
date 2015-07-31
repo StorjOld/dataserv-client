@@ -32,6 +32,12 @@ class InvalidAddress(DataservClientException):
         super(InvalidAddress, self).__init__(msg)
 
 
+class AddressRequired(DataservClientException):
+
+    def __init__(self):
+        super(AddressRequired, self).__init__("Required address not given!")
+
+
 class ConnectionError(DataservClientException):
 
     def __init__(self, url):
