@@ -25,7 +25,8 @@ setup(
     author='Shawn Wilkinson',
     author_email='shawn+dataserv-client@storj.io',
     license='MIT',
-    packages=find_packages(),
+    packages=find_packages(exclude=['dataserv_client.bin']),
+    scripts=['dataserv_client/bin/dataserv-client.py'],
     download_url = DOWNLOAD_URL,
     test_suite="tests",
     install_requires=[
