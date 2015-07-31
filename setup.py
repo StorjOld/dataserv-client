@@ -10,7 +10,7 @@ THISDIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(THISDIR)
 
 
-VERSION = open("version.txt").readline().strip()
+VERSION = open(os.path.join("dataserv_client", "version.txt")).readline().strip()
 DOWNLOAD_BASEURL = "https://pypi.python.org/packages/source/a/dataserv-client/"
 DOWNLOAD_URL = DOWNLOAD_BASEURL + "dataserv-client-%s.tar.gz" % VERSION
 

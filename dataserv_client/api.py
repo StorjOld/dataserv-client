@@ -16,7 +16,7 @@ _timedelta = datetime.timedelta
 _now = datetime.datetime.now
 
 
-_BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))          
+_BASEDIR = os.path.abspath(os.path.dirname(__file__))
 __version__ = "".join(open(os.path.join(_BASEDIR, "version.txt")).readlines())
 
 
