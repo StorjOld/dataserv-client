@@ -18,12 +18,25 @@ dataserv-client
 .. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
-Setup
-#####
+Linux Setup
+###########
 
-1. Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_ 
-2. Download the `client <https://github.com/Storj/dataserv-client/blob/master/client.py>`_ 
-3. Run the script
+::
+
+    $ pip install dataserv-client
+    $ dataserv-client version
+
+
+Windows Setup
+#############
+
+Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_ 
+TODO add pycrypto instructions
+
+::
+
+    $ pip install dataserv-client
+    $ dataserv-client version
 
 
 Usage

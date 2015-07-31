@@ -33,6 +33,11 @@ def _add_programm_args(parser):
                         help="Show debug information.")
 
 
+def _add_version(command_parser):
+    version_parser = command_parser.add_parser(  # NOQA
+        "version", help="Print version number."
+    )
+
 def _add_register(command_parser):
     register_parser = command_parser.add_parser(  # NOQA
         "register", help="Register a bitcoin address with farmer."
@@ -90,6 +95,7 @@ def _parse_args(args):
         title='commands', dest='command', metavar="<command>"
     )
 
+    _add_version(command_parser)
     _add_register(command_parser)
     _add_ping(command_parser)
     _add_poll(command_parser)

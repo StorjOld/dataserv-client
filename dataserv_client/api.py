@@ -16,9 +16,13 @@ _timedelta = datetime.timedelta
 _now = datetime.datetime.now
 
 
+_BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))          
+__version__ = "".join(open(os.path.join(_BASEDIR, "version.txt")).readlines())
+
+
 class Client(object):
 
-    def __init__(self, address, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, address=None, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH):
         self.url = url
@@ -35,8 +39,17 @@ class Client(object):
         if not os.path.exists(path):
             os.mkdir(path)
 
+    def _ensure_address_given(self):
+        if not self.address:  # TODO ensure address is valid
+            raise Exception("Address not given!")
+
+    def version(self):
+        print(__version__)
+        return __version__
+
     def register(self):
         """Attempt to register the config address."""
+        self._ensure_address_given()
 
         try:
             api_call = "{0}/api/register/{1}".format(self.url, self.address)
@@ -64,6 +77,7 @@ class Client(object):
 
     def ping(self):
         """Attempt keep-alive with the server."""
+        self._ensure_address_given()
         try:
             print("Pinging {0} with address {1}.".format(self.url,
                                                          self.address))
@@ -86,6 +100,7 @@ class Client(object):
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
              limit=None):
         """TODO doc string"""
+        self._ensure_address_given()
         stop_time = _now() + _timedelta(seconds=int(limit)) if limit else None
 
         if(register_address):
@@ -98,7 +113,8 @@ class Client(object):
             time.sleep(int(delay))
 
     def build(self, cleanup=False):
-        bucket = builder.Builder(self.address, common.SHARD_SIZE,
-                                 self.max_size)
-        return bucket.build(self.store_path, debug=self.debug, cleanup=cleanup)
+        """TODO doc string"""
+        self._ensure_address_given()
+        bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
+        return bldr.build(self.store_path, debug=self.debug, cleanup=cleanup)
 

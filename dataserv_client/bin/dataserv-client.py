@@ -1,3 +1,6 @@
+#!/usr/bin/env python                                                           
+
+
 import sys  # pragma: no cover
 from dataserv_client import cli  # pragma: no cover
 
