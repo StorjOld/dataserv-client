@@ -106,6 +106,13 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(client.poll(register_address=True, limit=60))
 
 
+class TestClientVersion(AbstractTestSetup, unittest.TestCase):
+
+    def test_version(self):
+        client = api.Client(url=url)
+        self.assertEqual(client.version(), api.__version__)
+
+
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_build(self):
