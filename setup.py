@@ -4,13 +4,14 @@
 
 import os
 from setuptools import setup, find_packages
+import py2exe
 
 
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(THISDIR)
 
 
-VERSION = open(os.path.join("dataserv_client", "version.txt")).readline().strip()
+VERSION = "1.0.7" # FIXME get from module
 DOWNLOAD_BASEURL = "https://pypi.python.org/packages/source/a/dataserv-client/"
 DOWNLOAD_URL = DOWNLOAD_BASEURL + "dataserv-client-%s.tar.gz" % VERSION
 
@@ -26,10 +27,9 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license='MIT',
     packages=find_packages(exclude=['dataserv_client.bin']),
-    scripts=['dataserv_client/bin/dataserv-client.py'],
+    scripts=[os.path.join('dataserv_client', 'bin', 'dataserv-client.py')],
     download_url = DOWNLOAD_URL,
     test_suite="tests",
-    package_data={'': ['version.txt']},
     install_requires=[
         'RandomIO == 0.2.1',
         'dataserv == 1.0.1',  # FIXME why do test only work when its here?
@@ -56,4 +56,11 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+
+    # py2exe
+    console=[os.path.join('dataserv_client', 'bin', 'dataserv-client.py')],
+    options = {'py2exe': {
+        "optimize": 2,
+        "bundle_files": 2, # This tells py2exe to bundle everything
+    }}
 )

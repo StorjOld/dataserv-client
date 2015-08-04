@@ -10,14 +10,11 @@ import datetime
 from dataserv_client import exceptions
 from dataserv_client import common
 from dataserv_client import builder
+from dataserv_client import __version__
 
 
 _timedelta = datetime.timedelta
 _now = datetime.datetime.now
-
-
-_BASEDIR = os.path.abspath(os.path.dirname(__file__))
-__version__ = "".join(open(os.path.join(_BASEDIR, "version.txt")).readlines())
 
 
 class Client(object):
