@@ -51,7 +51,7 @@ Argument ordering
 
 ::
 
-    $ dataserv-client.py <program arguments and flags> COMMAND <command arguments and flags>
+    $ dataserv-client.py <program arguments> COMMAND <command arguments>
 
 
 Argument ordering example
@@ -119,13 +119,13 @@ Register address with default farmer.
 
 ::
 
-    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> register
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> register
 
 Register address with custom farmer.
 
 ::
 
-    $ dataserv-client.py --url=<CUSTOM_FARMER_URL> --address=<YOUR_BITCOIN_ADDRESS> register
+    $ dataserv-client.py --url=<CUSTOM_FARMER_URL> --address=<BITCOIN_ADDRESS> register
 
 
 ping command
@@ -135,7 +135,7 @@ Ping address:
 
 ::
 
-    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> ping
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> ping
 
 
 poll command
@@ -145,22 +145,29 @@ Poll address:
 
 ::
 
-    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> poll
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> poll
 
 
 build command
 -------------
 
-Build:
+Build
 
 ::
 
-    $ dataserv-client.py --address=<YOUR_BITCOIN_ADDRESS> build
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build
 
 
-Build:
+Build with custom max data size and store path
 
 ::
 
-    $ dataserv-client.py --max_size=<MAX_DATA_SIZE_IN_BYTES> --address=<YOUR_BITCOIN_ADDRESS> build
+    $ dataserv-client.py --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --address=<BITCOIN_ADDRESS> build
+
+
+Build and cleanup files afterwards
+
+::
+
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --cleanup
 
