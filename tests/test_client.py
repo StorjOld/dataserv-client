@@ -41,7 +41,6 @@ class AbstractTestSetup(object):
         time.sleep(1)
 
 
-@unittest.skip("ok")
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
@@ -79,7 +78,6 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
-@unittest.skip("ok")
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
@@ -111,7 +109,6 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
-@unittest.skip("ok")
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
@@ -124,7 +121,6 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
-@unittest.skip("ok")
 class TestClientVersion(AbstractTestSetup, unittest.TestCase):
 
     def test_version(self):
@@ -159,7 +155,6 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
-@unittest.skip("ok")
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
