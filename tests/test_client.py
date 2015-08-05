@@ -130,6 +130,13 @@ class TestClientVersion(AbstractTestSetup, unittest.TestCase):
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
+    # TODO test default path
+    # TODO test custom path
+    # TODO test shard size
+    # TODO test shard default count
+    # TODO test height
+    # TODO test cleanup
+
     def test_build(self):
         client = api.Client(address_alpha, url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB

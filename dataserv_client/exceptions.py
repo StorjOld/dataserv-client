@@ -32,6 +32,13 @@ class InvalidAddress(DataservClientException):
         super(InvalidAddress, self).__init__(msg)
 
 
+class InvalidHeight(DataservClientException):
+
+    def __init__(self, height):
+        msg = "Height {0} not valid, must be an integer > 0!".format(height)
+        super(InvalidHeight, self).__init__(msg)
+
+
 class AddressRequired(DataservClientException):
 
     def __init__(self):

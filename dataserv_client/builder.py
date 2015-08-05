@@ -34,10 +34,11 @@ class Builder:
             os.remove(path)
         return file_hash
 
-    def build(self, store_path, debug=False, cleanup=False):
+    def build(self, store_path, debug=False, cleanup=False, height=None):
         """Fill the farmer with data up to their max."""
         hashes = []
-        for shard_num in range(int(self.max_size/self.shard_size)):
+        height = height if height else int(self.max_size / self.shard_size)
+        for shard_num in range(height):
             seed = self.build_seed(shard_num)
             file_hash = self.generate_shard(seed, store_path, cleanup)
             hashes.append(file_hash)

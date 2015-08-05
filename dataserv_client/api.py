@@ -109,9 +109,12 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def build(self, cleanup=False):
+    def build(self, cleanup=False, height=None):
         """TODO doc string"""
+        if height and (int(height) < 0):
+            raise exceptions.InvalidHeight(height)
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
-        return bldr.build(self.store_path, debug=self.debug, cleanup=cleanup)
+        return bldr.build(self.store_path, debug=self.debug,
+                          cleanup=cleanup, height=int(height))
 
