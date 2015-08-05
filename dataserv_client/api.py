@@ -113,8 +113,10 @@ class Client(object):
         """TODO doc string"""
         if height and (int(height) < 0):
             raise exceptions.InvalidHeight(height)
+        height = int(height) if height else height
+
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
         return bldr.build(self.store_path, debug=self.debug,
-                          cleanup=cleanup, height=int(height))
+                          cleanup=cleanup, height=height)
 
