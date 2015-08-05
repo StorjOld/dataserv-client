@@ -26,14 +26,10 @@ class Builder:
     def generate_shard(self, seed, store_path, cleanup=False):
         """Save a shard, and return its SHA-256 hash."""
 
-        # temporarily generate file
-        tmp_file = RandomIO.RandomIO(seed).read(self.shard_size)
-
-        file_hash = hashlib.sha256(tmp_file).hexdigest()  # get SHA-256 hash
-
         # save the shard
-        path = os.path.join(store_path, file_hash)
+        path = os.path.join(store_path, seed)
         RandomIO.RandomIO(seed).genfile(self.shard_size, path)
+        file_hash = hashlib.sha256(open(path, 'rb').read()).hexdigest()
         if cleanup:
             os.remove(path)
         return file_hash

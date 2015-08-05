@@ -4,14 +4,16 @@
 
 import os
 from setuptools import setup, find_packages
-import py2exe
+
+if os.name == 'nt':  # windows
+    import py2exe  # manual dependencie :/
 
 
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(THISDIR)
 
 
-VERSION = "1.0.7" # FIXME get from module
+VERSION = "1.0.8" # FIXME get from module
 DOWNLOAD_BASEURL = "https://pypi.python.org/packages/source/a/dataserv-client/"
 DOWNLOAD_URL = DOWNLOAD_BASEURL + "dataserv-client-%s.tar.gz" % VERSION
 
