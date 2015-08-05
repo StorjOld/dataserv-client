@@ -60,7 +60,7 @@ Show version number
 
 ::
 
-    $ dataserv-client.py verison
+    $ dataserv-client.py version
 
 
 Register address:
