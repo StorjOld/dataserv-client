@@ -44,16 +44,11 @@ class Client(object):
         print(__version__)
         return __version__
 
-    def register(self):
-        """Attempt to register the config address."""
-        self._ensure_address_given()
-
+    def _querry(self, api_call):
+        # print("API_CALL:", api_call)
         try:
-            api_call = "{0}/api/register/{1}".format(self.url, self.address)
-            response = urllib.request.urlopen(api_call)
+            response = urllib.request.urlopen(self.url + api_call)
             if response.code == 200:
-                print("Address {0} now registered on {1}.".format(self.address,
-                                                                  self.url))
                 return True
             return False  # pragma: no cover
 
@@ -72,27 +67,20 @@ class Client(object):
         except urllib.error.URLError:
             raise exceptions.ConnectionError(self.url)
 
+    def register(self):
+        """Attempt to register the config address."""
+        self._ensure_address_given()
+        registered = self._querry("/api/register/{0}".format(self.address))
+        if registered:
+            print("Address {0} now registered on {1}.".format(self.address,
+                                                              self.url))
+        return registered
+
     def ping(self):
         """Attempt keep-alive with the server."""
         self._ensure_address_given()
-        try:
-            print("Pinging {0} with address {1}.".format(self.url,
-                                                         self.address))
-            api_call = "{0}/api/ping/{1}".format(self.url, self.address)
-            urllib.request.urlopen(api_call)
-            return True
-
-        except urllib.error.HTTPError as e:
-            if e.code == 400:
-                raise exceptions.InvalidAddress(self.address)
-            elif e.code == 404:
-                raise exceptions.FarmerNotFound(self.url)
-            elif e.code == 500:  # pragma: no cover
-                raise exceptions.FarmerError(self.url)  # pragma: no cover
-            else:
-                raise e  # pragma: no cover
-        except urllib.error.URLError:
-            raise exceptions.ConnectionError(self.url)
+        print("Pinging {0} with address {1}.".format(self.url, self.address))
+        return self._querry("/api/ping/{0}".format(self.address))
 
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
              limit=None):
@@ -109,14 +97,10 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def build(self, cleanup=False, height=None):
+    def build(self, cleanup=False):
         """TODO doc string"""
-        if height and (int(height) < 0):
-            raise exceptions.InvalidHeight(height)
-        height = int(height) if height else height
-
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
-        return bldr.build(self.store_path, debug=self.debug,
-                          cleanup=cleanup, height=height)
-
+        hashes = bldr.build(self.store_path, debug=self.debug, cleanup=cleanup)
+        self._querry('/api/height/{0}/{1}'.format(self.address, len(hashes)))
+        return hashes

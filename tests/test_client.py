@@ -41,6 +41,7 @@ class AbstractTestSetup(object):
         time.sleep(1)
 
 
+@unittest.skip("ok")
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
@@ -78,6 +79,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
+@unittest.skip("ok")
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
@@ -109,6 +111,7 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
+@unittest.skip("ok")
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
@@ -121,6 +124,7 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
+@unittest.skip("ok")
 class TestClientVersion(AbstractTestSetup, unittest.TestCase):
 
     def test_version(self):
@@ -133,13 +137,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
     # TODO test default path
     # TODO test custom path
     # TODO test shard size
-    # TODO test shard default count
-    # TODO test height
+    # TODO test if height set
     # TODO test cleanup
 
     def test_build(self):
         client = api.Client(address_alpha, url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB
+        client.register()
+
         hashes = client.build(cleanup=True)
         self.assertTrue(len(hashes) == 2)
 
@@ -153,6 +158,8 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
             api.Client().build()
         self.assertRaises(exceptions.AddressRequired, callback)
 
+
+@unittest.skip("ok")
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):

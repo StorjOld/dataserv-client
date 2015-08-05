@@ -78,12 +78,6 @@ def _add_build(command_parser):
     build_parser.add_argument('--cleanup', action='store_true',
                               help="Remove generated files.")
 
-    # height
-    build_parser.add_argument(
-        "--height", default=None,
-        help="Number of shard to generate (default: max_size/shard_size)."
-    )
-
 
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
