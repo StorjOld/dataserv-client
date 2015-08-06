@@ -45,7 +45,7 @@ class Client(object):
         return __version__
 
     def _querry(self, api_call):
-        # print("API_CALL:", api_call)
+        #print("API_CALL:", self.url + api_call)
         try:
             response = urllib.request.urlopen(self.url + api_call)
             if response.code == 200:

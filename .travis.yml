@@ -17,6 +17,7 @@ before_script:
 
 # run tests, e.g. python setup.py test
 script:
+  - python -m dataserv.app &
   - coverage run --source="dataserv_client" setup.py test
 
 # run coverage
