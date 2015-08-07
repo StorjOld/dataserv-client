@@ -16,9 +16,8 @@ before_script:
   - mkdir data
 
 # run tests, e.g. python setup.py test
-#  - python -m dataserv.app < /dev/null &>/dev/null &  # XXX server not stopped
 script:
-  - screen -S dataserv -d -m env/py3/bin/python -m dataserv.app  # start server
+  - python -m dataserv.app < /dev/null &>/dev/null &  # XXX server not stopped
   - coverage run --source="dataserv_client" setup.py test
 
 # run coverage
