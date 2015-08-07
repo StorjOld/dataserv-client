@@ -34,7 +34,7 @@ test: devsetup
 	screen -S dataserv -d -m env/py3/bin/python -m dataserv.app  # start server
 	#env/py2/bin/python setup.py test
 	env/py3/bin/python setup.py test
-	screen -S dataserv -X quit  # FIXME stop server
+	screen -S dataserv -X kill  # FIXME doesnt work in Makefile
 
 
 publish:
