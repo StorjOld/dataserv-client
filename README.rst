@@ -109,7 +109,7 @@ Show version number
 
 ::
 
-    $ dataserv-client.py verison
+    $ dataserv-client.py version
 
 
 register command
