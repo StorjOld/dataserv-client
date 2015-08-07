@@ -1,19 +1,11 @@
-import os
-import signal
 import unittest
 import time
-import dataserv
-from multiprocessing import Process, freeze_support
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
-from dataserv.app import app, db
 
 
-port = "5000"
-host = "127.0.0.1"
-url = "http://%s:%s" % (host, port)
-dbpath = os.path.join(os.path.dirname(dataserv.__file__), 'dataserv.db')
+url = "http://127.0.0.1:5000"
 
 address_alpha = "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm"
 address_beta = "1BZR9GHs9a1bBfh6cwnDtvq6GEvNwVWxFa"
@@ -45,33 +37,7 @@ address_omega = "1NJZ3jDHVM3BdBQZPyNLc8n5GLUSmW72Vn"
 class AbstractTestSetup(object):
 
     def setUp(self):
-        time.sleep(2)
-
-    def _setUp(self):
-        # remove previous db file
-        try:
-            os.remove(dbpath)
-        except OSError:
-            pass  # file does not exist
-
-        def start_test_server():
-            db.create_all()  # create schema
-            app.run(host=host, port=int(port), debug=True)  # start server
-
-        self.server = Process(target=start_test_server)
-        self.server.start()
-        time.sleep(5)
-
-    def _tearDown(self):
-        self.server.terminate()
-        self.server.join()
-        time.sleep(1)
-        if os.name == 'posix':
-            # XXX hackisch
-            # FIXME why is proccess still not dead?
-            pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
-            if self.server.pid in pids:
-                os.kill(self.server.pid, signal.SIGKILL) 
+        time.sleep(2)  # avoid collision
 
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
@@ -236,5 +202,4 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
 
 if __name__ == '__main__':
-    freeze_support()  # for windows ...
     unittest.main()
