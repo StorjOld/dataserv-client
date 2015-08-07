@@ -31,15 +31,14 @@ devsetup: clean
 
 
 test: devsetup
-	# XXX server not stopped
-	env/py3/bin/python -m dataserv.app < /dev/null &>/dev/null &
+	screen -S dataserv -d -m env/py3/bin/python -m dataserv.app  # start server
 	#env/py2/bin/python setup.py test
 	env/py3/bin/python setup.py test
-	# import pudb; pu.db # set break point
-	
+	screen -S dataserv -X quit  # FIXME stop server
 
 
 publish:
 	env/py3/bin/python setup.py register sdist upload
 
 
+# import pudb; pu.db # set break point
