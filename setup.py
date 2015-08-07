@@ -34,7 +34,7 @@ setup(
     test_suite="tests",
     install_requires=[
         'RandomIO == 0.2.1',
-        'dataserv == 1.0.1',  # FIXME why do test only work when its here?
+        'dataserv == 1.0.2',  # FIXME why do tests only work when its here?
     ],
     tests_require=[
         'coverage',
