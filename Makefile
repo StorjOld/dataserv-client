@@ -30,10 +30,13 @@ devsetup: clean
 	@env/py3/bin/pip install pudb
 
 
-test:
+test: devsetup
+	# XXX server not stopped
+	env/py3/bin/python -m dataserv.app < /dev/null &>/dev/null &
 	#env/py2/bin/python setup.py test
 	env/py3/bin/python setup.py test
 	# import pudb; pu.db # set break point
+	
 
 
 publish:
