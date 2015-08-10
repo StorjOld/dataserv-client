@@ -13,7 +13,7 @@ THISDIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(THISDIR)
 
 
-VERSION = "1.0.9" # FIXME get from module
+VERSION = "1.0.10" # FIXME get from module
 DOWNLOAD_BASEURL = "https://pypi.python.org/packages/source/a/dataserv-client/"
 DOWNLOAD_URL = DOWNLOAD_BASEURL + "dataserv-client-%s.tar.gz" % VERSION
 
