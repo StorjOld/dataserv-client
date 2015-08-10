@@ -22,8 +22,8 @@ Setup
 =====
 
 
-Linux
------
+Ubuntu Linux
+------------
 
 ::
 
@@ -35,13 +35,7 @@ Linux
 Windows
 -------
 
-Download and install `Python 3.4 <https://www.python.org/downloads/release/python-343/>`_
-TODO add pycrypto instructions
-
-::
-
-    $ pip install dataserv-client
-    $ dataserv-client.py version
+TODO Download, extract and run latest bundle.
 
 
 Command line interface usage
