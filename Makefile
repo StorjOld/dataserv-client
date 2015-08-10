@@ -37,7 +37,7 @@ test: devsetup
 	screen -S dataserv -X kill  # FIXME doesnt work in Makefile
 
 
-publish:
+publish: test
 	env/py3/bin/python setup.py register sdist upload
 
 

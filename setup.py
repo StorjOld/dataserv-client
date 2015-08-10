@@ -13,7 +13,7 @@ THISDIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(THISDIR)
 
 
-VERSION = "1.0.8" # FIXME get from module
+VERSION = "1.0.9" # FIXME get from module
 DOWNLOAD_BASEURL = "https://pypi.python.org/packages/source/a/dataserv-client/"
 DOWNLOAD_URL = DOWNLOAD_BASEURL + "dataserv-client-%s.tar.gz" % VERSION
 
@@ -29,7 +29,7 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license='MIT',
     packages=find_packages(exclude=['dataserv_client.bin']),
-    scripts=[os.path.join('dataserv_client', 'bin', 'dataserv-client.py')],
+    scripts=[os.path.join('dataserv_client', 'bin', 'dataserv-client')],
     download_url = DOWNLOAD_URL,
     test_suite="tests",
     install_requires=[
@@ -60,7 +60,7 @@ setup(
     ],
 
     # py2exe
-    console=[os.path.join('dataserv_client', 'bin', 'dataserv-client.py')],
+    console=[os.path.join('dataserv_client', 'bin', 'dataserv-client')],
     options = {'py2exe': {
         "optimize": 2,
         "bundle_files": 2, # This tells py2exe to bundle everything

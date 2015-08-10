@@ -27,7 +27,7 @@ Linux
 
 ::
 
-    $ pip install dataserv-client
+    $ sudo pip install dataserv-client
     $ dataserv-client version
 
 
