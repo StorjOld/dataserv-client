@@ -1,6 +1,8 @@
 import os
 import hashlib
 import RandomIO
+import binascii
+import partialhash
 
 
 class Builder:
@@ -48,3 +50,18 @@ class Builder:
                 ))
 
         return hashes
+
+    def clean(self, store_path):
+        """Delete shards from path."""
+        for shard_num in range(int(self.max_size / self.shard_size)):
+            seed = self.build_seed(shard_num)
+            path = os.path.join(store_path, seed)
+            os.remove(path)
+
+    def audit(self, seed, store_path, height):
+        """Do an audit over the data."""
+        for i in range(height):
+            seed_hash = self.build_seed(i)
+            seed_path = os.path.join(store_path, seed_hash)
+            digest = partialhash.sample(seed_path, 1024, sample_count=3, seed=seed)
+            print(binascii.hexlify(digest))

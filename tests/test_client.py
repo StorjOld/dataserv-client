@@ -1,5 +1,5 @@
-import unittest
 import time
+import unittest
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
