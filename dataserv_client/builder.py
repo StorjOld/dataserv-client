@@ -60,8 +60,10 @@ class Builder:
 
     def audit(self, seed, store_path, height):
         """Do an audit over the data."""
+        audit_results = []
         for i in range(height):
             seed_hash = self.build_seed(i)
             seed_path = os.path.join(store_path, seed_hash)
             digest = partialhash.sample(seed_path, 1024, sample_count=3, seed=seed)
-            print(binascii.hexlify(digest))
+            audit_results.append(binascii.hexlify(digest))
+        return audit_results
