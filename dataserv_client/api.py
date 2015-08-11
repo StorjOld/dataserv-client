@@ -25,12 +25,25 @@ class Client(object):
 
     def __init__(self, address=None, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
-                 store_path=common.DEFAULT_STORE_PATH):
+                 store_path=common.DEFAULT_STORE_PATH,
+                 connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
+                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
+
         self.url = url
         self.debug = debug
         self.address = address
         self.max_size = int(max_size)
         self.store_path = store_path
+
+        if int(connection_retry_limit) < 0:
+            raise exceptions.InvalidArgument()
+        self.connection_retry_limit = int(connection_retry_limit)
+
+        if int(connection_retry_delay) < 0:
+            raise exceptions.InvalidArgument()
+        self.connection_retry_delay = int(connection_retry_delay)
+
+        # ensure storage dir exists
         self._mkdir_recursive(store_path)
 
     def _mkdir_recursive(self, path):
@@ -48,8 +61,7 @@ class Client(object):
         print(__version__)
         return __version__
 
-    def _querry(self, api_call):
-        #print("API_CALL:", self.url + api_call)
+    def _querry(self, api_call, retries=0):
         try:
             response = urllib.request.urlopen(self.url + api_call)
             if response.code == 200:
@@ -69,7 +81,10 @@ class Client(object):
             else:
                 raise e  # pragma: no cover
         except urllib.error.URLError:
-            raise exceptions.ConnectionError(self.url)
+            if retries >= self.connection_retry_limit:
+                raise exceptions.ConnectionError(self.url)
+            time.sleep(self.connection_retry_delay)
+            return self._querry(api_call, retries + 1)
 
     def register(self):
         """Attempt to register the config address."""

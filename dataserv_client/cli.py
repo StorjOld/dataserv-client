@@ -40,6 +40,7 @@ def _add_version(command_parser):
         "version", help="Print version number."
     )
 
+
 def _add_register(command_parser):
     register_parser = command_parser.add_parser(  # NOQA
         "register", help="Register a bitcoin address with farmer."

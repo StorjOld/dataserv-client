@@ -1,5 +1,7 @@
 import unittest
+import datetime
 import time
+from dataserv_client import common
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
@@ -11,7 +13,6 @@ address_alpha = "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm"
 address_beta = "1BZR9GHs9a1bBfh6cwnDtvq6GEvNwVWxFa"
 address_gamma = "1Jd4YBQ7d8nHGe4zWfLL9EWHMkspN9JKGf"
 address_delta = "16eEuTp1QERjCC8ZnGf34NvkptMifNSCti"
-address_epsilon = "1FwSLAJtpLrSQp94damzWY2nK5cEBugZfC"
 address_zeta = "1FHgmJkT4od36Zu3SVSzi71Kcvcs33Y1hn"
 address_eta = "1wqyu7Mxz6sgmnHGzQdaSdW8zpGkViL79"
 address_theta = "1AFJM5dn1iqHXtnttJJgskKwrhhajaY7iC"
@@ -19,11 +20,12 @@ address_iota = "19oWeFAWJh3WUKF9KEXdFUtwD9TQAf4gh9"
 address_lambda = "17prdhkPcSJ3TC4SoSVNCAbUdr8xZrokaY"
 address_mu = "1DNe4PPhr6raNbADsHABGSpm6XQi7KhSTo"
 address_nu = "16Smzr8ESjdFDdfj5pVZifvSRzHhim3gAn"
-address_ksi = "15xu7JLwqZB9ZakrfZQJF5AJpNDwWabqwA"
 address_pi = "1EdCc5bxUAsdsvuJN48gK8UteezYNC2ffU"
 address_omicron = "19FfabAxmTZRCuxBvesMovz1xSfGgsmoqg"
-
 address_kappa = "1G5UfNg2M1qExpLGDLko8cfusLQ2GvVSqK"
+
+address_ksi = "15xu7JLwqZB9ZakrfZQJF5AJpNDwWabqwA"
+address_epsilon = "1FwSLAJtpLrSQp94damzWY2nK5cEBugZfC"
 address_rho = "1EYtmt5QWgwATbJvnVP9G9cDXrMcX5bHJ"
 address_sigma = "12qx5eKHmtwHkrpByYBdosRwUfSfbGsqhT"
 address_tau = "1MfQwmCQaLRxAAij1Xii6BxFtkVvjrHPc2"
@@ -65,12 +67,6 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
             client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
-    def test_connection_error(self):
-        def callback():
-            client = api.Client(address_ksi, url="http://doesnt.exist.com")
-            client.register()
-        self.assertRaises(exceptions.ConnectionError, callback)
-
     def test_address_required(self):
         def callback():
             api.Client().register()
@@ -96,12 +92,6 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
             client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
-    def test_connection_error(self):
-        def callback():
-            client = api.Client(address_epsilon, url="http://doesnt.exist.com")
-            client.ping()
-        self.assertRaises(exceptions.ConnectionError, callback)
-
     def test_address_required(self):
         def callback():
             api.Client().ping()
@@ -125,6 +115,50 @@ class TestClientVersion(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
         client = api.Client(url=url)
         self.assertEqual(client.version(), api.__version__)
+
+
+class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
+
+    def test_invalid_retry_limit(self):
+        def callback():
+            api.Client(connection_retry_limit=-1)
+        self.assertRaises(exceptions.InvalidArgument, callback)
+
+    def test_invalid_retry_delay(self):
+        def callback():
+            api.Client(connection_retry_delay=-1)
+        self.assertRaises(exceptions.InvalidArgument, callback)
+
+
+class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
+
+    def test_no_retry(self):
+        def callback():
+            client = api.Client(address=address_kappa,
+                                url="http://invalid.url",
+                                connection_retry_limit=0,
+                                connection_retry_delay=0)
+            client.register()
+        before = datetime.datetime.now()
+        self.assertRaises(exceptions.ConnectionError, callback)
+        after = datetime.datetime.now()
+        print("NO RETRY", after - before)
+        self.assertTrue(datetime.timedelta(seconds=15) > (after - before))
+
+    def test_default_retry(self):
+        def callback():
+            client = api.Client(address=address_kappa,
+                                url="http://invalid.url")
+            client.register()
+        before = datetime.datetime.now()
+        self.assertRaises(exceptions.ConnectionError, callback)
+        after = datetime.datetime.now()
+        print("DEFAULT RETRY", after - before)
+        seconds = (
+            common.DEFAULT_CONNECTION_RETRY_LIMIT *
+            common.DEFAULT_CONNECTION_RETRY_DELAY
+        )
+        self.assertTrue(datetime.timedelta(seconds=seconds) < (after - before))
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):

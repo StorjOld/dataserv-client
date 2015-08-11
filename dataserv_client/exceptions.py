@@ -4,6 +4,12 @@ class DataservClientException(Exception):
     pass
 
 
+class InvalidArgument(DataservClientException):
+
+    def __init__(self):
+        super(InvalidArgument, self).__init__("Invalid argument given!")
+
+
 class AddressAlreadyRegistered(DataservClientException):
 
     def __init__(self, address, url):
