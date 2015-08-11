@@ -97,6 +97,13 @@ class Client(object):
 
         while True:
             self.ping()
+
+            # build stuff
+            bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
+            if bldr.checkup(self.store_path):
+                height = int(self.max_size/common.SHARD_SIZE)
+                bldr.full_audit(b'storj', self.store_path, height, True)
+
             if stop_time and _now() >= stop_time:
                 return True
             time.sleep(int(delay))
