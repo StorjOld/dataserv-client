@@ -67,3 +67,11 @@ class Builder:
             digest = partialhash.sample(seed_path, 1024, sample_count=3, seed=seed)
             audit_results.append(binascii.hexlify(digest))
         return audit_results
+
+    def full_audit(self, seed, store_path, height):
+        """Compute one hash from audit."""
+        hash_result = ""
+        audit_results = self.audit(seed, store_path, height)
+        for audit in audit_results:
+            hash_result = hash_result + str(audit.decode("utf-8"))
+        return self.sha256(hash_result)

@@ -6,7 +6,6 @@ address_alpha = "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm"
 address_beta = "1BZR9GHs9a1bBfh6cwnDtvq6GEvNwVWxFa"
 address_gamma = "1Jd4YBQ7d8nHGe4zWfLL9EWHMkspN9JKGf"
 address_delta = "16eEuTp1QERjCC8ZnGf34NvkptMifNSCti"
-
 address_epsilon = "1FwSLAJtpLrSQp94damzWY2nK5cEBugZfC"
 
 my_store_path = "tmp/"
@@ -79,6 +78,12 @@ class TestBuilder(unittest.TestCase):
         result1 = b'c790ba29ee4b43218637c84bececc41644e1e03718c824bd41c3adc960da3160'
         self.assertEqual(audit_results[0], result0)
         self.assertEqual(audit_results[1], result1)
+
+        # audit full
+        ans = '8d48bf4684c2f8d3bdedfa9b88d29ebdb447263713268bd92a7c7c21881389a2'
+        audit_results = bucket.full_audit(b"storj", my_store_path, height)
+        print(audit_results)
+        self.assertEqual(audit_results, ans)
 
         # clean command
         bucket.clean(my_store_path)
