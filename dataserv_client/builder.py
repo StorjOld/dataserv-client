@@ -92,7 +92,6 @@ class Builder:
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
             path = os.path.join(store_path, seed)
-            print(path)
             if not os.path.exists(path):
                 return False
         return True
