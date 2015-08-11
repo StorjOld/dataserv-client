@@ -57,7 +57,8 @@ class Builder:
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
             path = os.path.join(store_path, seed)
-            os.remove(path)
+            if os.path.exists(path):
+                os.remove(path)
 
     def audit(self, seed, store_path, height):
         """Do an audit over the data."""
@@ -85,3 +86,13 @@ class Builder:
             print(msg.format(str(seed), hash_result, final_time))
 
         return hash_result
+
+    def checkup(self, store_path):
+        """Make sure the shards exist."""
+        for shard_num in range(int(self.max_size / self.shard_size)):
+            seed = self.build_seed(shard_num)
+            path = os.path.join(store_path, seed)
+            print(path)
+            if not os.path.exists(path):
+                return False
+        return True
