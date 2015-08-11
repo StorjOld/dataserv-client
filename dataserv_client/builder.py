@@ -3,6 +3,7 @@ import hashlib
 import RandomIO
 import binascii
 import partialhash
+from datetime import datetime
 
 
 class Builder:
@@ -68,10 +69,19 @@ class Builder:
             audit_results.append(binascii.hexlify(digest))
         return audit_results
 
-    def full_audit(self, seed, store_path, height):
+    def full_audit(self, seed, store_path, height, debug = False):
         """Compute one hash from audit."""
         hash_result = ""
+
+        start_time = datetime.utcnow()
         audit_results = self.audit(seed, store_path, height)
         for audit in audit_results:
             hash_result = hash_result + str(audit.decode("utf-8"))
-        return self.sha256(hash_result)
+        hash_result = self.sha256(hash_result)
+
+        if debug:
+            final_time = (datetime.utcnow() - start_time).seconds
+            msg = "Seed: {0} with Audit Result: {1} in {2} seconds."
+            print(msg.format(str(seed), hash_result, final_time))
+
+        return hash_result

@@ -81,8 +81,7 @@ class TestBuilder(unittest.TestCase):
 
         # audit full
         ans = '8d48bf4684c2f8d3bdedfa9b88d29ebdb447263713268bd92a7c7c21881389a2'
-        audit_results = bucket.full_audit(b"storj", my_store_path, height)
-        print(audit_results)
+        audit_results = bucket.full_audit(b"storj", my_store_path, height, True)
         self.assertEqual(audit_results, ans)
 
         # clean command
