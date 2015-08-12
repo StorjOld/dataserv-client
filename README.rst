@@ -25,20 +25,39 @@ Setup
 Ubuntu Linux
 ------------
 
+Install client
+
 ::
 
     $ sudo apt-get install python3-pip
     $ sudo pip3 install dataserv-client 
     $ dataserv-client version
 
+Update client
+
+::
+
+    $ sudo pip3 install dataserv-client --upgrade
+    $ dataserv-client version
+
+
 OSX
 ---
+
+Install client
 
 ::
 
     $ brew install python3
     $ rehash 
     $ pip3 install dataserv-client
+    $ dataserv-client version
+
+Update client
+
+::
+
+    $ pip3 install dataserv-client --upgrade
     $ dataserv-client version
 
 Windows
@@ -55,7 +74,7 @@ Argument ordering
 
 ::
 
-    $ dataserv-client.py <program arguments> COMMAND <command arguments>
+    $ dataserv-client.py <programm arguments> COMMAND <command arguments>
 
 
 Argument ordering example
