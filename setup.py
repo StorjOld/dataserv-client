@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 
 VERSION = "1.2.0"  # FIXME get from module
-SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv_client')
+SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
 DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
     'baseurl': "https://pypi.python.org/packages/source/a",
     'name': 'dataserv-client',

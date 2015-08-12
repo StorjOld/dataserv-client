@@ -8,7 +8,7 @@ from dataserv_client import cli
 
 
 if getattr(sys, "frozen", False):
-    downloads_url = "https://driveshare.org/downloads/dataserv-client"
+    downloads_url = "https://driveshare.org/bin/dataserv-client"
     app = esky.Esky(sys.executable, downloads_url)
     try:
         if(app.find_update() is not None):

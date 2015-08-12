@@ -145,6 +145,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         print("NO RETRY", after - before)
         self.assertTrue(datetime.timedelta(seconds=15) > (after - before))
 
+    @unittest.skip("FIXME takes to long")
     def test_default_retry(self):
         def callback():
             client = api.Client(address=address_kappa,
