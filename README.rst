@@ -31,6 +31,14 @@ Ubuntu Linux
     $ sudo pip3 install dataserv-client 
     $ dataserv-client version
 
+OSX
+---
+
+::
+
+    $ brew install python3
+    $ rehash 
+    $ pip3 install dataserv-client
 
 Windows
 -------
