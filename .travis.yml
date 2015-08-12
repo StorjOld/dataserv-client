@@ -6,6 +6,7 @@ python:
 
 # install dependencies, e.g. pip install -r requirements.txt
 install:
+  - pip install esky  git+git://github.com/cloudmatrix/esky.git
   - pip install Flask
   - pip install dataserv
   - pip install RandomIO
