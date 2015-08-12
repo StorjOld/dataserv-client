@@ -66,7 +66,7 @@ Argument ordering example
     $ dataserv-client.py --address=1Dnpy4qd5XSsiAgwX8EqYbR2DLV2kB1Kha --max_size=2147483648 build --cleanup
 
 
-Show programm help, optional arguments and commands
+Show program help, optional arguments and commands
 ---------------------------------------------------
 
 ::
