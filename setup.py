@@ -62,7 +62,7 @@ if sys.platform in ['linux', 'linux2']:
 setup(
     app=[SCRIPT],
     name='dataserv-client',
-    description="",
+    description="Client for storing and auditing data. http://storj.io",
     long_description=open("README.rst").read(),
     keywords="",
     url='http://storj.io',
