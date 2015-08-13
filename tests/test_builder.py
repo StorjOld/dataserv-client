@@ -95,9 +95,6 @@ class TestBuilder(unittest.TestCase):
         audit_results = bucket.full_audit(b"storj", self.my_store_path, height, True)
         self.assertEqual(audit_results, ans)
 
-        # clean command
-        bucket.clean(self.my_store_path)
-
     def test_builder_checkup(self):
         # generate shards for testing
         bucket = Builder(address_epsilon, my_shard_size, my_max_size)
@@ -112,9 +109,6 @@ class TestBuilder(unittest.TestCase):
 
         # check again, should fail
         self.assertFalse(bucket.checkup(self.my_store_path))
-
-        # clean command
-        bucket.clean(self.my_store_path)
 
     def test_build_rebuild(self):
         # generate shards for testing
@@ -133,9 +127,6 @@ class TestBuilder(unittest.TestCase):
 
         # check again, should pass
         self.assertTrue(bucket.checkup(self.my_store_path))
-
-        # clean command
-        bucket.clean(self.my_store_path)
 
     def test_build_rebuild(self):
         # generate shards for testing
@@ -165,6 +156,3 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.my_store_path, False, False, True)
         sha256_mod_file = partialhash.compute(path)
         self.assertEqual(sha256_org_file, sha256_mod_file)
-
-        # clean command
-        bucket.clean(self.my_store_path)
