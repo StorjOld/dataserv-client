@@ -22,6 +22,18 @@ Setup
 =====
 
 
+Windows
+-------
+
+ - Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`. 
+ - Extarct the zip file to the folder where you wish to have it installed.
+ - The dataserv-client will automaticlly update when new releases are made.
+
+::
+
+    $ dataserv-client.exe version
+
+
 Ubuntu Linux
 ------------
 
@@ -59,11 +71,6 @@ Update client
 
     $ pip3 install dataserv-client --upgrade
     $ dataserv-client version
-
-Windows
--------
-
-TODO Download, extract and run latest bundle.
 
 
 Command line interface usage
