@@ -1,9 +1,7 @@
-
 import os
-import sys
-#from esky.bdist_esky import Executable
+# import sys
+# from esky.bdist_esky import Executable
 from setuptools import setup, find_packages
-
 
 VERSION = "1.2.1"  # FIXME get from module
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
@@ -16,7 +14,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 
 # FIXME get autoupdate with esky working
 ## windows
-#if sys.platform in ['win32', 'cygwin', 'win64']:
+# if sys.platform in ['win32', 'cygwin', 'win64']:
 #    icon = os.path.join(sys.prefix, "DLLs", "py.ico")
 #    script = Executable(SCRIPT, icon=icon, gui_only=False)
 #    options = {
@@ -29,7 +27,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 #
 #
 ## mac
-#if sys.platform == 'darwin':
+# if sys.platform == 'darwin':
 #    script = Executable(SCRIPT)
 #    options = {
 #        "bdist_esky": {
@@ -48,7 +46,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 #
 #
 ## linux
-#if sys.platform in ['linux', 'linux2']:
+# if sys.platform in ['linux', 'linux2']:
 #    script = Executable(SCRIPT)
 #    options = {
 #        "bdist_esky": {
@@ -72,8 +70,8 @@ setup(
     license="MIT",
     version=VERSION,
     scripts=[SCRIPT],
-    #scripts=[script],
-    #options=options,
+    # scripts=[script],
+    # options=options,
     console=[SCRIPT],
     data_files=[],
     test_suite="tests",
