@@ -2,6 +2,8 @@ import os
 import shutil
 import unittest
 import tempfile
+import binascii
+import partialhash
 from dataserv_client.builder import Builder
 
 address_alpha = "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm"
@@ -131,6 +133,38 @@ class TestBuilder(unittest.TestCase):
 
         # check again, should pass
         self.assertTrue(bucket.checkup(self.my_store_path))
+
+        # clean command
+        bucket.clean(self.my_store_path)
+
+    def test_build_rebuild(self):
+        # generate shards for testing
+        bucket = Builder(address_epsilon, my_shard_size, my_max_size)
+        bucket.build(self.my_store_path, False, False)
+
+        # modify one of the files
+        org_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        path = os.path.join(self.my_store_path, org_file)
+        sha256_org_file = partialhash.compute(path)
+
+        # write some data
+        with open(path, "a") as f:
+            f.write("bad data is bad\n")
+        sha256_mod_file = partialhash.compute(path)
+
+        # check their hashes
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
+
+        # build without a rebuild should fail
+        bucket.build(self.my_store_path, False, False, False)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
+
+        # build with a rebuild should pass
+        bucket.build(self.my_store_path, False, False, True)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertEqual(sha256_org_file, sha256_mod_file)
 
         # clean command
         bucket.clean(self.my_store_path)

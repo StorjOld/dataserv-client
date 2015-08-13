@@ -37,14 +37,14 @@ class Builder:
             os.remove(path)
         return file_hash
 
-    def build(self, store_path, debug=False, cleanup=False):
+    def build(self, store_path, debug=False, cleanup=False, rebuild=False):
         """Fill the farmer with data up to their max."""
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
             path = os.path.join(store_path, seed)
 
             # only generate if the file isn't there
-            if not os.path.exists(path):
+            if not os.path.exists(path) or rebuild:
                 file_hash = self.generate_shard(seed, store_path, cleanup)
 
                 if debug:
