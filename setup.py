@@ -3,6 +3,7 @@ import os
 # from esky.bdist_esky import Executable
 from setuptools import setup, find_packages
 
+
 VERSION = "1.2.1"  # FIXME get from module
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
 DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
@@ -21,12 +22,13 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 #        "bdist_esky": {
 #            "includes": [],  # include modules
 #            "excludes": ["pydoc"],  # exclude modules
-#            "freezer_module": "cx_Freeze",
+#            "freezer_module": "py2exe",
+#            #"freezer_module": "cx_Freeze",
 #        }
 #    }
 #
 #
-## mac
+## mac (untested)
 # if sys.platform == 'darwin':
 #    script = Executable(SCRIPT)
 #    options = {
@@ -69,9 +71,8 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
     version=VERSION,
-    scripts=[SCRIPT],
-    # scripts=[script],
-    # options=options,
+    scripts=[SCRIPT], # FIXME esky scripts=[script],
+    # FIXME esky options=options,
     console=[SCRIPT],
     data_files=[],
     test_suite="tests",
