@@ -70,14 +70,14 @@ class Builder:
             audit_results.append(binascii.hexlify(digest))
         return audit_results
 
-    def full_audit(self, seed, store_path, height, debug = False):
+    def full_audit(self, seed, store_path, height, debug=False):
         """Compute one hash from audit."""
         hash_result = ""
 
         start_time = datetime.utcnow()
         audit_results = self.audit(seed, store_path, height)
         for audit in audit_results:
-            hash_result = hash_result + str(audit.decode("utf-8"))
+            hash_result += str(audit.decode("utf-8"))
         hash_result = self.sha256(hash_result)
 
         if debug:
