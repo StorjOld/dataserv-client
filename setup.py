@@ -1,7 +1,7 @@
 
 import os
 import sys
-from esky.bdist_esky import Executable
+#from esky.bdist_esky import Executable
 from setuptools import setup, find_packages
 
 
@@ -14,49 +14,50 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 }
 
 
-# windows
-if sys.platform in ['win32', 'cygwin', 'win64']:
-    icon = os.path.join(sys.prefix, "DLLs", "py.ico")
-    script = Executable(SCRIPT, icon=icon, gui_only=False)
-    options = {
-        "bdist_esky": {
-            "includes": [],  # include modules
-            "excludes": ["pydoc"],  # exclude modules
-            "freezer_module": "cx_Freeze",
-        }
-    }
-
-
-# mac
-if sys.platform == 'darwin':
-    script = Executable(SCRIPT)
-    options = {
-        "bdist_esky": {
-            "includes": [],  # include modules
-            "excludes": ["pydoc"],  # exclude modules
-            "freezer_module": "py2app",
-            "freezer_options": {
-                "plist": {
-                    #"LSUIElement" : True,
-                    #'CFBundleIdentifier': 'de.cloudmatrix.esky',
-                    #'CFBundleIconFile' : 'images/box.icns',
-                }
-            },
-        }
-    }
-
-
-# linux
-if sys.platform in ['linux', 'linux2']:
-    script = Executable(SCRIPT)
-    options = {
-        "bdist_esky": {
-            "includes": [],  # include modules
-            "excludes": ["pydoc"],  # exclude modules
-            "freezer_module": "bbfreeze",  # FIXME unmaintained only python 2
-            # "freezer_module": "cx_Freeze", # FIXME pip install fails
-        }
-    }
+# FIXME get autoupdate with esky working
+## windows
+#if sys.platform in ['win32', 'cygwin', 'win64']:
+#    icon = os.path.join(sys.prefix, "DLLs", "py.ico")
+#    script = Executable(SCRIPT, icon=icon, gui_only=False)
+#    options = {
+#        "bdist_esky": {
+#            "includes": [],  # include modules
+#            "excludes": ["pydoc"],  # exclude modules
+#            "freezer_module": "cx_Freeze",
+#        }
+#    }
+#
+#
+## mac
+#if sys.platform == 'darwin':
+#    script = Executable(SCRIPT)
+#    options = {
+#        "bdist_esky": {
+#            "includes": [],  # include modules
+#            "excludes": ["pydoc"],  # exclude modules
+#            "freezer_module": "py2app",
+#            "freezer_options": {
+#                "plist": {
+#                    #"LSUIElement" : True,
+#                    #'CFBundleIdentifier': 'de.cloudmatrix.esky',
+#                    #'CFBundleIconFile' : 'images/box.icns',
+#                }
+#            },
+#        }
+#    }
+#
+#
+## linux
+#if sys.platform in ['linux', 'linux2']:
+#    script = Executable(SCRIPT)
+#    options = {
+#        "bdist_esky": {
+#            "includes": [],  # include modules
+#            "excludes": ["pydoc"],  # exclude modules
+#            "freezer_module": "bbfreeze",  # FIXME unmaintained only python 2
+#            # "freezer_module": "cx_Freeze", # FIXME pip install fails
+#        }
+#    }
 
 
 setup(
@@ -70,8 +71,9 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
     version=VERSION,
-    scripts=[script],
-    options=options,
+    scripts=[SCRIPT],
+    #scripts=[script],
+    #options=options,
     console=[SCRIPT],
     data_files=[],
     test_suite="tests",
