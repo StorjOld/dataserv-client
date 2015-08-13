@@ -34,6 +34,8 @@ devsetup: clean
 	@env/py3/bin/python setup.py develop
 
 	@# install usefull dev tools
+	@env/py2/bin/pip install dataserv
+	@env/py3/bin/pip install dataserv
 	@env/py2/bin/pip install ipython
 	@env/py3/bin/pip install ipython
 	@env/py2/bin/pip install pudb

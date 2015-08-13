@@ -80,7 +80,6 @@ setup(
     install_requires=[
         'RandomIO == 0.2.1',
         'future == 0.15.0',  # for python 2.7 support
-        'dataserv == 1.0.2',  # FIXME why do tests only work when its here?
     ],
     tests_require=[
         'coverage',
