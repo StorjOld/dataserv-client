@@ -142,24 +142,19 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
-        print("NO RETRY", after - before)
         self.assertTrue(datetime.timedelta(seconds=15) > (after - before))
 
-    @unittest.skip("FIXME takes to long")
     def test_default_retry(self):
         def callback():
             client = api.Client(address=address_kappa,
-                                url="http://invalid.url")
+                                url="http://invalid.url",
+                                connection_retry_limit=5,
+                                connection_retry_delay=5)
             client.register()
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
-        print("DEFAULT RETRY", after - before)
-        seconds = (
-            common.DEFAULT_CONNECTION_RETRY_LIMIT *
-            common.DEFAULT_CONNECTION_RETRY_DELAY
-        )
-        self.assertTrue(datetime.timedelta(seconds=seconds) < (after - before))
+        self.assertTrue(datetime.timedelta(seconds=25) < (after - before))
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):

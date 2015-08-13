@@ -113,3 +113,7 @@ class TestBuilder(unittest.TestCase):
 
         # clean command
         bucket.clean(self.my_store_path)
+
+    # TODO test rebuild option
+
+
