@@ -39,7 +39,9 @@ class Builder:
 
     def build(self, store_path, debug=False, cleanup=False, rebuild=False):
         """Fill the farmer with data up to their max."""
-        for shard_num in range(int(self.max_size / self.shard_size)):
+        height = int(self.max_size / self.shard_size)
+
+        for shard_num in range(height):
             seed = self.build_seed(shard_num)
             path = os.path.join(store_path, seed)
 
@@ -52,6 +54,8 @@ class Builder:
             else:
                 if debug:
                     print("Skipping seed {0}. Already exists.".format(seed))
+
+        return height
 
     def clean(self, store_path):
         """Delete shards from path."""
