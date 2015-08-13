@@ -2,12 +2,12 @@
 
 
 import sys
-import os
-#import esky
+# import os
+# import esky
 from dataserv_client import cli
 
 # FIXME get autoupdate with esky working
-#if getattr(sys, "frozen", False):
+# if getattr(sys, "frozen", False):
 #    downloads_url = "https://driveshare.org/bin/dataserv-client"
 #    app = esky.Esky(sys.executable, downloads_url)
 #    try:
