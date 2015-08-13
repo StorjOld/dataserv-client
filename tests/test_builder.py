@@ -113,3 +113,24 @@ class TestBuilder(unittest.TestCase):
 
         # clean command
         bucket.clean(self.my_store_path)
+
+    def test_build_rebuild(self):
+        # generate shards for testing
+        bucket = Builder(address_epsilon, my_shard_size, my_max_size)
+        bucket.build(self.my_store_path, False, False)
+
+        # remove one of the files
+        remove_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        os.remove(os.path.join(self.my_store_path, remove_file))
+
+        # check again, should fail
+        self.assertFalse(bucket.checkup(self.my_store_path))
+
+        # rebuild
+        bucket.build(self.my_store_path, False, False)
+
+        # check again, should pass
+        self.assertTrue(bucket.checkup(self.my_store_path))
+
+        # clean command
+        bucket.clean(self.my_store_path)

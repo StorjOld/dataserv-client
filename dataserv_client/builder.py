@@ -39,18 +39,19 @@ class Builder:
 
     def build(self, store_path, debug=False, cleanup=False):
         """Fill the farmer with data up to their max."""
-        hashes = []
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
-            file_hash = self.generate_shard(seed, store_path, cleanup)
-            hashes.append(file_hash)
+            path = os.path.join(store_path, seed)
 
-            if debug:
-                print("Saving seed {0} with SHA-256 hash {1}.".format(
-                    seed, file_hash
-                ))
+            # only generate if the file isn't there
+            if not os.path.exists(path):
+                file_hash = self.generate_shard(seed, store_path, cleanup)
 
-        return hashes
+                if debug:
+                    print("Saving seed {0} with SHA-256 hash {1}.".format(seed, file_hash))
+            else:
+                if debug:
+                    print("Skipping seed {0}. Already exists.".format(seed))
 
     def clean(self, store_path):
         """Delete shards from path."""
