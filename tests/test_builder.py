@@ -2,8 +2,8 @@ import os
 import shutil
 import unittest
 import tempfile
-import binascii
 import partialhash
+from datetime import datetime
 from dataserv_client.builder import Builder
 
 address_alpha = "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm"
@@ -156,3 +156,21 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.my_store_path, False, False, True)
         sha256_mod_file = partialhash.compute(path)
         self.assertEqual(sha256_org_file, sha256_mod_file)
+
+    def test_build_cont(self):
+        max_size1 = 1024*1024*384
+        max_size2 = 1024*1024*128
+
+        # generate shards for testing
+        start_time = datetime.utcnow()
+        bucket = Builder(address_epsilon, my_shard_size, max_size1)
+        bucket.build(self.my_store_path, False, False)
+        end_delta = datetime.utcnow() - start_time
+
+        # should skip all shards and be faster
+        start_time2 = datetime.utcnow()
+        bucket = Builder(address_epsilon, my_shard_size, max_size2)
+        bucket.build(self.my_store_path, False, False)
+        end_delta2 = datetime.utcnow() - start_time2
+
+        self.assertTrue(end_delta2<end_delta)
