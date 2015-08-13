@@ -204,6 +204,13 @@ Build and cleanup files afterwards
     $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --cleanup
 
 
+Build and force rebuild of any previously generated files.
+
+::
+
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --rebuild
+
+
 Build custom shard height
 
 ::
