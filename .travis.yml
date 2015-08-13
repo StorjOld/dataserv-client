@@ -16,6 +16,7 @@ before_script:
   - touch dataserv.db
   - touch dataserv_test.db
   - mkdir data
+  - mkdir tmp
 
 # run tests, e.g. python setup.py test
 script:

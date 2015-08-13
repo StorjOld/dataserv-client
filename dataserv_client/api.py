@@ -112,6 +112,7 @@ class Client(object):
 
         while True:
             self.ping()
+
             if stop_time and _now() >= stop_time:
                 return True
             time.sleep(int(delay))
