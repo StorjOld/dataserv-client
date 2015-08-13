@@ -25,13 +25,15 @@ Setup
 Windows
 -------
 
- - Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`. 
- - Extarct the zip file to the folder where you wish to have it installed.
- - The dataserv-client will automaticlly update when new releases are made.
+Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`_. 
+
+Extarct the zip file to the folder where you wish to have it installed.
 
 ::
 
     $ dataserv-client.exe version
+
+The dataserv-client will automaticlly update when new releases are made.
 
 
 Ubuntu Linux
