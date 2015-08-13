@@ -79,6 +79,10 @@ def _add_build(command_parser):
     build_parser.add_argument('--cleanup', action='store_true',
                               help="Remove generated files.")
 
+    # rebuild
+    build_parser.add_argument('--rebuild', action='store_true',
+                              help="Replace previously files.")
+
 
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
