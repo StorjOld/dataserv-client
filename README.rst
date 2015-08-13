@@ -95,7 +95,7 @@ Argument ordering example
 
 
 Show program help, optional arguments and commands
----------------------------------------------------
+--------------------------------------------------
 
 ::
 
@@ -209,3 +209,4 @@ Build custom shard height
 ::
 
     $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --height=<NUMBER_OF_SHARDS>
+

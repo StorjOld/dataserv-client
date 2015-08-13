@@ -107,7 +107,7 @@ class Client(object):
         self._ensure_address_given()
         stop_time = _now() + _timedelta(seconds=int(limit)) if limit else None
 
-        if(register_address):
+        if register_address:
             self.register()
 
         while True:

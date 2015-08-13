@@ -1,9 +1,7 @@
-
 import os
 import sys
 from esky.bdist_esky import Executable
 from setuptools import setup, find_packages
-
 
 VERSION = "1.2.1"  # FIXME get from module
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
@@ -37,9 +35,9 @@ if sys.platform == 'darwin':
             "freezer_module": "py2app",
             "freezer_options": {
                 "plist": {
-                    #"LSUIElement" : True,
-                    #'CFBundleIdentifier': 'de.cloudmatrix.esky',
-                    #'CFBundleIconFile' : 'images/box.icns',
+                    # "LSUIElement" : True,
+                    # 'CFBundleIdentifier': 'de.cloudmatrix.esky',
+                    # 'CFBundleIconFile' : 'images/box.icns',
                 }
             },
         }
@@ -57,7 +55,6 @@ if sys.platform in ['linux', 'linux2']:
             # "freezer_module": "cx_Freeze", # FIXME pip install fails
         }
     }
-
 
 setup(
     app=[SCRIPT],
