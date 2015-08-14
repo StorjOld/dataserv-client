@@ -1,8 +1,7 @@
-import unittest
-import datetime
 import json
 import time
-from dataserv_client import common
+import unittest
+import datetime
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions

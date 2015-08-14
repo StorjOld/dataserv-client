@@ -71,7 +71,7 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
     version=VERSION,
-    scripts=[SCRIPT], # FIXME esky scripts=[script],
+    scripts=[SCRIPT],  # FIXME esky scripts=[script],
     # FIXME esky options=options,
     console=[SCRIPT],
     data_files=[],

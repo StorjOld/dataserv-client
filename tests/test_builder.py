@@ -176,7 +176,7 @@ class TestBuilder(unittest.TestCase):
         # check again, should pass
         self.assertTrue(bucket.checkup(self.store_path))
 
-    def test_build_rebuild(self):
+    def test_build_rebuild_modify(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
         bucket.build(self.store_path, False, False)
@@ -188,7 +188,7 @@ class TestBuilder(unittest.TestCase):
 
         # write some data
         with open(path, "a") as f:
-          f.write("bad data is bad\n")
+            f.write("bad data is bad\n")
 
         # check their hashes
         sha256_mod_file = partialhash.compute(path)
@@ -220,4 +220,4 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path, False, False)
         end_delta2 = datetime.utcnow() - start_time2
 
-        self.assertTrue(end_delta2<end_delta)
+        self.assertTrue(end_delta2 < end_delta)
