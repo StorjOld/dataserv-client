@@ -15,6 +15,10 @@ addresses = fixtures["addresses"]
 url = "http://127.0.0.1:5000"
 
 
+def _to_bytes(string):
+    return string.encode('utf-8')
+
+
 class TestBuilder(unittest.TestCase):
 
     def setUp(self):
@@ -83,8 +87,8 @@ class TestBuilder(unittest.TestCase):
         audit_results = bucket.audit(b"storj", self.store_path, height)
         result0 = fixtures["test_builder_audit"]["result0"]
         result1 = fixtures["test_builder_audit"]["result1"]
-        self.assertEqual(audit_results[0], result0)
-        self.assertEqual(audit_results[1], result1)
+        self.assertEqual(audit_results[0], _to_bytes(result0))
+        self.assertEqual(audit_results[1], _to_bytes(result1))
 
         # audit full
         expected = fixtures["test_builder_audit"]["expected"]
@@ -101,7 +105,7 @@ class TestBuilder(unittest.TestCase):
         self.assertTrue(bucket.checkup(self.store_path))
 
         # remove one of the files
-        remove_file = random.choice(generated.keys())
+        remove_file = random.choice(list(generated.keys()))
         os.remove(os.path.join(self.store_path, remove_file))
 
         # check again, should fail
@@ -126,7 +130,6 @@ class TestBuilder(unittest.TestCase):
         # make sure all files are there
         self.assertTrue(bucket.checkup(self.store_path))
 
-    @unittest.skip("unfinished")
     def test_builder_rebuilds(self):
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
 
