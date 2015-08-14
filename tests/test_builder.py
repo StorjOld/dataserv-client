@@ -9,7 +9,6 @@ import partialhash
 from datetime import datetime
 from dataserv_client.builder import Builder
 
-
 my_shard_size = 1024*1024*128  # 128 MB
 my_max_size = 1024*1024*256  # 256 MB
 height = int(my_max_size / my_shard_size)
@@ -159,69 +158,66 @@ class TestBuilder(unittest.TestCase):
                                           height, True)
         self.assertEqual(audit_results, expected)
 
-#======
-#   def test_build_rebuild(self):
-#       # generate shards for testing
-#       bucket = Builder(address_epsilon, my_shard_size, my_max_size)
-#       bucket.build(self.my_store_path, False, False)
+    def test_build_rebuild(self):
+        # generate shards for testing
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket.build(self.store_path, False, False)
 
-#       # remove one of the files
-#       remove_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
-#       os.remove(os.path.join(self.my_store_path, remove_file))
+        # remove one of the files
+        remove_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        os.remove(os.path.join(self.store_path, remove_file))
 
-#       # check again, should fail
-#       self.assertFalse(bucket.checkup(self.my_store_path))
+        # check again, should fail
+        self.assertFalse(bucket.checkup(self.store_path))
 
-#       # rebuild
-#       bucket.build(self.my_store_path, False, False)
+        # rebuild
+        bucket.build(self.store_path, False, False)
 
-#       # check again, should pass
-#       self.assertTrue(bucket.checkup(self.my_store_path))
+        # check again, should pass
+        self.assertTrue(bucket.checkup(self.store_path))
 
-#   def test_build_rebuild(self):
-#       # generate shards for testing
-#       bucket = Builder(address_epsilon, my_shard_size, my_max_size)
-#       bucket.build(self.my_store_path, False, False)
+    def test_build_rebuild(self):
+        # generate shards for testing
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket.build(self.store_path, False, False)
 
-#       # modify one of the files
-#       org_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
-#       path = os.path.join(self.my_store_path, org_file)
-#       sha256_org_file = partialhash.compute(path)
+        # modify one of the files
+        org_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        path = os.path.join(self.store_path, org_file)
+        sha256_org_file = partialhash.compute(path)
 
-#       # write some data
-#       with open(path, "a") as f:
-#           f.write("bad data is bad\n")
-#       sha256_mod_file = partialhash.compute(path)
+        # write some data
+        with open(path, "a") as f:
+          f.write("bad data is bad\n")
 
-#       # check their hashes
-#       sha256_mod_file = partialhash.compute(path)
-#       self.assertNotEqual(sha256_org_file, sha256_mod_file)
+        # check their hashes
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
 
-#       # build without a rebuild should fail
-#       bucket.build(self.my_store_path, False, False, False)
-#       sha256_mod_file = partialhash.compute(path)
-#       self.assertNotEqual(sha256_org_file, sha256_mod_file)
+        # build without a rebuild should fail
+        bucket.build(self.store_path, False, False, False)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
 
-#       # build with a rebuild should pass
-#       bucket.build(self.my_store_path, False, False, True)
-#       sha256_mod_file = partialhash.compute(path)
-#       self.assertEqual(sha256_org_file, sha256_mod_file)
+        # build with a rebuild should pass
+        bucket.build(self.store_path, False, False, True)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertEqual(sha256_org_file, sha256_mod_file)
 
-#   def test_build_cont(self):
-#       max_size1 = 1024*1024*384
-#       max_size2 = 1024*1024*128
+    def test_build_cont(self):
+        max_size1 = 1024*1024*384
+        max_size2 = 1024*1024*128
 
-#       # generate shards for testing
-#       start_time = datetime.utcnow()
-#       bucket = Builder(address_epsilon, my_shard_size, max_size1)
-#       bucket.build(self.my_store_path, False, False)
-#       end_delta = datetime.utcnow() - start_time
+        # generate shards for testing
+        start_time = datetime.utcnow()
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size1)
+        bucket.build(self.store_path, False, False)
+        end_delta = datetime.utcnow() - start_time
 
-#       # should skip all shards and be faster
-#       start_time2 = datetime.utcnow()
-#       bucket = Builder(address_epsilon, my_shard_size, max_size2)
-#       bucket.build(self.my_store_path, False, False)
-#       end_delta2 = datetime.utcnow() - start_time2
+        # should skip all shards and be faster
+        start_time2 = datetime.utcnow()
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2)
+        bucket.build(self.store_path, False, False)
+        end_delta2 = datetime.utcnow() - start_time2
 
-#       self.assertTrue(end_delta2<end_delta)
-#>>>>>> 139661001e00708d7d1abd480e6de569c240af7e
+        self.assertTrue(end_delta2<end_delta)
