@@ -28,6 +28,7 @@ devsetup: clean
 	@# install esky for builds (required before setup :/)
 	@env/py2/bin/pip install esky
 	@env/py3/bin/pip install esky
+	@# TODO also install freezer?
 
 	@# install dependencies
 	@env/py2/bin/python setup.py develop

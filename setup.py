@@ -1,8 +1,7 @@
 import os
-# import sys
-# from esky.bdist_esky import Executable
-from setuptools import setup, find_packages
 
+from esky import bdist_esky
+from setuptools import setup, find_packages
 
 VERSION = "1.2.1"  # FIXME get from module
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
@@ -61,7 +60,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 
 
 setup(
-    app=[SCRIPT],
+    #app=[SCRIPT],
     name='dataserv-client',
     description="",
     long_description=open("README.rst").read(),
@@ -73,8 +72,8 @@ setup(
     version=VERSION,
     scripts=[SCRIPT], # FIXME esky scripts=[script],
     # FIXME esky options=options,
-    console=[SCRIPT],
-    data_files=[],
+    #console=[SCRIPT],
+    #data_files=[],
     test_suite="tests",
     install_requires=[
         'RandomIO == 0.2.1',
