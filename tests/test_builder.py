@@ -116,7 +116,7 @@ class TestBuilder(unittest.TestCase):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
         generated = bucket.build(self.store_path, False, False)
-        
+
         timestamp = time.time()
 
         # remove one of the files
@@ -149,8 +149,7 @@ class TestBuilder(unittest.TestCase):
                 os.utime(path, None)
 
         # rebuild all files
-        generated = bucket.build(self.store_path, debug=False,
-                                 cleanup=False, rebuild=True)
+        bucket.build(self.store_path, debug=False, cleanup=False, rebuild=True)
 
         # audit full
         expected = fixtures["test_builder_audit"]["expected"]
