@@ -39,20 +39,22 @@ class Builder:
         return file_hash
 
     def build(self, store_path, debug=False, cleanup=False, rebuild=False):
-        """Fill the farmer with data up to their max."""
-        hashes = []
+        """Fill the farmer with data up to their max.
+        Returns: { seed : hash, ... }
+        """
+        generated = []
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
             file_hash = self.generate_shard(seed, store_path,
                                             cleanup=cleanup, rebuild=rebuild)
-            hashes.append(file_hash)
+            generated[seed] = file_hash
 
             if debug:
                 print("Saving seed {0} with SHA-256 hash {1}.".format(
                     seed, file_hash
                 ))
 
-        return hashes
+        return generated
 
     def clean(self, store_path):
         """Delete shards from path."""

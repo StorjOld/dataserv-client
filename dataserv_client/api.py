@@ -121,7 +121,8 @@ class Client(object):
         """TODO doc string"""
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
-        hashes = bldr.build(self.store_path, debug=self.debug,
-                            cleanup=cleanup, rebuild=rebuild)
-        self._querry('/api/height/{0}/{1}'.format(self.address, len(hashes)))
-        return hashes
+        generated = bldr.build(self.store_path, debug=self.debug,
+                               cleanup=cleanup, rebuild=rebuild)
+        height = len(generated)
+        self._querry('/api/height/{0}/{1}'.format(self.address, height))
+        return generated

@@ -1,0 +1,40 @@
+{
+    "addresses" : {
+        "alpha" : "12guBkWfVjiqBnu5yRdTseBB7wBM5WSWnm",
+        "beta" : "1BZR9GHs9a1bBfh6cwnDtvq6GEvNwVWxFa",
+        "gamma" : "1Jd4YBQ7d8nHGe4zWfLL9EWHMkspN9JKGf",
+        "delta" : "16eEuTp1QERjCC8ZnGf34NvkptMifNSCti",
+        "epsilon" : "1FwSLAJtpLrSQp94damzWY2nK5cEBugZfC",
+        "zeta" : "1FHgmJkT4od36Zu3SVSzi71Kcvcs33Y1hn",
+        "eta" : "1wqyu7Mxz6sgmnHGzQdaSdW8zpGkViL79",
+        "theta" : "1AFJM5dn1iqHXtnttJJgskKwrhhajaY7iC",
+        "iota" : "19oWeFAWJh3WUKF9KEXdFUtwD9TQAf4gh9",
+        "lambda" : "17prdhkPcSJ3TC4SoSVNCAbUdr8xZrokaY",
+        "mu" : "1DNe4PPhr6raNbADsHABGSpm6XQi7KhSTo",
+        "nu" : "16Smzr8ESjdFDdfj5pVZifvSRzHhim3gAn",
+        "pi" : "1EdCc5bxUAsdsvuJN48gK8UteezYNC2ffU",
+        "omicron" : "19FfabAxmTZRCuxBvesMovz1xSfGgsmoqg",
+        "kappa" : "1G5UfNg2M1qExpLGDLko8cfusLQ2GvVSqK",
+        "ksi" : "15xu7JLwqZB9ZakrfZQJF5AJpNDwWabqwA",
+        "rho" : "1EYtmt5QWgwATbJvnVP9G9cDXrMcX5bHJ",
+        "sigma" : "12qx5eKHmtwHkrpByYBdosRwUfSfbGsqhT",
+        "tau" : "1MfQwmCQaLRxAAij1Xii6BxFtkVvjrHPc2",
+        "upsilon" : "1MwWa91KJGzctsYxE9V5iHFVp9Ub9HBarV",
+        "phi" : "1LRVczz1Ln1ECom7oVotEmUVLKbxofQfKS",
+        "chi" : "12zhPViCGssXWiUMeGuEYgqLFr1wF1MJH9",
+        "psi" : "1BKUVHEWRQNFF8M9TUZhsuGiQxL6rqeSi5",
+        "omega" : "1NJZ3jDHVM3BdBQZPyNLc8n5GLUSmW72Vn"
+    },
+    "test_sha256" : {
+        "expected" : "c059c8035bbd74aa81f4c787c39390b57b974ec9af25a7248c46a3ebfe0f9dc8"
+    },
+    "test_build_seed" : {
+        "hash0" : "8f4306631f71e40369acc3fb5645e7d13d17e686a3b623b46b4872714d3e3e92",
+        "hash3" : "4192fe2dd784eb5bc770258e5a494a3025b43025304def4b088c574dc4fa8821"
+    },
+    "test_builder_audit" : {
+        "result0" : "ba5a1733144184f8a9a479048d6e451b3639292f4f805e8eccb27aead92cbf93",
+        "result1" : "c790ba29ee4b43218637c84bececc41644e1e03718c824bd41c3adc960da3160",
+        "expected" : "8d48bf4684c2f8d3bdedfa9b88d29ebdb447263713268bd92a7c7c21881389a2"
+    }
+}
