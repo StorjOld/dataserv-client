@@ -117,6 +117,7 @@ class TestBuilder(unittest.TestCase):
         os.remove(os.path.join(self.store_path, remove_file))
 
         # FIXME how to test existing are skipped on unix and windows?
+        # use file access time?
 
         # generate only missing shard for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
@@ -124,3 +125,17 @@ class TestBuilder(unittest.TestCase):
 
         # make sure all files are there
         self.assertTrue(bucket.checkup(self.store_path))
+
+    @unittest.skip("unfinished")
+    def test_builder_rebuilds(self):
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+
+        # generate empty files to be rebuilt
+        for shard_num in range(height):
+            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+            with open(path, 'a'):
+                os.utime(path, None)
+
+        # rebuild all files
+        generated = bucket.build(self.store_path, debug=False,
+                                 cleanup=False, rebuild=True)

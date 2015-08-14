@@ -42,7 +42,7 @@ class Builder:
         """Fill the farmer with data up to their max.
         Returns: { seed : hash, ... }
         """
-        generated = []
+        generated = {}
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
             file_hash = self.generate_shard(seed, store_path,
