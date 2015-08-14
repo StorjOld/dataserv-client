@@ -26,31 +26,35 @@ class Builder:
             seed = self.sha256(seed)
         return seed
 
-    def generate_shard(self, seed, store_path, cleanup=False):
+    def generate_shard(self, seed, store_path, cleanup=False, rebuild=False):
         """Save a shard, and return its SHA-256 hash."""
 
         # save the shard
         path = os.path.join(store_path, seed)
-        RandomIO.RandomIO(seed).genfile(self.shard_size, path)
+        if not os.path.isfile(path) or rebuild:
+            RandomIO.RandomIO(seed).genfile(self.shard_size, path)
         file_hash = hashlib.sha256(open(path, 'rb').read()).hexdigest()
         if cleanup:
             os.remove(path)
         return file_hash
 
-    def build(self, store_path, debug=False, cleanup=False):
-        """Fill the farmer with data up to their max."""
-        hashes = []
+    def build(self, store_path, debug=False, cleanup=False, rebuild=False):
+        """Fill the farmer with data up to their max.
+        Returns: { seed : hash, ... }
+        """
+        generated = {}
         for shard_num in range(int(self.max_size / self.shard_size)):
             seed = self.build_seed(shard_num)
-            file_hash = self.generate_shard(seed, store_path, cleanup)
-            hashes.append(file_hash)
+            file_hash = self.generate_shard(seed, store_path,
+                                            cleanup=cleanup, rebuild=rebuild)
+            generated[seed] = file_hash
 
             if debug:
                 print("Saving seed {0} with SHA-256 hash {1}.".format(
                     seed, file_hash
                 ))
 
-        return hashes
+        return generated
 
     def clean(self, store_path):
         """Delete shards from path."""

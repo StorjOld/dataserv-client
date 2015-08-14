@@ -33,7 +33,7 @@ class Client(object):
         self.debug = debug
         self.address = address
         self.max_size = int(max_size)
-        self.store_path = store_path
+        self.store_path = os.path.realpath(store_path)
 
         if int(connection_retry_limit) < 0:
             raise exceptions.InvalidArgument()
@@ -44,7 +44,7 @@ class Client(object):
         self.connection_retry_delay = int(connection_retry_delay)
 
         # ensure storage dir exists
-        self._mkdir_recursive(store_path)
+        self._mkdir_recursive(self.store_path)
 
     def _mkdir_recursive(self, path):
         sub_path = os.path.dirname(path)
@@ -117,10 +117,12 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def build(self, cleanup=False):
+    def build(self, cleanup=False, rebuild=False):
         """TODO doc string"""
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
-        hashes = bldr.build(self.store_path, debug=self.debug, cleanup=cleanup)
-        self._querry('/api/height/{0}/{1}'.format(self.address, len(hashes)))
-        return hashes
+        generated = bldr.build(self.store_path, debug=self.debug,
+                               cleanup=cleanup, rebuild=rebuild)
+        height = len(generated)
+        self._querry('/api/height/{0}/{1}'.format(self.address, height))
+        return generated

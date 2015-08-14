@@ -44,7 +44,7 @@ Install client
 ::
 
     $ sudo apt-get install python3-pip
-    $ sudo pip3 install dataserv-client 
+    $ sudo pip3 install dataserv-client==1.1.0
     $ dataserv-client version
 
 Update client
@@ -64,7 +64,7 @@ Install client
 
     $ brew install python3
     $ rehash 
-    $ pip3 install dataserv-client
+    $ pip3 install dataserv-client==1.1.0
     $ dataserv-client version
 
 Update client
@@ -83,7 +83,7 @@ Argument ordering
 
 ::
 
-    $ dataserv-client.py <programm arguments> COMMAND <command arguments>
+    $ dataserv-client.py <program arguments> COMMAND <command arguments>
 
 
 Argument ordering example
@@ -95,7 +95,7 @@ Argument ordering example
 
 
 Show program help, optional arguments and commands
----------------------------------------------------
+--------------------------------------------------
 
 ::
 
@@ -105,10 +105,10 @@ Show program help, optional arguments and commands
                               [--debug]
                               <command> ...
 
-    Dataserve client command-line interface.
+    Dataserv client command-line interface.
 
     optional arguments:
-      -h, --help            show this help message and exit
+      -h, --help            Show this help message and exit
       --address ADDRESS     Required bitcoin address.
       --url URL             Url of the farmer (default: http://104.236.104.117).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
@@ -202,6 +202,13 @@ Build and cleanup files afterwards
 ::
 
     $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --cleanup
+
+
+Build and force rebuild of any previously generated files.
+
+::
+
+    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --rebuild
 
 
 Build custom shard height
