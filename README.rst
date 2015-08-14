@@ -44,7 +44,7 @@ Install client
 ::
 
     $ sudo apt-get install python3-pip
-    $ sudo pip3 install dataserv-client 
+    $ sudo pip3 install git+https://github.com/Storj/dataserv-client.git 
     $ dataserv-client version
 
 Update client
@@ -105,10 +105,10 @@ Show program help, optional arguments and commands
                               [--debug]
                               <command> ...
 
-    Dataserve client command-line interface.
+    Dataserv client command-line interface.
 
     optional arguments:
-      -h, --help            show this help message and exit
+      -h, --help            Show this help message and exit
       --address ADDRESS     Required bitcoin address.
       --url URL             Url of the farmer (default: http://104.236.104.117).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
