@@ -2,7 +2,7 @@
 dataserv-client
 ===============
 
-|BuildLink|_ |CoverageLink|_ |LicenseLprogrammink|_ |IssuesLink|_
+|BuildLink|_ |CoverageLink|_ |LicenseLink|_ |IssuesLink|_
 
 
 .. |BuildLink| image:: https://travis-ci.org/Storj/dataserv-client.svg?branch=master
