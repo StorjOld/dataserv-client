@@ -43,16 +43,21 @@ class Builder:
         Returns: { seed : hash, ... }
         """
         generated = {}
-        for shard_num in range(int(self.max_size / self.shard_size)):
+        height = int(self.max_size / self.shard_size)
+        for shard_num in range(height):
             seed = self.build_seed(shard_num)
-            file_hash = self.generate_shard(seed, store_path,
-                                            cleanup=cleanup, rebuild=rebuild)
-            generated[seed] = file_hash
+            path = os.path.join(store_path, seed)
 
-            if debug:
-                print("Saving seed {0} with SHA-256 hash {1}.".format(
-                    seed, file_hash
-                ))
+            # only generate if the file isn't there
+            will_generate = not os.path.isfile(path) or rebuild
+            file_hash = self.generate_shard(seed, store_path, cleanup=cleanup,
+                                            rebuild=rebuild)
+            generated[seed] = file_hash
+            if will_generate and debug:
+                print("Saving seed {0} with SHA-256 hash {1}.".format(seed, file_hash))
+
+            if (not will_generate) and debug:
+                print("Skipping seed {0}. Already exists.".format(seed))
 
         return generated
 

@@ -125,4 +125,4 @@ class Client(object):
                                cleanup=cleanup, rebuild=rebuild)
         height = len(generated)
         self._querry('/api/height/{0}/{1}'.format(self.address, height))
-        return generated
+        return generated  # FIXME check where height es expected and fix it
