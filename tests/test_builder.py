@@ -113,7 +113,7 @@ class TestBuilder(unittest.TestCase):
         generated = bucket.build(self.store_path, False, False)
 
         # remove one of the files
-        remove_file = random.choice(generated.keys())
+        remove_file = random.choice(list(generated.keys()))
         os.remove(os.path.join(self.store_path, remove_file))
 
         # FIXME how to test existing are skipped on unix and windows?
@@ -139,3 +139,9 @@ class TestBuilder(unittest.TestCase):
         # rebuild all files
         generated = bucket.build(self.store_path, debug=False,
                                  cleanup=False, rebuild=True)
+
+        # audit full
+        expected = fixtures["test_builder_audit"]["expected"]
+        audit_results = bucket.full_audit(b"storj", self.store_path,
+                                          height, True)
+        self.assertEqual(audit_results, expected)
