@@ -140,14 +140,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client = api.Client(addresses["pi"], url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB
         client.register()
-        height = client.build(cleanup=True)
-        self.assertTrue(height == 2)
+        generated = client.build(cleanup=True)
+        self.assertTrue(len(generated))
 
         client = api.Client(addresses["omicron"], url=url, debug=True,
                             max_size=1024*1024*512)  # 512MB
         client.register()
-        height = client.build(cleanup=True)
-        self.assertTrue(height == 4)
+        generated = client.build(cleanup=True)
+        self.assertTrue(len(generated) == 4)
 
     def test_address_required(self):
         def callback():
