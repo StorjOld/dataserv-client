@@ -44,7 +44,7 @@ Install client
 ::
 
     $ sudo apt-get install python3-pip
-    $ sudo pip3 install dataserv-client 
+    $ sudo pip3 install dataserv-client==1.1.0
     $ dataserv-client version
 
 Update client
@@ -64,7 +64,7 @@ Install client
 
     $ brew install python3
     $ rehash 
-    $ pip3 install dataserv-client
+    $ pip3 install dataserv-client==1.1.0
     $ dataserv-client version
 
 Update client
