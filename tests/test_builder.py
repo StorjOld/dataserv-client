@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import random
 import shutil
@@ -115,17 +116,25 @@ class TestBuilder(unittest.TestCase):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
         generated = bucket.build(self.store_path, False, False)
+        
+        timestamp = time.time()
 
         # remove one of the files
         remove_file = random.choice(list(generated.keys()))
         os.remove(os.path.join(self.store_path, remove_file))
 
-        # FIXME how to test existing are skipped on unix and windows?
-        # use file access time?
-
         # generate only missing shard for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
         generated = bucket.build(self.store_path, False, False)
+
+        # verify last access times
+        for seed, file_hash in generated.items():
+            path = os.path.join(self.store_path, seed)
+            last_access = os.path.getmtime(path)
+            if seed == remove_file:
+                self.assertTrue(last_access > timestamp)
+            else:
+                self.assertTrue(last_access < timestamp)
 
         # make sure all files are there
         self.assertTrue(bucket.checkup(self.store_path))
