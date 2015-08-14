@@ -2,7 +2,7 @@
 dataserv-client
 ===============
 
-|BuildLink|_ |CoverageLink|_ |LicenseLink|_ |IssuesLink|_
+|BuildLink|_ |CoverageLink|_ |LicenseLprogrammink|_ |IssuesLink|_
 
 
 .. |BuildLink| image:: https://travis-ci.org/Storj/dataserv-client.svg?branch=master
@@ -83,7 +83,7 @@ Argument ordering
 
 ::
 
-    $ dataserv-client.py <programm arguments> COMMAND <command arguments>
+    $ dataserv-client.py <program arguments> COMMAND <command arguments>
 
 
 Argument ordering example
@@ -95,7 +95,7 @@ Argument ordering example
 
 
 Show program help, optional arguments and commands
----------------------------------------------------
+--------------------------------------------------
 
 ::
 
@@ -105,10 +105,10 @@ Show program help, optional arguments and commands
                               [--debug]
                               <command> ...
 
-    Dataserve client command-line interface.
+    Dataserv client command-line interface.
 
     optional arguments:
-      -h, --help            show this help message and exit
+      -h, --help            Show this help message and exit
       --address ADDRESS     Required bitcoin address.
       --url URL             Url of the farmer (default: http://104.236.104.117).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
