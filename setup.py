@@ -70,7 +70,7 @@ setup(
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
     version=VERSION,
-    scripts=[SCRIPT], # FIXME esky scripts=[script],
+    scripts=[SCRIPT],  # FIXME esky scripts=[script],
     # FIXME esky options=options,
     #console=[SCRIPT],
     #data_files=[],
@@ -78,6 +78,7 @@ setup(
     install_requires=[
         'RandomIO == 0.2.1',
         'future == 0.15.0',  # for python 2.7 support
+        'partialhash == 1.1.0'
     ],
     tests_require=[
         'coverage',

@@ -1,8 +1,7 @@
-import unittest
-import datetime
 import json
 import time
-from dataserv_client import common
+import unittest
+import datetime
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
@@ -140,14 +139,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client = api.Client(addresses["pi"], url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB
         client.register()
-        hashes = client.build(cleanup=True)
-        self.assertTrue(len(hashes) == 2)
+        generated = client.build(cleanup=True)
+        self.assertTrue(len(generated))
 
         client = api.Client(addresses["omicron"], url=url, debug=True,
                             max_size=1024*1024*512)  # 512MB
         client.register()
-        hashes = client.build(cleanup=True)
-        self.assertTrue(len(hashes) == 4)
+        generated = client.build(cleanup=True)
+        self.assertTrue(len(generated) == 4)
 
     def test_address_required(self):
         def callback():
