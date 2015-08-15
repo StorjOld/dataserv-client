@@ -237,3 +237,7 @@ class TestBuilder(unittest.TestCase):
         calls = len(on_generate_shard_called_with)
         self.assertEqual(int(my_max_size / my_shard_size), calls)
 
+        # check height order
+        for num in range(calls):
+            height = on_generate_shard_called_with[num][0]
+            self.assertEqual(num + 1, height)
