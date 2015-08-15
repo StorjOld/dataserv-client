@@ -61,8 +61,10 @@ class Client(object):
         print(__version__)
         return __version__
 
-    def _querry(self, api_call, retries=0):
+    def _url_query(self, api_call, retries=0):
         try:
+            if self.debug:
+                print("Query url: " + self.url + api_call)
             response = urllib.request.urlopen(self.url + api_call)
             if response.code == 200:
                 return True
@@ -84,12 +86,12 @@ class Client(object):
             if retries >= self.connection_retry_limit:
                 raise exceptions.ConnectionError(self.url)
             time.sleep(self.connection_retry_delay)
-            return self._querry(api_call, retries + 1)
+            return self._url_query(api_call, retries + 1)
 
     def register(self):
         """Attempt to register the config address."""
         self._ensure_address_given()
-        registered = self._querry("/api/register/{0}".format(self.address))
+        registered = self._url_query("/api/register/{0}".format(self.address))
         if registered:
             print("Address {0} now registered on {1}.".format(self.address,
                                                               self.url))
@@ -99,7 +101,7 @@ class Client(object):
         """Attempt keep-alive with the server."""
         self._ensure_address_given()
         print("Pinging {0} with address {1}.".format(self.url, self.address))
-        return self._querry("/api/ping/{0}".format(self.address))
+        return self._url_query("/api/ping/{0}".format(self.address))
 
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
              limit=None):
@@ -121,11 +123,11 @@ class Client(object):
         """TODO doc string"""
         self._ensure_address_given()
         def on_generate_shard(height, seed, file_hash):
-            self._querry('/api/height/{0}/{1}'.format(self.address, height))
+            self._url_query('/api/height/{0}/{1}'.format(self.address, height))
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
                                on_generate_shard=on_generate_shard)
         generated = bldr.build(self.store_path, debug=self.debug,
                                cleanup=cleanup, rebuild=rebuild)
         height = len(generated)
-        self._querry('/api/height/{0}/{1}'.format(self.address, height))
+        self._url_query('/api/height/{0}/{1}'.format(self.address, height))
         return generated

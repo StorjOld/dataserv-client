@@ -1,63 +1,22 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+
 import os
-# import sys
-# from esky.bdist_esky import Executable
 from setuptools import setup, find_packages
 
 
-VERSION = "1.2.1"  # FIXME get from module
+if os.name == 'nt':  # windows
+    import py2exe  # manual dependencie :/
+
+
+VERSION = "1.3.0"  # FIXME get from module
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
 DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
     'baseurl': "https://pypi.python.org/packages/source/a",
     'name': 'dataserv-client',
     'version': VERSION
 }
-
-
-# FIXME get autoupdate with esky working
-## windows
-# if sys.platform in ['win32', 'cygwin', 'win64']:
-#    icon = os.path.join(sys.prefix, "DLLs", "py.ico")
-#    script = Executable(SCRIPT, icon=icon, gui_only=False)
-#    options = {
-#        "bdist_esky": {
-#            "includes": [],  # include modules
-#            "excludes": ["pydoc"],  # exclude modules
-#            "freezer_module": "py2exe",
-#            #"freezer_module": "cx_Freeze",
-#        }
-#    }
-#
-#
-## mac (untested)
-# if sys.platform == 'darwin':
-#    script = Executable(SCRIPT)
-#    options = {
-#        "bdist_esky": {
-#            "includes": [],  # include modules
-#            "excludes": ["pydoc"],  # exclude modules
-#            "freezer_module": "py2app",
-#            "freezer_options": {
-#                "plist": {
-#                    #"LSUIElement" : True,
-#                    #'CFBundleIdentifier': 'de.cloudmatrix.esky',
-#                    #'CFBundleIconFile' : 'images/box.icns',
-#                }
-#            },
-#        }
-#    }
-#
-#
-## linux
-# if sys.platform in ['linux', 'linux2']:
-#    script = Executable(SCRIPT)
-#    options = {
-#        "bdist_esky": {
-#            "includes": [],  # include modules
-#            "excludes": ["pydoc"],  # exclude modules
-#            "freezer_module": "bbfreeze",  # FIXME unmaintained only python 2
-#            # "freezer_module": "cx_Freeze", # FIXME pip install fails
-#        }
-#    }
 
 
 setup(
@@ -72,12 +31,12 @@ setup(
     license="MIT",
     version=VERSION,
     scripts=[SCRIPT],  # FIXME esky scripts=[script],
-    # FIXME esky options=options,
     console=[SCRIPT],
     data_files=[],
     test_suite="tests",
     install_requires=[
         'RandomIO == 0.2.1',
+        'partialhash == 1.1.0',
         'future == 0.15.0',  # for python 2.7 support
     ],
     tests_require=[
@@ -103,4 +62,10 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+
+    # py2exe
+    options = {'py2exe': {
+        "optimize": 2,
+        "bundle_files": 2, # This tells py2exe to bundle everything
+    }}
 )
