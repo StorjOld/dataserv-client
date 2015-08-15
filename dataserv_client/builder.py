@@ -8,10 +8,11 @@ from datetime import datetime
 
 class Builder:
 
-    def __init__(self, address, shard_size, max_size):
+    def __init__(self, address, shard_size, max_size, on_generate_shard=None):
         self.address = address
         self.shard_size = shard_size
         self.max_size = max_size
+        self.on_generate_shard = on_generate_shard
 
     @staticmethod
     def sha256(content):
@@ -58,6 +59,9 @@ class Builder:
 
             if (not will_generate) and debug:
                 print("Skipping seed {0}. Already exists.".format(seed))
+
+            if self.on_generate_shard:
+                self.on_generate_shard(shard_num + 1, seed, file_hash)
 
         return generated
 

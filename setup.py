@@ -79,9 +79,9 @@ setup(
     install_requires=[
         'RandomIO == 0.2.1',
         'future == 0.15.0',  # for python 2.7 support
-        'partialhash == 1.1.0'
     ],
     tests_require=[
+        'dataserv',
         'coverage',
         'coveralls'
     ],

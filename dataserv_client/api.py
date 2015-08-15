@@ -120,9 +120,12 @@ class Client(object):
     def build(self, cleanup=False, rebuild=False):
         """TODO doc string"""
         self._ensure_address_given()
-        bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size)
+        def on_generate_shard(height, seed, file_hash):
+            self._querry('/api/height/{0}/{1}'.format(self.address, height))
+        bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
+                               on_generate_shard=on_generate_shard)
         generated = bldr.build(self.store_path, debug=self.debug,
                                cleanup=cleanup, rebuild=rebuild)
         height = len(generated)
         self._querry('/api/height/{0}/{1}'.format(self.address, height))
-        return generated  # FIXME check where height is expected and fix it
+        return generated
