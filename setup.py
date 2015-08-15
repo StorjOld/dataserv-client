@@ -81,7 +81,6 @@ setup(
         'future == 0.15.0',  # for python 2.7 support
     ],
     tests_require=[
-        'dataserv',
         'coverage',
         'coveralls'
     ],

@@ -221,3 +221,19 @@ class TestBuilder(unittest.TestCase):
         end_delta2 = datetime.utcnow() - start_time2
 
         self.assertTrue(end_delta2 < end_delta)
+
+    def test_on_generate_shard_callback(self):
+        # save callback args
+        on_generate_shard_called_with = []
+        def on_generate_shard(*args):
+            on_generate_shard_called_with.append(args)
+
+        # generate shards for testing
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         on_generate_shard=on_generate_shard)
+        bucket.build(self.store_path, False, False)
+
+        # check correct call count
+        calls = len(on_generate_shard_called_with)
+        self.assertEqual(int(my_max_size / my_shard_size), calls)
+
