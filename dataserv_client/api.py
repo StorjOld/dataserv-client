@@ -22,6 +22,44 @@ _timedelta = datetime.timedelta
 _now = datetime.datetime.now
 
 
+def _deserialize_byte_count(byte_count_str):
+    # ugly but much faster and safer then regex
+    # FIXME handle parse errors
+
+    if isinstance(byte_count_str, int):
+        return byte_count_str
+
+    def _get_byte_count(postfix, base, exponant):
+        char_num = len(postfix)
+        if byte_count_str[-char_num:] == postfix:
+            return int(byte_count_str[:char_num]) * (base ** exponant)
+        return None
+
+    # check base 1024
+    if len(byte_count_str) > 1:
+        n = None
+        n = n if n is not None else _get_byte_count('K', 1024, 1)
+        n = n if n is not None else _get_byte_count('M', 1024, 2)
+        n = n if n is not None else _get_byte_count('G', 1024, 3)
+        n = n if n is not None else _get_byte_count('T', 1024, 4)
+        n = n if n is not None else _get_byte_count('P', 1024, 5)
+        if n is not None:
+            return n
+
+    # check base 1000
+    if len(byte_count_str) > 2:
+        n = None
+        n = n if n is not None else _get_byte_count('K', 1000, 1)
+        n = n if n is not None else _get_byte_count('M', 1000, 2)
+        n = n if n is not None else _get_byte_count('G', 1000, 3)
+        n = n if n is not None else _get_byte_count('T', 1000, 4)
+        n = n if n is not None else _get_byte_count('P', 1000, 5)
+        if n is not None:
+            return n
+
+    return int(byte_count_str)
+
+
 class Client(object):
 
     def __init__(self, address=None, url=common.DEFAULT_URL, debug=False,
@@ -30,10 +68,11 @@ class Client(object):
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
+        print("MAX_SIZE:", type(max_size), max_size)
         self.url = url
         self.debug = debug
         self.address = address
-        self.max_size = int(max_size)
+        self.max_size = _deserialize_byte_count(max_size)
         self.store_path = os.path.realpath(store_path)
 
         if int(connection_retry_limit) < 0:
