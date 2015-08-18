@@ -1,0 +1,3 @@
+RandomIO == 0.2.1
+partialhash == 1.1.0
+future == 0.15.0

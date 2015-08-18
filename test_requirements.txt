@@ -1,0 +1,4 @@
+coverage
+coveralls
+dataserv
+-e git://github.com/cloudmatrix/esky.git#egg=esky

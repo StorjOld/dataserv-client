@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-# install latest version from github first
+# unavoidable dependencie for setup.py, get latest version from github
 # pip install git+git://github.com/cloudmatrix/esky.git
 from esky import bdist_esky
 
@@ -32,15 +32,8 @@ setup(
     version=__version__,
     scripts=[SCRIPT],
     test_suite="tests",
-    install_requires=[
-        'RandomIO == 0.2.1',
-        'partialhash == 1.1.0',
-        'future == 0.15.0',  # for python 2.7 support
-    ],
-    tests_require=[
-        'coverage',
-        'coveralls'
-    ],
+    install_requires=open("requirements.txt").readlines(),
+    tests_require=[], # use `pip install -r test_requirements.txt`
     download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
     classifiers=[
