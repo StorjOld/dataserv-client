@@ -1,7 +1,7 @@
 import os
 
 
-DEFAULT_URL = "http://104.236.104.117"
+DEFAULT_URL = "http://status.driveshare.org"
 DEFAULT_DELAY = 15
 
 DEFAULT_APP_HOME = os.path.join(os.path.expanduser("~"), ".storj")
