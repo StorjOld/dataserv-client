@@ -14,7 +14,7 @@ help:
 	@echo "  clean      Remove all generated files."
 	@echo "  test       Run tests and analysis tools."
 	@echo "  devsetup   Setup development environment."
-	@echo "  wheelhouse Build cached wheels to speed up tests."
+	@echo "  wheels     Build cached wheels to speed up tests."
 	@echo "  dist       Build dist and move to downloads."
 	@echo "  publish    Build and upload package to pypi."
 
@@ -33,7 +33,7 @@ virtualenvs: clean
 	$(PIP) install wheel
 
 
-wheelhouse: virtualenvs
+wheels: virtualenvs
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r requirements.txt
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r test_requirements.txt
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r develop_requirements.txt
