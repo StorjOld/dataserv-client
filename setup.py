@@ -6,16 +6,12 @@ import os
 from setuptools import setup, find_packages
 
 
-if os.name == 'nt':  # windows
-    import py2exe  # manual dependencie :/
-
-
-VERSION = "1.3.0"  # FIXME get from module
+exec(open('partialhash/version.py').read())
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
 DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
     'baseurl': "https://pypi.python.org/packages/source/a",
     'name': 'dataserv-client',
-    'version': VERSION
+    'version': __version__  # NOQA
 }
 
 
@@ -29,8 +25,8 @@ setup(
     author='Shawn Wilkinson',
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
-    version=VERSION,
-    scripts=[SCRIPT],  # FIXME esky scripts=[script],
+    version=__version__,  # NOQA
+    scripts=[SCRIPT],
     console=[SCRIPT],
     data_files=[],
     test_suite="tests",
@@ -61,11 +57,5 @@ setup(
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Topic :: Software Development :: Libraries :: Python Modules",
-    ],
-
-    # py2exe
-    options = {'py2exe': {
-        "optimize": 2,
-        "bundle_files": 2, # This tells py2exe to bundle everything
-    }}
+    ]
 )
