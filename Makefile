@@ -26,8 +26,8 @@ devsetup: clean
 	virtualenv -p /usr/bin/python3 env/py3
 
 	# install esky for builds (required before setup :/)
-	#env/py2/bin/pip install esky
-	#env/py3/bin/pip install esky
+	env/py2/bin/pip install git+git://github.com/cloudmatrix/esky.git
+	env/py3/bin/pip install git+git://github.com/cloudmatrix/esky.git
 
 	# install dependencies
 	env/py2/bin/python setup.py develop

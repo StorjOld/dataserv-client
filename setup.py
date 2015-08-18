@@ -2,11 +2,16 @@
 # coding: utf-8
 
 
+# install latest version from github first
+# pip install git+git://github.com/cloudmatrix/esky.git
+from esky import bdist_esky
+
+
 import os
 from setuptools import setup, find_packages
 
 
-exec(open('partialhash/version.py').read())
+exec(open('dataserv_client/version.py').read())  # load __version__
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
 DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
     'baseurl': "https://pypi.python.org/packages/source/a",
@@ -16,7 +21,6 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 
 
 setup(
-    app=[SCRIPT],
     name='dataserv-client',
     description="",
     long_description=open("README.rst").read(),
@@ -25,10 +29,8 @@ setup(
     author='Shawn Wilkinson',
     author_email='shawn+dataserv-client@storj.io',
     license="MIT",
-    version=__version__,  # NOQA
+    version=__version__,
     scripts=[SCRIPT],
-    console=[SCRIPT],
-    data_files=[],
     test_suite="tests",
     install_requires=[
         'RandomIO == 0.2.1',
