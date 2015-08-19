@@ -41,7 +41,8 @@ setup(
     ],
     tests_require=[
         'coverage',
-        'coveralls'
+        'coveralls',
+        'mock'
     ],
     download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
