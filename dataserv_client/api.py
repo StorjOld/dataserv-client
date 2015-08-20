@@ -44,7 +44,8 @@ class Client(object):
         self.connection_retry_delay = int(connection_retry_delay)
 
         # ensure storage dir exists
-        os.makedirs(self.store_path)
+        if not os.path.exists(self.store_path):
+            os.makedirs(self.store_path)
 
     def _ensure_address_given(self):
         if not self.address:  # TODO ensure address is valid
