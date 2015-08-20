@@ -12,11 +12,11 @@ PY = env/bin/python
 help:
 	@echo "Some usefull development shortcuts."
 	@echo "  clean      Remove all generated files."
+	@echo "  setup      Setup development environment."
 	@echo "  test       Run tests and analysis tools."
-	@echo "  devsetup   Setup development environment."
-	@echo "  wheels     Build cached wheels to speed up tests."
-	@echo "  dist       Build dist and move to downloads."
-	@echo "  publish    Build and upload package to pypi."
+	@echo "  wheel      Build package wheel and save in '$(WHEEL_DIR)'."
+	@echo "  wheels     Build dependencie wheels and save in '$(WHEEL_DIR)'."
+	@echo "  publish    Build and upload package to pypi.python.org"
 
 
 clean:
@@ -28,24 +28,29 @@ clean:
 	find | grep -i ".*\.pyc$$" | xargs -r -L1 rm
 
 
-virtualenvs: clean
+virtualenv: clean
 	virtualenv -p /usr/bin/python$(PYTHON_VERSION) env
 	$(PIP) install wheel
 
 
-wheels: virtualenvs
+wheels: virtualenv
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r requirements.txt
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r test_requirements.txt
 	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r develop_requirements.txt
 
 
-devsetup: virtualenvs
+wheel: test
+	$(PY) setup.py bdist_wheel
+	mv dist/*.whl $(WHEEL_DIR)
+
+
+setup: virtualenv
 	$(PIP) install $(USE_WHEEL) -r requirements.txt
 	$(PIP) install $(USE_WHEEL) -r test_requirements.txt
 	$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
 
 
-test: devsetup
+test: setup
 	screen -S testserver -d -m $(PY) -m dataserv.app
 	$(PY) setup.py test
 	screen -S testserver -X kill
@@ -53,12 +58,6 @@ test: devsetup
 
 publish: test
 	$(PY) setup.py register sdist upload
-
-
-dist: test
-	$(PIP) install bbfreeze
-	$(PY) setup.py bdist_esky
-	# TODO move to downloads
 
 
 # import pudb; pu.db # set break point

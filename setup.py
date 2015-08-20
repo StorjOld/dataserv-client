@@ -33,7 +33,7 @@ setup(
     scripts=[SCRIPT],
     test_suite="tests",
     install_requires=open("requirements.txt").readlines(),
-    tests_require=[], # use `pip install -r test_requirements.txt`
+    tests_require=[],  # use `pip install -r test_requirements.txt`
     download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
     classifiers=[
