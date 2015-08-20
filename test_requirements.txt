@@ -1,4 +1,5 @@
 coverage
 coveralls
 dataserv
+mock
 -e git://github.com/cloudmatrix/esky.git#egg=esky
