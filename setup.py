@@ -22,7 +22,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 
 setup(
     name='dataserv-client',
-    description="",
+    description="Client for storing and auditing data. http://storj.io",
     long_description=open("README.rst").read(),
     keywords="",
     url='http://storj.io',
