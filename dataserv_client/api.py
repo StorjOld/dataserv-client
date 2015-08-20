@@ -44,14 +44,7 @@ class Client(object):
         self.connection_retry_delay = int(connection_retry_delay)
 
         # ensure storage dir exists
-        self._mkdir_recursive(self.store_path)
-
-    def _mkdir_recursive(self, path):
-        sub_path = os.path.dirname(path)
-        if not os.path.exists(sub_path):
-            self._mkdir_recursive(sub_path)
-        if not os.path.exists(path):
-            os.mkdir(path)
+        os.makedirs(self.store_path)
 
     def _ensure_address_given(self):
         if not self.address:  # TODO ensure address is valid
