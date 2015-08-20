@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 
-
 from future.standard_library import install_aliases
 install_aliases()
 
-
+import datetime
 import os
 import time
 import urllib
 import urllib.error
 import urllib.request
-import datetime
+
+from dataserv_client import __version__
+from dataserv_client import builder
 from dataserv_client import exceptions
 from dataserv_client import common
-from dataserv_client import builder
-from dataserv_client import __version__
-
 
 _timedelta = datetime.timedelta
 _now = datetime.datetime.now
@@ -115,6 +113,7 @@ class Client(object):
     def build(self, cleanup=False, rebuild=False):
         """TODO doc string"""
         self._ensure_address_given()
+
         def on_generate_shard(height, seed, file_hash):
             self._url_query('/api/height/{0}/{1}'.format(self.address, height))
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
