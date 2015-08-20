@@ -7,6 +7,7 @@ install_aliases()
 
 import os
 import time
+import socket
 import urllib
 import urllib.error
 import urllib.request
@@ -37,10 +38,12 @@ class Client(object):
         self.max_size = deserialize.byte_count(max_size)
         self.store_path = os.path.realpath(store_path)
 
+        # FIXME add deserialize.positive_integer
         if int(connection_retry_limit) < 0:
             raise exceptions.InvalidArgument()
         self.connection_retry_limit = int(connection_retry_limit)
 
+        # FIXME add deserialize.positive_integer
         if int(connection_retry_delay) < 0:
             raise exceptions.InvalidArgument()
         self.connection_retry_delay = int(connection_retry_delay)
@@ -87,6 +90,8 @@ class Client(object):
         except HTTPException:
             self._handle_connection_error(api_call, retries)
         except urllib.error.URLError:
+            self._handle_connection_error(api_call, retries)
+        except socket.error:
             self._handle_connection_error(api_call, retries)
 
     def _handle_connection_error(self, api_call, retries):
