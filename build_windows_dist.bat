@@ -1,1 +1,2 @@
-python setup.py py2exe
+pip install cx-Freeze
+python setup.py bdist_esky

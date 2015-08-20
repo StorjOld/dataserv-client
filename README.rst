@@ -44,7 +44,7 @@ Install client
 ::
 
     $ sudo apt-get install python3-pip
-    $ sudo pip3 install dataserv-client==1.1.0
+    $ sudo pip3 install dataserv-client
     $ dataserv-client version
 
 Update client
@@ -64,7 +64,7 @@ Install client
 
     $ brew install python3
     $ rehash 
-    $ pip3 install dataserv-client==1.1.0
+    $ pip3 install dataserv-client
     $ dataserv-client version
 
 Update client
@@ -195,6 +195,18 @@ Build with custom max data size and store path
 ::
 
     $ dataserv-client.py --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --address=<BITCOIN_ADDRESS> build
+
+    # optional max_size syntax
+    --max_size=1K  # 1024^1 bytes
+    --max_size=1KB # 1000^1 bytes
+    --max_size=1M  # 1024^2 bytes
+    --max_size=1MB # 1000^2 bytes
+    --max_size=1G  # 1024^3 bytes
+    --max_size=1GB # 1000^3 bytes
+    --max_size=1T  # 1024^4 bytes
+    --max_size=1TB # 1000^4 bytes
+    --max_size=1P  # 1024^5 bytes
+    --max_size=1PB # 1000^5 bytes
 
 
 Build and cleanup files afterwards
