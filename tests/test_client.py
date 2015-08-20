@@ -2,44 +2,47 @@ import json
 import time
 import unittest
 import datetime
+from btctxstore import BtcTxStore
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
 
 
-fixtures = json.load(open("tests/fixtures.json"))
-addresses = fixtures["addresses"]
 url = "http://127.0.0.1:5000"
 
 
 class AbstractTestSetup(object):
 
     def setUp(self):
+        self.btctxstore = BtcTxStore()
         time.sleep(2)  # avoid collision
 
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
-        client = api.Client(addresses["alpha"], url=url)
+        wif = self.btctxstore.create_key()
+        client = api.Client(wif, url=url)
         self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
-            client = api.Client(addresses["beta"], url=url)
+            wif = self.btctxstore.create_key()
+            client = api.Client(wif, url=url)
             client.register()
             client.register()
         self.assertRaises(exceptions.AddressAlreadyRegistered, callback)
 
-    def test_invalid_address(self):
+    def test_invalid_wif(self):
         def callback():
             client = api.Client("xyz", url=url)
             client.register()
-        self.assertRaises(exceptions.InvalidAddress, callback)
+        self.assertRaises(exceptions.InvalidWif, callback)
 
     def test_invalid_farmer(self):
         def callback():
-            client = api.Client(addresses["nu"], url=url + "/xyz")
+            wif = self.btctxstore.create_key()
+            client = api.Client(wif, url=url + "/xyz")
             client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
@@ -52,19 +55,21 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
-        client = api.Client(addresses["gamma"], url=url)
+        wif = self.btctxstore.create_key()
+        client = api.Client(wif, url=url)
         self.assertTrue(client.register())
         self.assertTrue(client.ping())
 
-    def test_invalid_address(self):
+    def test_invalid_wif(self):
         def callback():
             client = api.Client("xyz", url=url)
             client.ping()
-        self.assertRaises(exceptions.InvalidAddress, callback)
+        self.assertRaises(exceptions.InvalidWif, callback)
 
     def test_invalid_farmer(self):
         def callback():
-            client = api.Client(addresses["delta"], url=url + "/xyz")
+            wif = self.btctxstore.create_key()
+            client = api.Client(wif, url=url + "/xyz")
             client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
@@ -77,7 +82,8 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
-        client = api.Client(addresses["zeta"], url=url)
+        wif = self.btctxstore.create_key()
+        client = api.Client(wif, url=url)
         self.assertTrue(client.poll(register_address=True, limit=60))
 
     def test_address_required(self):
@@ -98,20 +104,20 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_invalid_retry_limit(self):
         def callback():
             api.Client(connection_retry_limit=-1)
-        self.assertRaises(exceptions.InvalidArgument, callback)
+        self.assertRaises(exceptions.InvalidInput, callback)
 
     def test_invalid_retry_delay(self):
         def callback():
             api.Client(connection_retry_delay=-1)
-        self.assertRaises(exceptions.InvalidArgument, callback)
+        self.assertRaises(exceptions.InvalidInput, callback)
 
 
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_no_retry(self):
         def callback():
-            client = api.Client(address=addresses["kappa"],
-                                url="http://invalid.url",
+            wif = self.btctxstore.create_key()
+            client = api.Client(wif=wif, url="http://invalid.url",
                                 connection_retry_limit=0,
                                 connection_retry_delay=0)
             client.register()
@@ -122,8 +128,8 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_default_retry(self):
         def callback():
-            client = api.Client(address=addresses["kappa"],
-                                url="http://invalid.url",
+            wif = self.btctxstore.create_key()
+            client = api.Client(wif=wif, url="http://invalid.url",
                                 connection_retry_limit=5,
                                 connection_retry_delay=5)
             client.register()
@@ -136,13 +142,15 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_build(self):
-        client = api.Client(addresses["pi"], url=url, debug=True,
+        wif = self.btctxstore.create_key()
+        client = api.Client(wif, url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated))
 
-        client = api.Client(addresses["omicron"], url=url, debug=True,
+        wif = self.btctxstore.create_key()
+        client = api.Client(wif, url=url, debug=True,
                             max_size=1024*1024*512)  # 512MB
         client.register()
         generated = client.build(cleanup=True)
@@ -157,8 +165,9 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
+        wif = self.btctxstore.create_key()
         args = [
-            "--address=" + addresses["eta"],
+            "--wif=" + wif,
             "--url=" + url,
             "poll",
             "--register_address",
@@ -168,25 +177,29 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
-        args = ["--address=" + addresses["theta"], "--url=" + url, "register"]
+        wif = self.btctxstore.create_key()
+        args = ["--wif=" + wif, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
-        args = ["--address=" + addresses["iota"], "--url=" + url, "register"]
+        wif = self.btctxstore.create_key()
+        args = ["--wif=" + wif, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
-        args = ["--address=" + addresses["iota"], "--url=" + url, "ping"]
+        args = ["--wif=" + wif, "--url=" + url, "ping"]
         self.assertTrue(cli.main(args))
 
     def test_no_command_error(self):
         def callback():
-            cli.main(["--address=" + addresses["lambda"]])
+            wif = self.btctxstore.create_key()
+            cli.main(["--wif=" + wif])
         self.assertRaises(SystemExit, callback)
 
     def test_input_error(self):
         def callback():
+            wif = self.btctxstore.create_key()
             cli.main([
-                "--address=" + addresses["mu"],
+                "--wif=" + wif,
                 "--url=" + url,
                 "poll",
                 "--register_address",
@@ -197,8 +210,8 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_api_error(self):
         def callback():
-            cli.main(["--address=xyz", "--url=" + url, "register"])
-        self.assertRaises(exceptions.InvalidAddress, callback)
+            cli.main(["--wif=xyz", "--url=" + url, "register"])
+        self.assertRaises(exceptions.InvalidWif, callback)
 
 
 if __name__ == '__main__':

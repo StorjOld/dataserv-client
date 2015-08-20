@@ -1,5 +1,8 @@
 
 
+from btctxstore.exceptions import *  # NOQA
+
+
 class DataservClientException(Exception):
     pass
 

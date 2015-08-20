@@ -5,9 +5,9 @@ from dataserv_client import api
 
 
 def _add_programm_args(parser):
-    # address
+    # wif
     parser.add_argument(
-        "--address", default=None, help="Required bitcoin address."
+        "--wif", default=None, help="Required bitcoin wallet."
     )
 
     # url
@@ -119,7 +119,7 @@ def _parse_args(args):
 def main(args):
     command_name, arguments = _parse_args(args)
     client = api.Client(
-        arguments.pop("address"),
+        arguments.pop("wif"),
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),

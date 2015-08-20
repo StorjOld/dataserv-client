@@ -5,15 +5,16 @@ install_aliases()
 
 import os
 import time
+import json
 import socket
 import urllib
 import urllib.error
 import urllib.request
+from btctxstore import BtcTxStore
 from email.utils import formatdate
 from datetime import datetime
 from datetime import timedelta
 from time import mktime
-from btctxstore import BtcTxStore
 from http.client import HTTPException
 from dataserv_client import __version__
 from dataserv_client import builder
@@ -21,34 +22,37 @@ from dataserv_client import common
 from dataserv_client import deserialize
 from dataserv_client import exceptions
 
+
 _now = datetime.now
 
 
 class Client(object):
 
-    def __init__(self, address=None, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, wif=None, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
-        self.wif = None  # TODO get wif
-        self.node_address = None
-        self.url = url
-        self.debug = debug
-        self.address = address
+        self.server_address = None
+        self.connection_retry_limit = deserialize.positive_integer(
+            connection_retry_limit
+        )
+        self.connection_retry_delay = deserialize.positive_integer(
+            connection_retry_delay
+        )
+        self.url = url  # TODO validate
+        self.debug = debug  # TODO validate
         self.max_size = deserialize.byte_count(max_size)
         self.store_path = os.path.realpath(store_path)
 
-        # FIXME add deserialize.positive_integer
-        if int(connection_retry_limit) < 0:
-            raise exceptions.InvalidArgument()
-        self.connection_retry_limit = int(connection_retry_limit)
+        self.blockchain = BtcTxStore()  # FIXME pass testnet and dryrun options
 
-        # FIXME add deserialize.positive_integer
-        if int(connection_retry_delay) < 0:
-            raise exceptions.InvalidArgument()
-        self.connection_retry_delay = int(connection_retry_delay)
+        # set wif and address
+        if wif and not self.blockchain.validate_key(wif):
+            raise exceptions.InvalidWif(wif)
+        self.wif = wif
+        self.address = self.blockchain.get_address(wif) if wif else None
 
         # ensure storage dir exists
         if not os.path.exists(self.store_path):
@@ -63,10 +67,11 @@ class Client(object):
         return __version__
 
     def _get_node_address(self):
-        if not self.node_address:
-            data = self._url_query('/api/address')
-            self.node_address = data["address"] # TODO validate address
-        return self.node_address
+        if not self.server_address:
+            data = self._url_query('/api/address', authenticate=False)
+            data = json.loads(data.decode("utf-8"))
+            self.server_address = data["address"]  # TODO validate address
+        return self.server_address
 
     def _create_authentication_headers(self):
         blockchain = BtcTxStore()
@@ -74,7 +79,7 @@ class Client(object):
                                  localtime=True, usegmt=True)
         message = self._get_node_address() + " " + header_date
         header_authorization = blockchain.sign_unicode(self.wif, message)
-        return {"Date": header_date, "Authorization": header_authorization }
+        return {"Date": header_date, "Authorization": header_authorization}
 
     def _url_query(self, api_call, retries=0, authenticate=True):
         try:
@@ -87,7 +92,9 @@ class Client(object):
                 q.add_header("Authorization", headers["Authorization"])
             response = urllib.request.urlopen(q)
             if response.code == 200:
-                return True
+                return response.read()
+
+            # unreachable code
             return False  # pragma: no cover
 
         except urllib.error.HTTPError as e:

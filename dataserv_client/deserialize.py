@@ -1,4 +1,8 @@
 
+
+from btctxstore.deserialize import *  # NOQA
+
+
 def byte_count(byte_count): # ugly but much faster and safer then regex
     # FIXME handle parse errors
 
@@ -35,5 +39,4 @@ def byte_count(byte_count): # ugly but much faster and safer then regex
             return n
 
     return int(byte_count)
-
 
