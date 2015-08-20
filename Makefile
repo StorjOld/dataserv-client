@@ -13,6 +13,7 @@ help:
 	@echo "Some usefull development shortcuts."
 	@echo "  clean      Remove all generated files."
 	@echo "  setup      Setup development environment."
+	@echo "  shell      Open ipython from the development environment."
 	@echo "  test       Run tests and analysis tools."
 	@echo "  wheel      Build package wheel and save in '$(WHEEL_DIR)'."
 	@echo "  wheels     Build dependencie wheels and save in '$(WHEEL_DIR)'."
@@ -48,6 +49,10 @@ setup: virtualenv
 	$(PIP) install $(USE_WHEEL) -r requirements.txt
 	$(PIP) install $(USE_WHEEL) -r test_requirements.txt
 	$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
+
+
+shell: setup
+	env/bin/ipython
 
 
 test: setup

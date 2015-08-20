@@ -3,14 +3,17 @@
 from future.standard_library import install_aliases
 install_aliases()
 
-import datetime
 import os
 import time
 import socket
 import urllib
 import urllib.error
 import urllib.request
-
+from email.utils import formatdate
+from datetime import datetime
+from datetime import timedelta
+from time import mktime
+from btctxstore import BtcTxStore
 from http.client import HTTPException
 from dataserv_client import __version__
 from dataserv_client import builder
@@ -18,8 +21,7 @@ from dataserv_client import common
 from dataserv_client import deserialize
 from dataserv_client import exceptions
 
-_timedelta = datetime.timedelta
-_now = datetime.datetime.now
+_now = datetime.now
 
 
 class Client(object):
@@ -30,6 +32,8 @@ class Client(object):
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
+        self.wif = None  # TODO get wif
+        self.node_address = None
         self.url = url
         self.debug = debug
         self.address = address
@@ -58,11 +62,30 @@ class Client(object):
         print(__version__)
         return __version__
 
-    def _url_query(self, api_call, retries=0):
+    def _get_node_address(self):
+        if not self.node_address:
+            data = self._url_query('/api/address')
+            self.node_address = data["address"] # TODO validate address
+        return self.node_address
+
+    def _create_authentication_headers(self):
+        blockchain = BtcTxStore()
+        header_date = formatdate(timeval=mktime(datetime.now().timetuple()),
+                                 localtime=True, usegmt=True)
+        message = self._get_node_address() + " " + header_date
+        header_authorization = blockchain.sign_unicode(self.wif, message)
+        return {"Date": header_date, "Authorization": header_authorization }
+
+    def _url_query(self, api_call, retries=0, authenticate=True):
         try:
             if self.debug:
                 print("Query url: " + self.url + api_call)
-            response = urllib.request.urlopen(self.url + api_call)
+            q = urllib.request.Request(self.url + api_call)
+            if self.wif and authenticate:
+                headers = self._create_authentication_headers()
+                q.add_header("Date", headers["Date"])
+                q.add_header("Authorization", headers["Authorization"])
+            response = urllib.request.urlopen(q)
             if response.code == 200:
                 return True
             return False  # pragma: no cover
@@ -80,17 +103,17 @@ class Client(object):
             else:
                 raise e  # pragma: no cover
         except HTTPException:
-            self._handle_connection_error(api_call, retries)
+            self._handle_connection_error(api_call, retries, authenticate)
         except urllib.error.URLError:
-            self._handle_connection_error(api_call, retries)
+            self._handle_connection_error(api_call, retries, authenticate)
         except socket.error:
-            self._handle_connection_error(api_call, retries)
+            self._handle_connection_error(api_call, retries, authenticate)
 
-    def _handle_connection_error(self, api_call, retries):
+    def _handle_connection_error(self, api_call, retries, authenticate):
         if retries >= self.connection_retry_limit:
             raise exceptions.ConnectionError(self.url)
         time.sleep(self.connection_retry_delay)
-        return self._url_query(api_call, retries + 1)
+        return self._url_query(api_call, retries + 1, authenticate)
 
     def register(self):
         """Attempt to register the config address."""
@@ -111,7 +134,7 @@ class Client(object):
              limit=None):
         """TODO doc string"""
         self._ensure_address_given()
-        stop_time = _now() + _timedelta(seconds=int(limit)) if limit else None
+        stop_time = _now() + timedelta(seconds=int(limit)) if limit else None
 
         if register_address:
             self.register()
