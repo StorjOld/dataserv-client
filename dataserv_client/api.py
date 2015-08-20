@@ -1,24 +1,22 @@
 #!/usr/bin/env python3
 
-
 from future.standard_library import install_aliases
 install_aliases()
 
-
+import datetime
 import os
 import time
 import socket
 import urllib
 import urllib.error
 import urllib.request
-import datetime
-from http.client import HTTPException
-from dataserv_client import exceptions
-from dataserv_client import common
-from dataserv_client import builder
-from dataserv_client import deserialize
-from dataserv_client import __version__
 
+from http.client import HTTPException
+from dataserv_client import __version__
+from dataserv_client import builder
+from dataserv_client import common
+from dataserv_client import deserialize
+from dataserv_client import exceptions
 
 _timedelta = datetime.timedelta
 _now = datetime.datetime.now
@@ -49,14 +47,8 @@ class Client(object):
         self.connection_retry_delay = int(connection_retry_delay)
 
         # ensure storage dir exists
-        self._mkdir_recursive(self.store_path)
-
-    def _mkdir_recursive(self, path):
-        sub_path = os.path.dirname(path)
-        if not os.path.exists(sub_path):
-            self._mkdir_recursive(sub_path)
-        if not os.path.exists(path):
-            os.mkdir(path)
+        if not os.path.exists(self.store_path):
+            os.makedirs(self.store_path)
 
     def _ensure_address_given(self):
         if not self.address:  # TODO ensure address is valid
@@ -134,6 +126,7 @@ class Client(object):
     def build(self, cleanup=False, rebuild=False):
         """TODO doc string"""
         self._ensure_address_given()
+
         def on_generate_shard(height, seed, file_hash):
             self._url_query('/api/height/{0}/{1}'.format(self.address, height))
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
