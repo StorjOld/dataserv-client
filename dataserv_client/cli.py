@@ -83,6 +83,13 @@ def _add_build(command_parser):
     build_parser.add_argument('--rebuild', action='store_true',
                               help="Replace previously files.")
 
+    # set height interval
+    default=common.DEFAULT_SET_HEIGHT_INTERVAL
+    build_parser.add_argument(
+        "--set_height_interval", default=default,
+        help="Interval at which to set height (default: {0}).".format(default)
+    )
+
 
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
