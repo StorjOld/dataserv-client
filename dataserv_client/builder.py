@@ -110,7 +110,8 @@ class Builder:
         seeds = self.build_seeds(height)
         for shard_num, seed in enumerate(seeds):
             seed_path = os.path.join(store_path, seed)
-            digest = partialhash.sample(seed_path, 1024, sample_count=3, seed=seed)
+            digest = partialhash.sample(seed_path, 1024, sample_count=3,
+                                        seed=seed.encode("utf-8"))
             audit_results.append(binascii.hexlify(digest))
         return audit_results
 

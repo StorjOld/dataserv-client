@@ -88,7 +88,6 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path)
 
         # audit
-        import pudb; pu.db # set break point
         audit_results = bucket.audit(b"storj", self.store_path, height)
         result0 = fixtures["test_builder_audit"]["result0"]
         result1 = fixtures["test_builder_audit"]["result1"]
