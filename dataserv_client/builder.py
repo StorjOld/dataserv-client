@@ -24,18 +24,29 @@ class Builder:
         content = content.encode('utf-8')
         return hashlib.sha256(content).hexdigest()
 
-    def build_seeds(self, height):
-        """Deterministically build seeds."""
-        seed = self.sha256(self.address)
-        seeds = []
-        for i in range(height):
-            seed = self.sha256(seed)
-            seeds.append(seed)
-        return seeds if seeds else [seed]
+# FIXME how is this not equivelant to the methods below
+#   def build_seeds(self, height):
+#       """Deterministically build seeds."""
+#       seed = self.sha256(self.address)
+#       seeds = []
+#       for i in range(height):
+#           seed = self.sha256(seed)
+#           seeds.append(seed)
+#       return seeds if seeds else [seed]
+
+#   def build_seed(self, height):
+#       """Deterministically build a seed."""
+#       return self.build_seeds(height).pop()
 
     def build_seed(self, height):
         """Deterministically build a seed."""
-        return self.build_seeds(height).pop()
+        seed = self.sha256(self.address)
+        for i in range(height):
+            seed = self.sha256(seed)
+        return seed
+
+    def build_seeds(self, height):
+        return list(map(self.build_seed, range(height)))
 
     def generate_shard(self, seed, store_path, cleanup=False, rebuild=False):
         """Save a shard, and return its SHA-256 hash."""

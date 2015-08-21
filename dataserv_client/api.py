@@ -166,10 +166,11 @@ class Client(object):
                 self._url_query(url)
 
         self._ensure_address_given()
-        bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
+        bldr = builder.Builder(self.address, common.SHARD_SIZE,
+                               self.max_size, debug=self.debug,
                                on_generate_shard=_on_generate_shard)
-        generated = bldr.build(self.store_path, debug=self.debug,
-                               cleanup=cleanup, rebuild=rebuild)
+        generated = bldr.build(self.store_path, cleanup=cleanup,
+                               rebuild=rebuild)
         height = len(generated)
         self._url_query('/api/height/{0}/{1}'.format(self.address, height))
         return generated

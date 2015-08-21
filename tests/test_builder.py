@@ -9,6 +9,7 @@ import partialhash
 from datetime import datetime
 from dataserv_client.builder import Builder
 
+
 my_shard_size = 1024*1024*128  # 128 MB
 my_max_size = 1024*1024*256  # 256 MB
 height = int(my_max_size / my_shard_size)
@@ -41,7 +42,6 @@ class TestBuilder(unittest.TestCase):
         self.assertEqual(bucket.build_seed(0), hash0)
         self.assertEqual(bucket.build_seed(3), hash3)
 
-    @unittest.skip("broken")  # FIXME
     def test_builder_build(self):
         # generate shards for testing
         bucket = Builder(addresses["beta"], my_shard_size, my_max_size, debug=True)
@@ -50,6 +50,7 @@ class TestBuilder(unittest.TestCase):
         # see if the shards exist
         for shard_num in range(height):
             path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+            print("PATH", path)
             self.assertTrue(os.path.exists(path))
 
         bucket.clean(self.store_path)
@@ -63,7 +64,6 @@ class TestBuilder(unittest.TestCase):
             path = os.path.join(self.store_path, bucket.build_seed(shard_num))
             self.assertFalse(os.path.exists(path))
 
-    @unittest.skip("broken")  # FIXME
     def test_builder_clean(self):
         # generate shards for testing
         bucket = Builder(addresses["delta"], my_shard_size, my_max_size, debug=True)
@@ -82,13 +82,13 @@ class TestBuilder(unittest.TestCase):
             path = os.path.join(self.store_path, bucket.build_seed(shard_num))
             self.assertFalse(os.path.exists(path))
 
-    @unittest.skip("broken")  # FIXME
     def test_builder_audit(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
         bucket.build(self.store_path)
 
         # audit
+        import pudb; pu.db # set break point
         audit_results = bucket.audit(b"storj", self.store_path, height)
         result0 = fixtures["test_builder_audit"]["result0"]
         result1 = fixtures["test_builder_audit"]["result1"]
@@ -143,7 +143,6 @@ class TestBuilder(unittest.TestCase):
         # make sure all files are there
         self.assertTrue(bucket.checkup(self.store_path))
 
-    @unittest.skip("broken")  # FIXME
     def test_builder_rebuilds(self):
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
 
@@ -162,7 +161,6 @@ class TestBuilder(unittest.TestCase):
                                           height)
         self.assertEqual(audit_results, expected)
 
-    @unittest.skip("broken")  # FIXME
     def test_build_rebuild(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
@@ -181,7 +179,6 @@ class TestBuilder(unittest.TestCase):
         # check again, should pass
         self.assertTrue(bucket.checkup(self.store_path))
 
-    @unittest.skip("broken")  # FIXME
     def test_build_rebuild_modify(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
