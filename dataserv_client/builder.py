@@ -70,7 +70,7 @@ class Builder:
         seeds = [seed for num, seed in enum_seeds]
         index = bisect.bisect_left(seeds, HackedCompareObject())
         if self.debug:
-            print("Resuming from height {0}".format(index +1))
+            print("Resuming from height {0}".format(index + 1))
         return enum_seeds[index:]  # rebuild last in case its corrupt
 
     def build(self, store_path, cleanup=False, rebuild=False):
@@ -89,7 +89,9 @@ class Builder:
                                             rebuild=rebuild)
             generated[seed] = file_hash
             if self.debug:
-                print("Saving seed {0} with SHA-256 hash {1}.".format(seed, file_hash))
+                print("Saving seed {0} with SHA-256 hash {1}.".format(
+                    seed, file_hash
+                ))
 
             if self.on_generate_shard:
                 self.on_generate_shard(shard_num + 1, seed, file_hash)
@@ -107,10 +109,11 @@ class Builder:
     def audit(self, seed, store_path, height):
         """Do an audit over the data."""
         audit_results = []
-        for i in range(height):                                                
-            seed_hash = self.build_seed(i)                                     
-            seed_path = os.path.join(store_path, seed_hash)                    
-            digest = partialhash.sample(seed_path, 1024, sample_count=3, seed=seed)
+        seeds = self.build_seeds(height)
+        for shard_num, seed_hash in enumerate(seeds):
+            seed_path = os.path.join(store_path, seed_hash)
+            digest = partialhash.sample(seed_path, 1024, sample_count=3,
+                                        seed=seed)
             audit_results.append(binascii.hexlify(digest))
         return audit_results
 
@@ -139,5 +142,3 @@ class Builder:
             if not os.path.exists(path):
                 return False
         return True
-
-
