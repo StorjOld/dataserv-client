@@ -83,7 +83,8 @@ class Client(object):
             if first or set_height or last:
                 self._api_client.height(height)
 
-        bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
+        bldr = builder.Builder(self._api_client.client_address(),
+                               common.SHARD_SIZE, self.max_size,
                                on_generate_shard=_on_generate_shard)
         generated = bldr.build(self.store_path, debug=self.debug,
                                cleanup=cleanup, rebuild=rebuild)
