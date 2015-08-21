@@ -22,33 +22,33 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
         wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url)
+        client = api.Client(wif, url=url, debug=True)
         self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
             wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url)
+            client = api.Client(wif, url=url, debug=True)
             client.register()
             client.register()
         self.assertRaises(exceptions.AddressAlreadyRegistered, callback)
 
     def test_invalid_wif(self):
         def callback():
-            client = api.Client("xyz", url=url)
+            client = api.Client("xyz", url=url, debug=True)
             client.register()
         self.assertRaises(exceptions.InvalidWif, callback)
 
     def test_invalid_farmer(self):
         def callback():
             wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url + "/xyz")
+            client = api.Client(wif, url=url + "/xyz", debug=True)
             client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_address_required(self):
         def callback():
-            api.Client().register()
+            api.Client(debug=True).register()
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
@@ -56,26 +56,26 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
         wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url)
+        client = api.Client(wif, url=url, debug=True)
         self.assertTrue(client.register())
         self.assertTrue(client.ping())
 
     def test_invalid_wif(self):
         def callback():
-            client = api.Client("xyz", url=url)
+            client = api.Client("xyz", url=url, debug=True)
             client.ping()
         self.assertRaises(exceptions.InvalidWif, callback)
 
     def test_invalid_farmer(self):
         def callback():
             wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url + "/xyz")
+            client = api.Client(wif, url=url + "/xyz", debug=True)
             client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_address_required(self):
         def callback():
-            api.Client().ping()
+            api.Client(debug=True).ping()
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
@@ -83,19 +83,19 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
         wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url)
+        client = api.Client(wif, url=url, debug=True)
         self.assertTrue(client.poll(register_address=True, limit=60))
 
     def test_address_required(self):
         def callback():
-            api.Client().poll()
+            api.Client(debug=True).poll()
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
 class TestClientVersion(AbstractTestSetup, unittest.TestCase):
 
     def test_version(self):
-        client = api.Client(url=url)
+        client = api.Client(url=url, debug=True)
         self.assertEqual(client.version(), api.__version__)
 
 
@@ -103,12 +103,12 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
     def test_invalid_retry_limit(self):
         def callback():
-            api.Client(connection_retry_limit=-1)
+            api.Client(connection_retry_limit=-1, debug=True)
         self.assertRaises(exceptions.InvalidInput, callback)
 
     def test_invalid_retry_delay(self):
         def callback():
-            api.Client(connection_retry_delay=-1)
+            api.Client(connection_retry_delay=-1, debug=True)
         self.assertRaises(exceptions.InvalidInput, callback)
 
 
@@ -119,7 +119,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
             wif = self.btctxstore.create_key()
             client = api.Client(wif=wif, url="http://invalid.url",
                                 connection_retry_limit=0,
-                                connection_retry_delay=0)
+                                connection_retry_delay=0, debug=True)
             client.register()
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
@@ -131,7 +131,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
             wif = self.btctxstore.create_key()
             client = api.Client(wif=wif, url="http://invalid.url",
                                 connection_retry_limit=5,
-                                connection_retry_delay=5)
+                                connection_retry_delay=5, debug=True)
             client.register()
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
@@ -158,7 +158,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_address_required(self):
         def callback():
-            api.Client().build()
+            api.Client(debug=True).build()
         self.assertRaises(exceptions.AddressRequired, callback)
 
 

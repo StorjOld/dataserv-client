@@ -8,6 +8,7 @@ DEFAULT_APP_HOME = os.path.join(os.path.expanduser("~"), ".storj")
 
 
 # build
+SET_HEIGHT_INTERVAL = 50
 SHARD_SIZE = 1024 * 1024 * 128  # 128 MB
 DEFAULT_MAX_SIZE = 1024 * 1024 * 1024  # 1 GB
 DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
