@@ -91,7 +91,7 @@ Argument ordering example
 
 ::
 
-    $ dataserv-client.py --address=1Dnpy4qd5XSsiAgwX8EqYbR2DLV2kB1Kha --max_size=2147483648 build --cleanup
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> --max_size=2147483648 build --cleanup
 
 
 Show program help, optional arguments and commands
@@ -100,7 +100,7 @@ Show program help, optional arguments and commands
 ::
 
     $ dataserv-client.py --help
-    usage: dataserv-client.py [-h] [--address ADDRESS] [--url URL]
+    usage: dataserv-client.py [-h] [--wif WIF] [--url URL]
                               [--max_size MAX_SIZE] [--store_path STORE_PATH]
                               [--debug]
                               <command> ...
@@ -109,7 +109,7 @@ Show program help, optional arguments and commands
 
     optional arguments:
       -h, --help            Show this help message and exit
-      --address ADDRESS     Required bitcoin address.
+      --wif WIF             Required bitcoin wallet.
       --url URL             Url of the farmer (default: http://104.236.104.117).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
       --store_path STORE_PATH
@@ -151,13 +151,13 @@ Register address with default farmer.
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> register
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> register
 
 Register address with custom farmer.
 
 ::
 
-    $ dataserv-client.py --url=<CUSTOM_FARMER_URL> --address=<BITCOIN_ADDRESS> register
+    $ dataserv-client.py --url=<CUSTOM_FARMER_URL> --wif=<BITCOIN_WALLET> register
 
 
 ping command
@@ -167,7 +167,7 @@ Ping address:
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> ping
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> ping
 
 
 poll command
@@ -177,7 +177,7 @@ Poll address:
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> poll
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> poll
 
 
 build command
@@ -187,14 +187,14 @@ Build
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> build
 
 
 Build with custom max data size and store path
 
 ::
 
-    $ dataserv-client.py --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --address=<BITCOIN_ADDRESS> build
+    $ dataserv-client.py --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --wif=<BITCOIN_WALLET> build
 
     # optional max_size syntax
     --max_size=1K  # 1024^1 bytes
@@ -213,18 +213,18 @@ Build and cleanup files afterwards
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --cleanup
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> build --cleanup
 
 
 Build and force rebuild of any previously generated files.
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --rebuild
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> build --rebuild
 
 
 Build custom shard height
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --height=<NUMBER_OF_SHARDS>
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> build --height=<NUMBER_OF_SHARDS>
