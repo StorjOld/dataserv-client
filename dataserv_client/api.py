@@ -153,19 +153,21 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def _on_generate_shard(self, height, seed, file_hash):
-        first = height == 1
-        set_height = (height % common.SET_HEIGHT_INTERVAL) == 0
-        last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
-        if first or set_height or last:
-            url = '/api/height/{0}/{1}'.format(self.address, height)
-            self._url_query(url)
-
-    def build(self, cleanup=False, rebuild=False):
+    def build(self, cleanup=False, rebuild=False,
+              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
         """TODO doc string"""
+
+        def _on_generate_shard(height, seed, file_hash):
+            first = height == 1
+            set_height = (height % set_height_interval) == 0
+            last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
+            if first or set_height or last:
+                url = '/api/height/{0}/{1}'.format(self.address, height)
+                self._url_query(url)
+
         self._ensure_address_given()
         bldr = builder.Builder(self.address, common.SHARD_SIZE, self.max_size,
-                               on_generate_shard=self._on_generate_shard)
+                               on_generate_shard=_on_generate_shard)
         generated = bldr.build(self.store_path, debug=self.debug,
                                cleanup=cleanup, rebuild=rebuild)
         height = len(generated)
