@@ -85,9 +85,10 @@ class Client(object):
 
         bldr = builder.Builder(self._api_client.client_address(),
                                common.SHARD_SIZE, self.max_size,
+                               debug=self.debug,
                                on_generate_shard=_on_generate_shard)
-        generated = bldr.build(self.store_path, debug=self.debug,
-                               cleanup=cleanup, rebuild=rebuild)
+        generated = bldr.build(self.store_path, cleanup=cleanup,
+                               rebuild=rebuild)
         height = len(generated)
         self._api_client.height(height)
         return generated
