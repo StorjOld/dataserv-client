@@ -84,11 +84,11 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         wif = self.btctxstore.create_key()
         client = api.Client(wif, url=url, debug=True)
-        self.assertTrue(client.poll(register_address=True, limit=60))
+        self.assertTrue(client.poll(register_address=True, delay=2, limit=10))
 
     def test_address_required(self):
         def callback():
-            api.Client(debug=True).poll()
+            api.Client(debug=True).poll(delay=2, limit=10)
         self.assertRaises(exceptions.AuthWifRequired, callback)
 
 
@@ -167,8 +167,8 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "poll",
             "--register_address",
-            "--delay=5",
-            "--limit=60"
+            "--delay=2",
+            "--limit=10"
         ]
         self.assertTrue(cli.main(args))
 
