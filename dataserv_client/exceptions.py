@@ -41,10 +41,11 @@ class InvalidAddress(DataservClientException):
         super(InvalidAddress, self).__init__(msg)
 
 
-class AddressRequired(DataservClientException):
+class AuthWifRequired(DataservClientException):
 
     def __init__(self):
-        super(AddressRequired, self).__init__("Required address not given!")
+        msg = "Required authentication wif not given!"
+        super(AuthWifRequired, self).__init__(msg)
 
 
 class ConnectionError(DataservClientException):

@@ -21,14 +21,14 @@ class AbstractTestSetup(object):
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
-        wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url, debug=True)
+        auth_wif = self.btctxstore.create_key()
+        client = api.Client(auth_wif, url=url, debug=True)
         self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url, debug=True)
+            auth_wif = self.btctxstore.create_key()
+            client = api.Client(auth_wif, url=url, debug=True)
             client.register()
             client.register()
         self.assertRaises(exceptions.AddressAlreadyRegistered, callback)
@@ -41,22 +41,22 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_invalid_farmer(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url + "/xyz", debug=True)
+            auth_wif = self.btctxstore.create_key()
+            client = api.Client(auth_wif, url=url + "/xyz", debug=True)
             client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_address_required(self):
         def callback():
             api.Client(debug=True).register()
-        self.assertRaises(exceptions.AddressRequired, callback)
+        self.assertRaises(exceptions.AuthWifRequired, callback)
 
 
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
-        wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url, debug=True)
+        auth_wif = self.btctxstore.create_key()
+        client = api.Client(auth_wif, url=url, debug=True)
         self.assertTrue(client.register())
         self.assertTrue(client.ping())
 
@@ -68,28 +68,28 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_invalid_farmer(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            client = api.Client(wif, url=url + "/xyz", debug=True)
+            auth_wif = self.btctxstore.create_key()
+            client = api.Client(auth_wif, url=url + "/xyz", debug=True)
             client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
 
     def test_address_required(self):
         def callback():
             api.Client(debug=True).ping()
-        self.assertRaises(exceptions.AddressRequired, callback)
+        self.assertRaises(exceptions.AuthWifRequired, callback)
 
 
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
-        wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url, debug=True)
+        auth_wif = self.btctxstore.create_key()
+        client = api.Client(auth_wif, url=url, debug=True)
         self.assertTrue(client.poll(register_address=True, limit=60))
 
     def test_address_required(self):
         def callback():
             api.Client(debug=True).poll()
-        self.assertRaises(exceptions.AddressRequired, callback)
+        self.assertRaises(exceptions.AuthWifRequired, callback)
 
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
@@ -109,8 +109,8 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_no_retry(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            client = api.Client(wif=wif, url="http://invalid.url",
+            auth_wif = self.btctxstore.create_key()
+            client = api.Client(auth_wif=auth_wif, url="http://invalid.url",
                                 connection_retry_limit=0,
                                 connection_retry_delay=0, debug=True)
             client.register()
@@ -121,8 +121,8 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_default_retry(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            client = api.Client(wif=wif, url="http://invalid.url",
+            auth_wif = self.btctxstore.create_key()
+            client = api.Client(auth_wif=auth_wif, url="http://invalid.url",
                                 connection_retry_limit=5,
                                 connection_retry_delay=5, debug=True)
             client.register()
@@ -135,15 +135,15 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_build(self):
-        wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url, debug=True,
+        auth_wif = self.btctxstore.create_key()
+        client = api.Client(auth_wif, url=url, debug=True,
                             max_size=1024*1024*256)  # 256MB
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated))
 
-        wif = self.btctxstore.create_key()
-        client = api.Client(wif, url=url, debug=True,
+        auth_wif = self.btctxstore.create_key()
+        client = api.Client(auth_wif, url=url, debug=True,
                             max_size=1024*1024*512)  # 512MB
         client.register()
         generated = client.build(cleanup=True)
@@ -152,15 +152,18 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
     def test_address_required(self):
         def callback():
             api.Client(debug=True).build()
-        self.assertRaises(exceptions.AddressRequired, callback)
+        self.assertRaises(exceptions.AuthWifRequired, callback)
 
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
+    def test_version(self):
+        self.assertTrue(cli.main(["version"]))
+
     def test_poll(self):
-        wif = self.btctxstore.create_key()
+        auth_wif = self.btctxstore.create_key()
         args = [
-            "--wif=" + wif,
+            "--auth_wif=" + auth_wif,
             "--url=" + url,
             "poll",
             "--register_address",
@@ -170,29 +173,29 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
-        wif = self.btctxstore.create_key()
-        args = ["--wif=" + wif, "--url=" + url, "register"]
+        auth_wif = self.btctxstore.create_key()
+        args = ["--auth_wif=" + auth_wif, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
-        wif = self.btctxstore.create_key()
-        args = ["--wif=" + wif, "--url=" + url, "register"]
+        auth_wif = self.btctxstore.create_key()
+        args = ["--auth_wif=" + auth_wif, "--url=" + url, "register"]
         self.assertTrue(cli.main(args))
 
-        args = ["--wif=" + wif, "--url=" + url, "ping"]
+        args = ["--auth_wif=" + auth_wif, "--url=" + url, "ping"]
         self.assertTrue(cli.main(args))
 
     def test_no_command_error(self):
         def callback():
-            wif = self.btctxstore.create_key()
-            cli.main(["--wif=" + wif])
+            auth_wif = self.btctxstore.create_key()
+            cli.main(["--auth_wif=" + auth_wif])
         self.assertRaises(SystemExit, callback)
 
     def test_input_error(self):
         def callback():
-            wif = self.btctxstore.create_key()
+            auth_wif = self.btctxstore.create_key()
             cli.main([
-                "--wif=" + wif,
+                "--auth_wif=" + auth_wif,
                 "--url=" + url,
                 "poll",
                 "--register_address",
@@ -203,7 +206,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_api_error(self):
         def callback():
-            cli.main(["--wif=xyz", "--url=" + url, "register"])
+            cli.main(["--auth_wif=xyz", "--url=" + url, "register"])
         self.assertRaises(exceptions.InvalidWif, callback)
 
 

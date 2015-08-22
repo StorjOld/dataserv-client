@@ -54,11 +54,13 @@ setup: virtualenv
 shell: setup
 	env/bin/ipython
 
-test_build:
+
+test_single:
 	$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
 	$(PY) -m unittest tests.test_builder.TestBuilder.test_builder_rebuilds
 	$(PY) -m unittest tests.test_builder.TestBuilder.test_builder_audit
+
 
 test: setup
 	screen -S testserver -d -m $(PY) -m dataserv.app

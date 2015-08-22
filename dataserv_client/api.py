@@ -19,17 +19,16 @@ _now = datetime.datetime.now
 
 class Client(object):
 
-    def __init__(self, wif=None, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, auth_wif=None, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
-        retry_limit = deserialize.positive_integer(
-            connection_retry_limit)
-        retry_delay = deserialize.positive_integer(
-            connection_retry_delay)
-        self._api_client = messaging.Messaging(url, wif, retry_limit,
-                                               retry_delay)
+
+        retry_limit = deserialize.positive_integer( connection_retry_limit)
+        retry_delay = deserialize.positive_integer(connection_retry_delay)
+        self._messaging = messaging.Messaging(url, auth_wif, retry_limit,
+                                              retry_delay)
 
         self.debug = debug  # TODO validate
         self.max_size = deserialize.byte_count(max_size)
@@ -45,16 +44,16 @@ class Client(object):
 
     def register(self):
         """Attempt to register the config address."""
-        self._api_client.register()
+        self._messaging.register()
         print("Address {0} now registered on {1}.".format(
-            self._api_client.client_address(), self._api_client.server_url()))
+            self._messaging.auth_address(), self._messaging.server_url()))
         return True
 
     def ping(self):
         """Attempt keep-alive with the server."""
         print("Pinging {0} with address {1}.".format(
-            self._api_client.server_url(), self._api_client.client_address()))
-        self._api_client.ping()
+            self._messaging.server_url(), self._messaging.auth_address()))
+        self._messaging.ping()
         return True
 
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
@@ -81,14 +80,14 @@ class Client(object):
             set_height = (height % set_height_interval) == 0
             last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
             if first or set_height or last:
-                self._api_client.height(height)
+                self._messaging.height(height)
 
-        bldr = builder.Builder(self._api_client.client_address(),
+        bldr = builder.Builder(self._messaging.auth_address(),
                                common.SHARD_SIZE, self.max_size,
                                debug=self.debug,
                                on_generate_shard=_on_generate_shard)
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
         height = len(generated)
-        self._api_client.height(height)
+        self._messaging.height(height)
         return generated

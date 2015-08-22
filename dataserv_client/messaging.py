@@ -15,31 +15,31 @@ from dataserv_client import exceptions
 
 class Messaging(object):
 
-    def __init__(self, server_url, wif, connection_retry_limit,
+    def __init__(self, server_url, auth_wif, connection_retry_limit,
                  connection_retry_delay):
         self._server_url = server_url
         self._server_address = None
         self._connection_retry_limit = connection_retry_limit
         self._connection_retry_delay = connection_retry_delay
 
-        # FIXME wif and client_address do not belong here
         # FIXME pass testnet and dryrun options
-        self._blockchain = btctxstore.BtcTxStore()
-        # set wif and address
-        if wif and not self._blockchain.validate_key(wif):
-            raise exceptions.InvalidWif(wif)
-        self._wif = wif
-        if wif:
-            self._client_address = self._blockchain.get_address(wif)
-        else:
-            self._client_address = None
-        if not self._client_address:
-            raise exceptions.AddressRequired()
+        self._btctxstore = btctxstore.BtcTxStore()
+        self._wif = auth_wif
+
+    def _get_wif(self):
+        if not self._wif:
+            raise exceptions.AuthWifRequired()
+        if not self._btctxstore.validate_key(self._wif):
+            raise exceptions.InvalidWif(self._wif)
+        return self._wif
+
+    def auth_address(self):
+        return self._btctxstore.get_address(self._get_wif())
 
     def _url_query(self, api_path, retries=0, authenticate=True):
         try:
             req = urllib.request.Request(self._server_url + api_path)
-            if self._wif and authenticate:
+            if self._get_wif() and authenticate:
                 headers = self._create_authentication_headers()
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
@@ -48,12 +48,12 @@ class Messaging(object):
                 return response.read()
         except urllib.error.HTTPError as e:
             if e.code == 409:
-                raise exceptions.AddressAlreadyRegistered(self._client_address,
+                raise exceptions.AddressAlreadyRegistered(self.auth_address(),
                                                           self._server_url)
             elif e.code == 404:
                 raise exceptions.FarmerNotFound(self._server_url)
             elif e.code == 400:
-                raise exceptions.InvalidAddress(self._client_address)
+                raise exceptions.InvalidAddress(self.auth_address())
             elif e.code == 500:  # pragma: no cover
                 raise exceptions.FarmerError(self._server_url)
             else:
@@ -75,11 +75,9 @@ class Messaging(object):
         header_date = email.utils.formatdate(
             timeval=time.mktime(datetime.datetime.now().timetuple()),
             localtime=True, usegmt=True)
-        message = self._get_node_address() + " " + header_date
-        header_authorization = self._blockchain.sign_unicode(
-            self._wif, message)
-        return {"Date": header_date,
-                "Authorization": header_authorization}
+        msg = self._get_node_address() + " " + header_date
+        header_authorization = self._btctxstore.sign_unicode(self._get_wif(), msg)
+        return {"Date": header_date, "Authorization": header_authorization}
 
     def _handle_connection_error(self, api_path, retries, authenticate):
         if retries >= self._connection_retry_limit:
@@ -90,22 +88,19 @@ class Messaging(object):
     def server_url(self):
         return self._server_url
 
-    def client_address(self):
-        return self._client_address
-
     def address(self):
         data = self._url_query("/api/address", authenticate=False)
         return json.loads(data.decode("utf-8"))["address"]
 
     def register(self):
         """Attempt to register this client address."""
-        return self._url_query("/api/register/%s" % self._client_address)
+        return self._url_query("/api/register/%s" % self.auth_address())
 
     def ping(self):
         """Send a heartbeat message for this client address."""
-        return self._url_query("/api/ping/%s" % self._client_address)
+        return self._url_query("/api/ping/%s" % self.auth_address())
 
     def height(self, height):
         """Set the height claim for this client address."""
-        return self._url_query('/api/height/%s/%s' % (self._client_address,
+        return self._url_query('/api/height/%s/%s' % (self.auth_address(),
                                                       height))
