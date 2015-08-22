@@ -13,7 +13,7 @@ import btctxstore
 from dataserv_client import exceptions
 
 
-class ApiClient(object):
+class Messaging(object):
 
     def __init__(self, server_url, wif, connection_retry_limit,
                  connection_retry_delay):
@@ -22,6 +22,7 @@ class ApiClient(object):
         self._connection_retry_limit = connection_retry_limit
         self._connection_retry_delay = connection_retry_delay
 
+        # FIXME wif and client_address do not belong here
         # FIXME pass testnet and dryrun options
         self._blockchain = btctxstore.BtcTxStore()
         # set wif and address

@@ -8,7 +8,7 @@ import os
 import time
 
 from dataserv_client import __version__
-from dataserv_client import api_client
+from dataserv_client import messaging
 from dataserv_client import builder
 from dataserv_client import common
 from dataserv_client import deserialize
@@ -28,8 +28,8 @@ class Client(object):
             connection_retry_limit)
         retry_delay = deserialize.positive_integer(
             connection_retry_delay)
-        self._api_client = api_client.ApiClient(url, wif, retry_limit,
-                                                retry_delay)
+        self._api_client = messaging.Messaging(url, wif, retry_limit,
+                                               retry_delay)
 
         self.debug = debug  # TODO validate
         self.max_size = deserialize.byte_count(max_size)
