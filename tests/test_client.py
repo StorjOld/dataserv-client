@@ -167,8 +167,8 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "poll",
             "--register_address",
-            "--delay=5",
-            "--limit=60"
+            "--delay=2",
+            "--limit=10"
         ]
         self.assertTrue(cli.main(args))
 
