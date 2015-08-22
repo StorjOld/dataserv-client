@@ -15,7 +15,7 @@ from dataserv_client import exceptions
 
 class Messaging(object):
 
-    def __init__(self, server_url, auth_wif, connection_retry_limit,
+    def __init__(self, server_url, wif, connection_retry_limit,
                  connection_retry_delay):
         self._server_url = server_url
         self._server_address = None
@@ -24,7 +24,7 @@ class Messaging(object):
 
         # FIXME pass testnet and dryrun options
         self._btctxstore = btctxstore.BtcTxStore()
-        self._wif = auth_wif
+        self._wif = wif
 
     def _get_wif(self):
         if not self._wif:
@@ -92,9 +92,19 @@ class Messaging(object):
         data = self._url_query("/api/address", authenticate=False)
         return json.loads(data.decode("utf-8"))["address"]
 
-    def register(self):
+    def register(self, payout_addr):
         """Attempt to register this client address."""
-        return self._url_query("/api/register/%s" % self.auth_address())
+        if payout_addr and not self._btctxstore.validate_address(payout_addr):
+            raise exceptions.InvalidAddress(payout_addr)
+        if payout_addr:
+            return self._url_query("/api/register/{0}/{1}".format(
+                self.auth_address(), payout_addr
+            ))
+        data = self._url_query("/api/register/{0}".format(self.auth_address()))
+        data = json.loads(data.decode("utf-8"))
+        payout_addr = payout_addr if payout_addr else self.auth_address()
+        return (data["btc_addr"] == self.auth_address() and 
+                data["payout_addr"] == payout_addr)
 
     def ping(self):
         """Send a heartbeat message for this client address."""

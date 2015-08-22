@@ -2,6 +2,7 @@
 
 from future.standard_library import install_aliases
 install_aliases()
+import json
 import datetime
 from datetime import timedelta
 import os
@@ -19,7 +20,7 @@ _now = datetime.datetime.now
 
 class Client(object):
 
-    def __init__(self, auth_wif=None, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, wif=None, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
@@ -27,7 +28,7 @@ class Client(object):
 
         retry_limit = deserialize.positive_integer( connection_retry_limit)
         retry_delay = deserialize.positive_integer(connection_retry_delay)
-        self._messaging = messaging.Messaging(url, auth_wif, retry_limit,
+        self._messaging = messaging.Messaging(url, wif, retry_limit,
                                               retry_delay)
 
         self.debug = debug  # TODO validate
@@ -42,11 +43,16 @@ class Client(object):
         print(__version__)
         return __version__
 
-    def register(self):
+    def register(self, payout_address=None):
         """Attempt to register the config address."""
-        self._messaging.register()
-        print("Address {0} now registered on {1}.".format(
-            self._messaging.auth_address(), self._messaging.server_url()))
+        registered = self._messaging.register(payout_address)
+        auth_addr = self._messaging.auth_address()
+        url = self._messaging.server_url()
+        if registered:
+            print("Address {0} now registered on {1}.".format(auth_addr, url))
+        else:
+            print("Failed to register address {0} on {1}.".format(auth_addr,
+                                                                  url))
         return True
 
     def ping(self):

@@ -153,6 +153,14 @@ Register address with default farmer.
 
     $ dataserv-client.py --wif=<BITCOIN_WALLET> register
 
+
+Register address with default farmer and use cold storage wallet as payout_address.
+
+::
+
+    $ dataserv-client.py --wif=<BITCOIN_WALLET> register --payout_address=<BITCOIN_ADDRESS>
+
+
 Register address with custom farmer.
 
 ::

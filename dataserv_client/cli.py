@@ -5,9 +5,9 @@ from dataserv_client import api
 
 
 def _add_programm_args(parser):
-    # auth_wif
+    # wif
     parser.add_argument(
-        "--auth_wif", default=None, help="Required bitcoin wallet."
+        "--wif", default=None, help="Required bitcoin wallet."
     )
 
     # url
@@ -45,6 +45,10 @@ def _add_register(command_parser):
     register_parser = command_parser.add_parser(  # NOQA
         "register", help="Register a bitcoin address with farmer."
     )
+
+    # payout_address
+    msg = "Address of wif used if not given."
+    register_parser.add_argument("--payout_address", default=None, help=msg)
 
 
 def _add_ping(command_parser):
@@ -126,7 +130,7 @@ def _parse_args(args):
 def main(args):
     command_name, arguments = _parse_args(args)
     client = api.Client(
-        arguments.pop("auth_wif"),
+        arguments.pop("wif"),
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),
