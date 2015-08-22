@@ -92,13 +92,6 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.AddressRequired, callback)
 
 
-class TestClientVersion(AbstractTestSetup, unittest.TestCase):
-
-    def test_version(self):
-        client = api.Client(url=url, debug=True)
-        self.assertEqual(client.version(), api.__version__)
-
-
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
     def test_invalid_retry_limit(self):
