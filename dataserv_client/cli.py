@@ -5,11 +5,6 @@ from dataserv_client import api
 
 
 def _add_programm_args(parser):
-    # wif
-    parser.add_argument(
-        "--wif", default=None, help="Required bitcoin wallet."
-    )
-
     # url
     parser.add_argument(
         "--url", default=common.DEFAULT_URL,
@@ -47,7 +42,7 @@ def _add_register(command_parser):
     )
 
     # payout_address
-    msg = "Address of wif used if not given."
+    msg = "Address from wallet used if not given."
     register_parser.add_argument("--payout_address", default=None, help=msg)
 
 
@@ -130,7 +125,6 @@ def _parse_args(args):
 def main(args):
     command_name, arguments = _parse_args(args)
     client = api.Client(
-        arguments.pop("wif"),
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),

@@ -20,12 +20,13 @@ _now = datetime.datetime.now
 
 class Client(object):
 
-    def __init__(self, wif=None, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, url=common.DEFAULT_URL, debug=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
+        wif = None  # FIXME get from wallet
         retry_limit = deserialize.positive_integer( connection_retry_limit)
         retry_delay = deserialize.positive_integer(connection_retry_delay)
         self._messaging = messaging.Messaging(url, wif, retry_limit,
