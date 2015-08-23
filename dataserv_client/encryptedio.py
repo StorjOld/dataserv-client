@@ -12,6 +12,7 @@ openssl aes-256-cbc -salt -in filename -out filename.enc
 openssl aes-256-cbc -d -in filename.enc -out filename
 """
 
+
 # FIXME add unittests to ensure compatibility (already verified manually)
 
 
@@ -58,5 +59,3 @@ def decrypt(in_file, out_file, password, key_length=32):
             chunk = chunk[:-padding_length]
             finished = True
         out_file.write(chunk)
-
-
