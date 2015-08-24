@@ -89,7 +89,6 @@ class Client(object):
 
     def _init_messanger(self):
         if self.messanger is None:
-            self._load_config()
             wif = self._get_root_wif(self.config["master_secret"])
             self.messanger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
@@ -101,7 +100,6 @@ class Client(object):
 
     def register(self):
         """Attempt to register the config address."""
-        self._load_config()
         self._init_messanger()
         registered = self.messanger.register(self.config["payout_address"])
         auth_addr = self.messanger.auth_address()
@@ -112,6 +110,11 @@ class Client(object):
             print("Failed to register address {0} on {1}.".format(auth_addr,
                                                                   self.url))
         return True
+
+    def show_config(self):
+        """Display saved config."""
+        print(json.dumps(self.config, indent=2))
+        return self.config
 
     def ping(self):
         """Attempt keep-alive with the server."""

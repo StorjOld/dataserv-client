@@ -63,6 +63,12 @@ def _add_ping(command_parser):
     )
 
 
+def _add_show_config(command_parser):
+    show_config_parser = command_parser.add_parser(  # NOQA
+        "show_config", help="Display saved config."
+    )
+
+
 def _add_poll(command_parser):
     poll_parser = command_parser.add_parser(
         "poll", help="Continuously ping farmer with given address."
@@ -124,6 +130,7 @@ def _parse_args(args):
     _add_ping(command_parser)
     _add_poll(command_parser)
     _add_build(command_parser)
+    _add_show_config(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))

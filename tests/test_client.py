@@ -185,8 +185,20 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(ValueError, callback)
 
 
-# FIXME test set payout address
-# FIXME test set master_secret
+class TestConfig(AbstractTestSetup, unittest.TestCase):
+
+    def test_(self):
+        payout_wif = self.btctxstore.create_key()
+        master_secret = "testmastersecret"
+        payout_address = self.btctxstore.get_address(payout_wif)
+        client = api.Client(debug=True, 
+                            set_master_secret=master_secret,
+                            set_payout_address=payout_address,
+                            config_path=tempfile.mktemp())
+        config = client.show_config()
+        self.assertEqual(config["master_secret"], master_secret)
+        self.assertEqual(config["payout_address"], payout_address)
+
 
 if __name__ == '__main__':
     unittest.main()
