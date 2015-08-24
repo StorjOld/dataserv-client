@@ -187,7 +187,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
 class TestConfig(AbstractTestSetup, unittest.TestCase):
 
-    def test_(self):
+    def test_show(self):
         payout_wif = self.btctxstore.create_key()
         master_secret = "testmastersecret"
         payout_address = self.btctxstore.get_address(payout_wif)
@@ -199,6 +199,12 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
         self.assertEqual(config["master_secret"], master_secret)
         self.assertEqual(config["payout_address"], payout_address)
 
+    def test_validation(self):
+        def callback():
+            client = api.Client(debug=True, 
+                                set_payout_address="invalid",
+                                config_path=tempfile.mktemp())
+        self.assertRaises(exceptions.InvalidAddress, callback)
 
 if __name__ == '__main__':
     unittest.main()

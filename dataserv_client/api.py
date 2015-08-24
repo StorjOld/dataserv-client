@@ -32,9 +32,8 @@ class Client(object):
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
-        # FIXME validate payout_address
         # FIXME validate master_secret
-        self.btctxstore = BtcTxStore()
+
         self.url = url
         self.config = None  # lazy
         self.messanger = None  # lazy
@@ -48,6 +47,11 @@ class Client(object):
         self._ensure_path_exists(os.path.dirname(self.config_path))
         self.store_path = os.path.realpath(store_path)
         self._ensure_path_exists(self.store_path)
+
+        # validate payout address
+        self.btctxstore = BtcTxStore()
+        if set_payout_address and (not self.btctxstore.validate_address(set_payout_address)):
+            raise exceptions.InvalidAddress(set_payout_address)
 
         self._initialize_config(set_master_secret, set_payout_address)
 

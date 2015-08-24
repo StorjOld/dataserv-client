@@ -78,6 +78,25 @@ Update client
 Command line interface usage
 ============================
 
+
+Quickstart example
+------------------
+
+::
+
+    # optional, payout address and master secret are generated automatically
+    $ dataserv-client --set_payout_address=<BITCOIN_ADDRESS> show_config
+
+    # register your node
+    $ dataserv-client register
+
+    # create shards
+    $ dataserv-client build
+
+    # let the network know you are online
+    $ dataserv-client poll
+
+
 Argument ordering
 -----------------
 
@@ -91,7 +110,7 @@ Argument ordering example
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> --max_size=2147483648 build --cleanup
+    $ dataserv-client --max_size=10G build --cleanup
 
 
 Show program help, optional arguments and commands
@@ -100,21 +119,28 @@ Show program help, optional arguments and commands
 ::
 
     $ dataserv-client --help
-    usage: dataserv-client [-h] [--wif WIF] [--url URL]
-                           [--max_size MAX_SIZE] [--store_path STORE_PATH]
-                           [--debug]
+    usage: dataserv-client [-h] [--url URL] [--max_size MAX_SIZE]
+                           [--store_path STORE_PATH] [--config_path CONFIG_PATH]
+                           [--debug] [--set_master_secret SET_MASTER_SECRET]
+                           [--set_payout_address SET_PAYOUT_ADDRESS]
                            <command> ...
 
-    Dataserv client command-line interface.
+    Dataserve client command-line interface.
 
     optional arguments:
-      -h, --help            Show this help message and exit
-      --wif WIF             Required bitcoin wallet.
-      --url URL             Url of the farmer (default: http://104.236.104.117).
+      -h, --help            show this help message and exit
+      --url URL             Url of the farmer (default:
+                            http://status.driveshare.org).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
       --store_path STORE_PATH
-                            Storage path. (default: /home/storj/.storj/store).
+                            Storage path. (default: /home/fabe/.storj/store).
+      --config_path CONFIG_PATH
+                            Config path. (default: /home/fabe/.storj/config.json).
       --debug               Show debug information.
+      --set_master_secret SET_MASTER_SECRET
+                            Base64 encoded master secret to generate node wallet.
+      --set_payout_address SET_PAYOUT_ADDRESS
+                            Address from wallet used if not given.
 
     commands:
       <command>
@@ -123,6 +149,7 @@ Show program help, optional arguments and commands
         ping                Ping farmer with given address.
         poll                Continuously ping farmer with given address.
         build               Fill the farmer with data up to their max.
+        show_config         Display saved config.
 
 
 
@@ -151,21 +178,21 @@ Register address with default farmer.
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> register
+    $ dataserv-client register
 
 
 Register address with default farmer and use cold storage wallet as payout_address.
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> register --payout_address=<BITCOIN_ADDRESS>
+    $ dataserv-client register --payout_address=<BITCOIN_ADDRESS>
 
 
 Register address with custom farmer.
 
 ::
 
-    $ dataserv-client --url=<CUSTOM_FARMER_URL> --wif=<BITCOIN_WALLET> register
+    $ dataserv-client --url=<CUSTOM_FARMER_URL> register
 
 
 ping command
@@ -175,7 +202,7 @@ Ping address:
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> ping
+    $ dataserv-client ping
 
 
 poll command
@@ -185,7 +212,7 @@ Poll address:
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> poll
+    $ dataserv-client poll
 
 
 build command
@@ -195,14 +222,14 @@ Build
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> build
+    $ dataserv-client build
 
 
 Build with custom max data size and store path
 
 ::
 
-    $ dataserv-client --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --wif=<BITCOIN_WALLET> build
+    $ dataserv-client --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> build
 
     # optional max_size syntax
     --max_size=1K  # 1024^1 bytes
@@ -221,18 +248,18 @@ Build and cleanup files afterwards
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> build --cleanup
+    $ dataserv-client build --cleanup
 
 
 Build and force rebuild of any previously generated files.
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> build --rebuild
+    $ dataserv-client build --rebuild
 
 
 Build custom shard height
 
 ::
 
-    $ dataserv-client --wif=<BITCOIN_WALLET> build --height=<NUMBER_OF_SHARDS>
+    $ dataserv-client build --height=<NUMBER_OF_SHARDS>
