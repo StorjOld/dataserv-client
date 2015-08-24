@@ -16,11 +16,11 @@ class TestConfig(unittest.TestCase):
 
         # encrypt
         with open(input_path, 'rb') as in_file, open(encrypted_path, 'wb') as out_file:
-            encryptedio.encrypt(in_file, out_file, "test")
+            encryptedio.encrypt(in_file, out_file, b"test")
 
         # decrypt
         with open(encrypted_path, 'rb') as in_file, open(output_path, 'wb') as out_file:
-            encryptedio.decrypt(in_file, out_file, "test")
+            encryptedio.decrypt(in_file, out_file, b"test")
 
         # check hashes
         with open(input_path, 'rb') as input_file:
