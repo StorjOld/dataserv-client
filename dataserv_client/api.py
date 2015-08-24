@@ -67,6 +67,7 @@ class Client(object):
 
         if set_master_secret or set_payout_address:
             self.config = {
+                "version": __version__,
                 "master_secret": set_master_secret,
                 "payout_address": set_payout_address,
             }
