@@ -59,12 +59,13 @@ test_single:
 	$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
 	$(PY) -m unittest tests.test_encryptedio
-	$(PY) -m unittest tests.test_config
 
 
 test: setup
 	screen -S testserver -d -m $(PY) -m dataserv.app
 	$(PY) setup.py test
+	#$(PY) setup.py install
+	#$(PY) -m unittest tests.test_client
 	screen -S testserver -X kill
 
 

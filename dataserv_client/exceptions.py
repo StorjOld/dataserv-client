@@ -7,6 +7,20 @@ class DataservClientException(Exception):
     pass
 
 
+class ExistingConfig(DataservClientException):
+
+    def __init__(self, path):
+        msg = "Config already exists at '{0}'!".format(path)
+        super(ExistingConfig, self).__init__(msg)
+
+
+class ConfigNotFound(DataservClientException):
+
+    def __init__(self, path):
+        msg = "Config not found at '{0}'!".format(path)
+        super(ConfigNotFound, self).__init__(msg)
+
+
 class InvalidArgument(DataservClientException):
 
     def __init__(self):

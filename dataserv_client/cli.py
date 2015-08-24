@@ -25,9 +25,24 @@ def _add_programm_args(parser):
         help="Storage path. (default: {0}).".format(default)
     )
 
+    # config_path
+    default = common.DEFAULT_CONFIG_PATH
+    parser.add_argument(
+        "--config_path", default=default,
+        help="Config path. (default: {0}).".format(default)
+    )
+
     # debug
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
+
+    # master secret
+    msg = "Base64 encoded master secret to generate node wallet."
+    parser.add_argument("--set_master_secret", default=None, help=msg)
+
+    # payout_address
+    msg = "Address from wallet used if not given."
+    parser.add_argument("--set_payout_address", default=None, help=msg)
 
 
 def _add_version(command_parser):
@@ -40,10 +55,6 @@ def _add_register(command_parser):
     register_parser = command_parser.add_parser(  # NOQA
         "register", help="Register a bitcoin address with farmer."
     )
-
-    # payout_address
-    msg = "Address from wallet used if not given."
-    register_parser.add_argument("--payout_address", default=None, help=msg)
 
 
 def _add_ping(command_parser):
@@ -129,5 +140,8 @@ def main(args):
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
+        config_path=arguments.pop("config_path"),
+        set_master_secret=arguments.pop("set_master_secret"),
+        set_payout_address=arguments.pop("set_payout_address"),
     )
     return getattr(client, command_name)(**arguments)
