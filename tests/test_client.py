@@ -1,119 +1,95 @@
 import json
 import time
+import tempfile
 import unittest
 import datetime
+from btctxstore import BtcTxStore
 from dataserv_client import cli
 from dataserv_client import api
 from dataserv_client import exceptions
 
 
-fixtures = json.load(open("tests/fixtures.json"))
-addresses = fixtures["addresses"]
 url = "http://127.0.0.1:5000"
 
 
 class AbstractTestSetup(object):
 
     def setUp(self):
+        self.btctxstore = BtcTxStore()
         time.sleep(2)  # avoid collision
 
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
-        client = api.Client(addresses["alpha"], url=url)
+        client = api.Client(url=url, debug=True,
+                            config_path=tempfile.mktemp())
         self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
-            client = api.Client(addresses["beta"], url=url)
+            client = api.Client(url=url, debug=True,
+                                config_path=tempfile.mktemp())
             client.register()
             client.register()
         self.assertRaises(exceptions.AddressAlreadyRegistered, callback)
 
-    def test_invalid_address(self):
-        def callback():
-            client = api.Client("xyz", url=url)
-            client.register()
-        self.assertRaises(exceptions.InvalidAddress, callback)
-
     def test_invalid_farmer(self):
         def callback():
-            client = api.Client(addresses["nu"], url=url + "/xyz")
+            client = api.Client(url=url + "/xyz", debug=True,
+                                config_path=tempfile.mktemp())
             client.register()
         self.assertRaises(exceptions.FarmerNotFound, callback)
-
-    def test_address_required(self):
-        def callback():
-            api.Client().register()
-        self.assertRaises(exceptions.AddressRequired, callback)
 
 
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
-        client = api.Client(addresses["gamma"], url=url)
+        client = api.Client(url=url, debug=True,
+                            config_path=tempfile.mktemp())
         self.assertTrue(client.register())
         self.assertTrue(client.ping())
 
-    def test_invalid_address(self):
-        def callback():
-            client = api.Client("xyz", url=url)
-            client.ping()
-        self.assertRaises(exceptions.InvalidAddress, callback)
-
     def test_invalid_farmer(self):
         def callback():
-            client = api.Client(addresses["delta"], url=url + "/xyz")
+            client = api.Client(url=url + "/xyz", debug=True,
+                                config_path=tempfile.mktemp())
             client.ping()
         self.assertRaises(exceptions.FarmerNotFound, callback)
-
-    def test_address_required(self):
-        def callback():
-            api.Client().ping()
-        self.assertRaises(exceptions.AddressRequired, callback)
 
 
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
 
     def test_poll(self):
-        client = api.Client(addresses["zeta"], url=url)
+        client = api.Client(url=url, debug=True,
+                            config_path=tempfile.mktemp())
         self.assertTrue(client.poll(register_address=True, limit=60))
-
-    def test_address_required(self):
-        def callback():
-            api.Client().poll()
-        self.assertRaises(exceptions.AddressRequired, callback)
-
-
-class TestClientVersion(AbstractTestSetup, unittest.TestCase):
-
-    def test_version(self):
-        client = api.Client(url=url)
-        self.assertEqual(client.version(), api.__version__)
 
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
     def test_invalid_retry_limit(self):
         def callback():
-            api.Client(connection_retry_limit=-1)
-        self.assertRaises(exceptions.InvalidArgument, callback)
+            api.Client(connection_retry_limit=-1, debug=True,
+                       config_path=tempfile.mktemp())
+        self.assertRaises(exceptions.InvalidInput, callback)
 
     def test_invalid_retry_delay(self):
         def callback():
-            api.Client(connection_retry_delay=-1)
-        self.assertRaises(exceptions.InvalidArgument, callback)
+            api.Client(connection_retry_delay=-1, debug=True,
+                                config_path=tempfile.mktemp())
+        self.assertRaises(exceptions.InvalidInput, callback)
 
 
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_no_retry(self):
         def callback():
-            client = api.Client(address=addresses["kappa"],
-                                url="http://invalid.url",
+            client = api.Client(url="http://invalid.url",
                                 connection_retry_limit=0,
-                                connection_retry_delay=0)
+                                connection_retry_delay=0, 
+                                config_path=tempfile.mktemp(),
+                                debug=True)
             client.register()
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
@@ -122,10 +98,10 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 
     def test_default_retry(self):
         def callback():
-            client = api.Client(address=addresses["kappa"],
-                                url="http://invalid.url",
+            client = api.Client(url="http://invalid.url",
+                                config_path=tempfile.mktemp(),
                                 connection_retry_limit=5,
-                                connection_retry_delay=5)
+                                connection_retry_delay=5, debug=True)
             client.register()
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
@@ -136,30 +112,30 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
     def test_build(self):
-        client = api.Client(addresses["pi"], url=url, debug=True,
+        client = api.Client(url=url, debug=True,
+                            config_path=tempfile.mktemp(),
                             max_size=1024*1024*256)  # 256MB
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated))
 
-        client = api.Client(addresses["omicron"], url=url, debug=True,
+        client = api.Client(url=url, debug=True,
+                            config_path=tempfile.mktemp(),
                             max_size=1024*1024*512)  # 512MB
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
 
-    def test_address_required(self):
-        def callback():
-            api.Client().build()
-        self.assertRaises(exceptions.AddressRequired, callback)
-
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
+    def test_version(self):
+        self.assertTrue(cli.main(["version"]))
+
     def test_poll(self):
         args = [
-            "--address=" + addresses["eta"],
             "--url=" + url,
+            "--config_path=" + tempfile.mktemp(),
             "poll",
             "--register_address",
             "--delay=5",
@@ -168,26 +144,39 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
-        args = ["--address=" + addresses["theta"], "--url=" + url, "register"]
+        args = [
+            "--url=" + url,
+            "--config_path=" + tempfile.mktemp(),
+            "register"
+        ]
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
-        args = ["--address=" + addresses["iota"], "--url=" + url, "register"]
+        config_path = tempfile.mktemp()
+        args = [
+            "--url=" + url,
+            "--config_path=" + config_path,
+            "register"
+        ]
         self.assertTrue(cli.main(args))
 
-        args = ["--address=" + addresses["iota"], "--url=" + url, "ping"]
+        args = [
+            "--url=" + url,
+            "--config_path=" + config_path,
+            "ping"
+        ]
         self.assertTrue(cli.main(args))
 
     def test_no_command_error(self):
         def callback():
-            cli.main(["--address=" + addresses["lambda"]])
+            cli.main([])
         self.assertRaises(SystemExit, callback)
 
     def test_input_error(self):
         def callback():
             cli.main([
-                "--address=" + addresses["mu"],
                 "--url=" + url,
+                "--config_path=" + tempfile.mktemp(),
                 "poll",
                 "--register_address",
                 "--delay=5",
@@ -195,11 +184,27 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             ])
         self.assertRaises(ValueError, callback)
 
-    def test_api_error(self):
-        def callback():
-            cli.main(["--address=xyz", "--url=" + url, "register"])
-        self.assertRaises(exceptions.InvalidAddress, callback)
 
+class TestConfig(AbstractTestSetup, unittest.TestCase):
+
+    def test_show(self):
+        payout_wif = self.btctxstore.create_key()
+        master_secret = "testmastersecret"
+        payout_address = self.btctxstore.get_address(payout_wif)
+        client = api.Client(debug=True, 
+                            set_master_secret=master_secret,
+                            set_payout_address=payout_address,
+                            config_path=tempfile.mktemp())
+        config = client.show_config()
+        self.assertEqual(config["master_secret"], master_secret)
+        self.assertEqual(config["payout_address"], payout_address)
+
+    def test_validation(self):
+        def callback():
+            client = api.Client(debug=True, 
+                                set_payout_address="invalid",
+                                config_path=tempfile.mktemp())
+        self.assertRaises(exceptions.InvalidAddress, callback)
 
 if __name__ == '__main__':
     unittest.main()

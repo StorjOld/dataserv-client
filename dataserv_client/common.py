@@ -1,13 +1,15 @@
 import os
 
 
-DEFAULT_URL = "http://104.236.104.117"
+DEFAULT_URL = "http://status.driveshare.org"
 DEFAULT_DELAY = 15
 
 DEFAULT_APP_HOME = os.path.join(os.path.expanduser("~"), ".storj")
+DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_APP_HOME, "config.json")
 
 
 # build
+DEFAULT_SET_HEIGHT_INTERVAL = 25
 SHARD_SIZE = 1024 * 1024 * 128  # 128 MB
 DEFAULT_MAX_SIZE = 1024 * 1024 * 1024  # 1 GB
 DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
@@ -16,3 +18,4 @@ DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
 # connection retry
 DEFAULT_CONNECTION_RETRY_LIMIT = 12  # 12 * 5 mins = 1 hour
 DEFAULT_CONNECTION_RETRY_DELAY = 300   # 5 mins
+

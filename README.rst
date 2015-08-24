@@ -44,7 +44,7 @@ Install client
 ::
 
     $ sudo apt-get install python3-pip
-    $ sudo pip3 install dataserv-client==1.1.0
+    $ sudo pip3 install dataserv-client
     $ dataserv-client version
 
 Update client
@@ -64,7 +64,7 @@ Install client
 
     $ brew install python3
     $ rehash 
-    $ pip3 install dataserv-client==1.1.0
+    $ pip3 install dataserv-client
     $ dataserv-client version
 
 Update client
@@ -78,12 +78,31 @@ Update client
 Command line interface usage
 ============================
 
+
+Quickstart example
+------------------
+
+::
+
+    # optional, payout address and master secret are generated automatically
+    $ dataserv-client --set_payout_address=<BITCOIN_ADDRESS> show_config
+
+    # register your node
+    $ dataserv-client register
+
+    # create shards
+    $ dataserv-client build
+
+    # let the network know you are online
+    $ dataserv-client poll
+
+
 Argument ordering
 -----------------
 
 ::
 
-    $ dataserv-client.py <program arguments> COMMAND <command arguments>
+    $ dataserv-client <program arguments> COMMAND <command arguments>
 
 
 Argument ordering example
@@ -91,7 +110,7 @@ Argument ordering example
 
 ::
 
-    $ dataserv-client.py --address=1Dnpy4qd5XSsiAgwX8EqYbR2DLV2kB1Kha --max_size=2147483648 build --cleanup
+    $ dataserv-client --max_size=10G build --cleanup
 
 
 Show program help, optional arguments and commands
@@ -99,22 +118,29 @@ Show program help, optional arguments and commands
 
 ::
 
-    $ dataserv-client.py --help
-    usage: dataserv-client.py [-h] [--address ADDRESS] [--url URL]
-                              [--max_size MAX_SIZE] [--store_path STORE_PATH]
-                              [--debug]
-                              <command> ...
+    $ dataserv-client --help
+    usage: dataserv-client [-h] [--url URL] [--max_size MAX_SIZE]
+                           [--store_path STORE_PATH] [--config_path CONFIG_PATH]
+                           [--debug] [--set_master_secret SET_MASTER_SECRET]
+                           [--set_payout_address SET_PAYOUT_ADDRESS]
+                           <command> ...
 
-    Dataserv client command-line interface.
+    Dataserve client command-line interface.
 
     optional arguments:
-      -h, --help            Show this help message and exit
-      --address ADDRESS     Required bitcoin address.
-      --url URL             Url of the farmer (default: http://104.236.104.117).
+      -h, --help            show this help message and exit
+      --url URL             Url of the farmer (default:
+                            http://status.driveshare.org).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
       --store_path STORE_PATH
-                            Storage path. (default: /home/storj/.storj/store).
+                            Storage path. (default: /home/fabe/.storj/store).
+      --config_path CONFIG_PATH
+                            Config path. (default: /home/fabe/.storj/config.json).
       --debug               Show debug information.
+      --set_master_secret SET_MASTER_SECRET
+                            Base64 encoded master secret to generate node wallet.
+      --set_payout_address SET_PAYOUT_ADDRESS
+                            Address from wallet used if not given.
 
     commands:
       <command>
@@ -123,6 +149,7 @@ Show program help, optional arguments and commands
         ping                Ping farmer with given address.
         poll                Continuously ping farmer with given address.
         build               Fill the farmer with data up to their max.
+        show_config         Display saved config.
 
 
 
@@ -131,7 +158,7 @@ Show command help and optional arguments
 
 ::
 
-    $ dataserv-client.py <COMMAND> --help
+    $ dataserv-client <COMMAND> --help
 
 
 version command
@@ -141,7 +168,7 @@ Show version number
 
 ::
 
-    $ dataserv-client.py version
+    $ dataserv-client version
 
 
 register command
@@ -151,13 +178,21 @@ Register address with default farmer.
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> register
+    $ dataserv-client register
+
+
+Register address with default farmer and use cold storage wallet as payout_address.
+
+::
+
+    $ dataserv-client register --payout_address=<BITCOIN_ADDRESS>
+
 
 Register address with custom farmer.
 
 ::
 
-    $ dataserv-client.py --url=<CUSTOM_FARMER_URL> --address=<BITCOIN_ADDRESS> register
+    $ dataserv-client --url=<CUSTOM_FARMER_URL> register
 
 
 ping command
@@ -167,7 +202,7 @@ Ping address:
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> ping
+    $ dataserv-client ping
 
 
 poll command
@@ -177,7 +212,7 @@ Poll address:
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> poll
+    $ dataserv-client poll
 
 
 build command
@@ -187,32 +222,44 @@ Build
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build
+    $ dataserv-client build
 
 
 Build with custom max data size and store path
 
 ::
 
-    $ dataserv-client.py --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> --address=<BITCOIN_ADDRESS> build
+    $ dataserv-client --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> build
+
+    # optional max_size syntax
+    --max_size=1K  # 1024^1 bytes
+    --max_size=1KB # 1000^1 bytes
+    --max_size=1M  # 1024^2 bytes
+    --max_size=1MB # 1000^2 bytes
+    --max_size=1G  # 1024^3 bytes
+    --max_size=1GB # 1000^3 bytes
+    --max_size=1T  # 1024^4 bytes
+    --max_size=1TB # 1000^4 bytes
+    --max_size=1P  # 1024^5 bytes
+    --max_size=1PB # 1000^5 bytes
 
 
 Build and cleanup files afterwards
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --cleanup
+    $ dataserv-client build --cleanup
 
 
 Build and force rebuild of any previously generated files.
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --rebuild
+    $ dataserv-client build --rebuild
 
 
 Build custom shard height
 
 ::
 
-    $ dataserv-client.py --address=<BITCOIN_ADDRESS> build --height=<NUMBER_OF_SHARDS>
+    $ dataserv-client build --height=<NUMBER_OF_SHARDS>

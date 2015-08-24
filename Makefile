@@ -2,63 +2,73 @@
 # License: MIT (see LICENSE file)
 
 
+PYTHON_VERSION = 3
+WHEEL_DIR = /tmp/wheelhouse
+USE_WHEEL = --use-wheel --no-index --find-links=$(WHEEL_DIR)
+PIP = env/bin/pip
+PY = env/bin/python
+
+
 help:
 	@echo "Some usefull development shortcuts."
 	@echo "  clean      Remove all generated files."
+	@echo "  setup      Setup development environment."
+	@echo "  shell      Open ipython from the development environment."
 	@echo "  test       Run tests and analysis tools."
-	@echo "  devsetup   Setup development environment."
-	@echo "  dist       Build dist and move to downloads."
-	@echo "  publish    Build and upload package to pypi."
+	@echo "  wheel      Build package wheel and save in '$(WHEEL_DIR)'."
+	@echo "  wheels     Build dependencie wheels and save in '$(WHEEL_DIR)'."
+	@echo "  publish    Build and upload package to pypi.python.org"
 
 
 clean:
-	@rm -rf env
-	@rm -rf build
-	@rm -rf dist
-	@rm -rf *.egg
-	@rm -rf *.egg-info
-	@find | grep -i ".*\.pyc$$" | xargs -r -L1 rm
+	rm -rf env
+	rm -rf build
+	rm -rf dist
+	rm -rf *.egg
+	rm -rf *.egg-info
+	find | grep -i ".*\.pyc$$" | xargs -r -L1 rm
 
 
-devsetup: clean
-	@# setup virtual envs
-	@virtualenv -p /usr/bin/python2 env/py2
-	@virtualenv -p /usr/bin/python3 env/py3
-
-	@# install esky for builds (required before setup :/)
-	@env/py2/bin/pip install esky
-	@env/py3/bin/pip install esky
-	@# TODO also install freezer?
-
-	@# install dependencies
-	@env/py2/bin/python setup.py develop
-	@env/py3/bin/python setup.py develop
-
-	@# install usefull dev tools
-	@env/py2/bin/pip install dataserv
-	@env/py3/bin/pip install dataserv
-	@env/py2/bin/pip install ipython
-	@env/py3/bin/pip install ipython
-	@env/py2/bin/pip install pudb
-	@env/py3/bin/pip install pudb
+virtualenv: clean
+	virtualenv -p /usr/bin/python$(PYTHON_VERSION) env
+	$(PIP) install wheel
 
 
-test: devsetup
-	screen -S dataserv -d -m env/py3/bin/python -m dataserv.app
-	env/py2/bin/python setup.py test
-	env/py3/bin/python setup.py test
-	screen -S dataserv -X kill
+wheels: virtualenv
+	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r requirements.txt
+	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r test_requirements.txt
+	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r develop_requirements.txt
+
+
+wheel: test
+	$(PY) setup.py bdist_wheel
+	mv dist/*.whl $(WHEEL_DIR)
+
+
+setup: virtualenv
+	$(PIP) install $(USE_WHEEL) -r requirements.txt
+	$(PIP) install $(USE_WHEEL) -r test_requirements.txt
+	$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
+
+
+shell: setup
+	env/bin/ipython
+
+
+test_single:
+	$(PIP) uninstall dataserv-client
+	$(PY) setup.py install
+	$(PY) -m unittest tests.test_encryptedio
+
+
+test: setup
+	screen -S testserver -d -m $(PY) -m dataserv.app
+	$(PY) setup.py test
+	screen -S testserver -X kill
 
 
 publish: test
-	@env/py3/bin/python setup.py register sdist upload
-
-
-dist: test
-	@env/py2/bin/pip install bbfreeze
-	@env/py2/bin/python setup.py bdist_esky
-	# TODO move to downloads
-
+	$(PY) setup.py register sdist upload
 
 
 # import pudb; pu.db # set break point

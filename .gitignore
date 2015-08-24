@@ -56,6 +56,12 @@ docs/_build/
 # PyBuilder
 target/
 
+# Rope
+.ropeproject
+
+# Vim
+*.swp
+
 dataserv/dataserv.db
 .idea
 tests/data

@@ -5,11 +5,6 @@ from dataserv_client import api
 
 
 def _add_programm_args(parser):
-    # address
-    parser.add_argument(
-        "--address", default=None, help="Required bitcoin address."
-    )
-
     # url
     parser.add_argument(
         "--url", default=common.DEFAULT_URL,
@@ -30,9 +25,24 @@ def _add_programm_args(parser):
         help="Storage path. (default: {0}).".format(default)
     )
 
+    # config_path
+    default = common.DEFAULT_CONFIG_PATH
+    parser.add_argument(
+        "--config_path", default=default,
+        help="Config path. (default: {0}).".format(default)
+    )
+
     # debug
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
+
+    # master secret
+    msg = "Base64 encoded master secret to generate node wallet."
+    parser.add_argument("--set_master_secret", default=None, help=msg)
+
+    # payout_address
+    msg = "Address from wallet used if not given."
+    parser.add_argument("--set_payout_address", default=None, help=msg)
 
 
 def _add_version(command_parser):
@@ -50,6 +60,12 @@ def _add_register(command_parser):
 def _add_ping(command_parser):
     ping_parser = command_parser.add_parser(  # NOQA
         "ping", help="Ping farmer with given address."
+    )
+
+
+def _add_show_config(command_parser):
+    show_config_parser = command_parser.add_parser(  # NOQA
+        "show_config", help="Display saved config."
     )
 
 
@@ -83,6 +99,13 @@ def _add_build(command_parser):
     build_parser.add_argument('--rebuild', action='store_true',
                               help="Replace previously files.")
 
+    # set height interval
+    default=common.DEFAULT_SET_HEIGHT_INTERVAL
+    build_parser.add_argument(
+        "--set_height_interval", default=default,
+        help="Interval at which to set height (default: {0}).".format(default)
+    )
+
 
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
@@ -107,6 +130,7 @@ def _parse_args(args):
     _add_ping(command_parser)
     _add_poll(command_parser)
     _add_build(command_parser)
+    _add_show_config(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))
@@ -119,10 +143,12 @@ def _parse_args(args):
 def main(args):
     command_name, arguments = _parse_args(args)
     client = api.Client(
-        arguments.pop("address"),
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
+        config_path=arguments.pop("config_path"),
+        set_master_secret=arguments.pop("set_master_secret"),
+        set_payout_address=arguments.pop("set_payout_address"),
     )
     return getattr(client, command_name)(**arguments)
