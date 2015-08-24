@@ -1,4 +1,5 @@
 import os
+import hashlib
 import unittest
 import tempfile
 from dataserv_client import encryptedio
@@ -15,13 +16,20 @@ class TestConfig(unittest.TestCase):
 
         # encrypt
         with open(input_path, 'rb') as in_file, open(encrypted_path, 'wb') as out_file:
-            encryptedio.encrypt(in_file, out_file, b"test")
+            encryptedio.encrypt(in_file, out_file, "test")
 
         # decrypt
         with open(encrypted_path, 'rb') as in_file, open(output_path, 'wb') as out_file:
-            encryptedio.decrypt(in_file, out_file, b"test")
+            encryptedio.decrypt(in_file, out_file, "test")
 
+        # check hashes
+        with open(input_path, 'rb') as input_file:
+            input_hash = hashlib.sha256(input_file.read()).hexdigest()
+        with open(output_path, 'rb') as output_file:
+            output_hash = hashlib.sha256(output_file.read()).hexdigest()
+        self.assertEqual(input_hash, output_hash)
 
+        # FIXME add openssl compatibility tests (already tested manually)
 
 
 if __name__ == '__main__':

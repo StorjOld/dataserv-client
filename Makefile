@@ -56,7 +56,7 @@ shell: setup
 
 
 test_single:
-	$(PIP) uninstall dataserv-client
+	#$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
 	$(PY) -m unittest tests.test_encryptedio
 

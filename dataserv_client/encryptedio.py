@@ -14,17 +14,14 @@ openssl aes-256-cbc -d -in filename.enc -out filename
 """
 
 
-# FIXME add unittests to ensure compatibility (already verified manually)
-# FIXME this is currently broken
-# maybe use https://gist.github.com/SpotlightKid/53e1eb408267315de620
-
-
 from hashlib import md5
 from Crypto.Cipher import AES
 from Crypto import Random
 
 
 def _chr(i):
+    if isinstance(i, bytes):
+        return i  # FIXME why is it mixed in python 2 ?
     return chr(i).encode('utf-8')
 
 
@@ -37,6 +34,8 @@ def _derive_key_and_iv(password, salt, key_length, iv_length):
 
 
 def encrypt(in_file, out_file, password, key_length=32):
+    assert(isinstance(password, bytes))
+    assert(isinstance(key_length, int))
     bs = AES.block_size
     salt = Random.new().read(bs - len(b'Salted__'))
     key, iv = _derive_key_and_iv(password, salt, key_length, bs)
@@ -54,11 +53,13 @@ def encrypt(in_file, out_file, password, key_length=32):
 
 
 def decrypt(in_file, out_file, password, key_length=32):
+    assert(isinstance(password, bytes))
+    assert(isinstance(key_length, int))
     bs = AES.block_size
     salt = in_file.read(bs)[len(b'Salted__'):]
     key, iv = _derive_key_and_iv(password, salt, key_length, bs)
     cipher = AES.new(key, AES.MODE_CBC, iv)
-    next_chunk = ''
+    next_chunk = b''
     finished = False
     while not finished:
         chunk, next_chunk = next_chunk, cipher.decrypt(in_file.read(1024 * bs))
@@ -66,6 +67,4 @@ def decrypt(in_file, out_file, password, key_length=32):
             padding_length = ord(_chr(chunk[-1]))
             chunk = chunk[:-padding_length]
             finished = True
-        if not isinstance(chunk, bytes):
-            chunk = chunk.encode('utf-8')
         out_file.write(chunk)
