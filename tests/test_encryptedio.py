@@ -4,7 +4,6 @@ import tempfile
 from dataserv_client import encryptedio
 
 
-@unittest.skip("encryptedio broken")
 class TestConfig(unittest.TestCase):
 
     def test_roundtrip(self):

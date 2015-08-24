@@ -50,7 +50,6 @@ def encrypt(in_file, out_file, password, key_length=32):
             chunk += padding_length * _chr(padding_length)
             finished = True
         encrypted_chunk = cipher.encrypt(chunk)
-        print("encrypted_chunk", type(encrypted_chunk))
         out_file.write(encrypted_chunk)
 
 
@@ -67,4 +66,6 @@ def decrypt(in_file, out_file, password, key_length=32):
             padding_length = ord(_chr(chunk[-1]))
             chunk = chunk[:-padding_length]
             finished = True
+        if not isinstance(chunk, bytes):
+            chunk = chunk.encode('utf-8')
         out_file.write(chunk)
