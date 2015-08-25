@@ -47,19 +47,19 @@ def _add_programm_args(parser):
 
 def _add_version(command_parser):
     version_parser = command_parser.add_parser(  # NOQA
-        "version", help="Print version number."
+        "version", help="Show version number."
     )
 
 
 def _add_register(command_parser):
     register_parser = command_parser.add_parser(  # NOQA
-        "register", help="Register a bitcoin address with farmer."
+        "register", help="Register your node on the network."
     )
 
 
 def _add_ping(command_parser):
     ping_parser = command_parser.add_parser(  # NOQA
-        "ping", help="Ping farmer with given address."
+        "ping", help="Ping master node."
     )
 
 
@@ -71,7 +71,7 @@ def _add_show_config(command_parser):
 
 def _add_poll(command_parser):
     poll_parser = command_parser.add_parser(
-        "poll", help="Continuously ping farmer with given address."
+        "poll", help="Let the network know your are online."
     )
     poll_parser.add_argument(
         "--delay", default=common.DEFAULT_DELAY,
