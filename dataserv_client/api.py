@@ -47,7 +47,6 @@ class Client(object):
         self._ensure_path_exists(self.store_path)
 
         # init config
-        import pudb; pu.db # set break point
         self._init_config(set_payout_address, set_wallet)
 
     def _init_config(self, set_payout_address, set_wallet):
