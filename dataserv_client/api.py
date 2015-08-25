@@ -32,6 +32,7 @@ class Client(object):
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
+        import pudb; pu.db # set break point
         self.url = url
         self.messanger = None  # lazy
         self.debug = debug

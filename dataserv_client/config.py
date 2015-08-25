@@ -40,20 +40,20 @@ def validate(btctxstore, config):
 
     # is a dict
     if not isinstance(config, dict):
-        exceptions.InvalidConfig()
+        raise exceptions.InvalidConfig()
 
     # correct version
     if config.get("version") != __version__:
-        exceptions.InvalidConfig()
+        raise exceptions.InvalidConfig()
 
     # has valid payout address
     if not btctxstore.validate_address(config.get("payout_address")):
-        exceptions.InvalidConfig()
+        raise exceptions.InvalidConfig()
 
     # has valid wallet
     wif = btctxstore.get_key(config.get("wallet"))
     if not btctxstore.validate_key(wif):
-        exceptions.InvalidConfig()
+        raise exceptions.InvalidConfig()
 
 
 def get(btctxstore, path, password=None):
