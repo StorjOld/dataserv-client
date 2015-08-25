@@ -36,12 +36,12 @@ def _add_programm_args(parser):
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
 
-    # master secret
-    msg = "Base64 encoded master secret to generate node wallet."
-    parser.add_argument("--set_master_secret", default=None, help=msg)
+    # wallet
+    msg = "Set node wallet to given hwif."
+    parser.add_argument("--set_wallet", default=None, help=msg)
 
     # payout_address
-    msg = "Address from wallet used if not given."
+    msg = "Root address of wallet used by default."
     parser.add_argument("--set_payout_address", default=None, help=msg)
 
 
@@ -148,7 +148,7 @@ def main(args):
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
         config_path=arguments.pop("config_path"),
-        set_master_secret=arguments.pop("set_master_secret"),
+        set_wallet=arguments.pop("set_wallet"),
         set_payout_address=arguments.pop("set_payout_address"),
     )
     return getattr(client, command_name)(**arguments)

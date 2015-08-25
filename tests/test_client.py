@@ -130,7 +130,11 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_version(self):
-        self.assertTrue(cli.main(["version"]))
+        args = [
+            "--config_path=" + tempfile.mktemp(),
+            "version"
+        ]
+        self.assertTrue(cli.main(args))
 
     def test_poll(self):
         args = [
@@ -189,14 +193,14 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
 
     def test_show(self):
         payout_wif = self.btctxstore.create_key()
-        master_secret = "testmastersecret"
+        hwif = self.btctxstore.create_wallet()
         payout_address = self.btctxstore.get_address(payout_wif)
         client = api.Client(debug=True, 
-                            set_master_secret=master_secret,
+                            set_wallet=hwif,
                             set_payout_address=payout_address,
                             config_path=tempfile.mktemp())
         config = client.show_config()
-        self.assertEqual(config["master_secret"], master_secret)
+        self.assertEqual(config["wallet"], hwif)
         self.assertEqual(config["payout_address"], payout_address)
 
     def test_validation(self):
@@ -204,7 +208,16 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
             client = api.Client(debug=True, 
                                 set_payout_address="invalid",
                                 config_path=tempfile.mktemp())
-        self.assertRaises(exceptions.InvalidAddress, callback)
+        self.assertRaises(exceptions.InvalidConfig, callback)
+
+    def test_persistance(self):
+        config_path = tempfile.mktemp()
+        a = api.Client(debug=True, config_path=config_path).show_config()
+        b = api.Client(debug=True, config_path=config_path).show_config()
+        c = api.Client(debug=True, config_path=config_path).show_config()
+        self.assertEqual(a, b, c)
+        self.assertTrue(c["wallet"] != None)
+
 
 if __name__ == '__main__':
     unittest.main()

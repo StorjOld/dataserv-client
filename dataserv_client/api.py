@@ -28,73 +28,50 @@ class Client(object):
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
-                 set_master_secret=None, set_payout_address=None,
+                 set_wallet=None, set_payout_address=None,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
-        # FIXME validate master_secret
-
         self.url = url
-        self.config = None  # lazy
         self.messanger = None  # lazy
-        self.debug = debug  # TODO validate
+        self.debug = debug
+        self.btctxstore = BtcTxStore()
         self.retry_limit = deserialize.positive_integer(connection_retry_limit)
         self.retry_delay = deserialize.positive_integer(connection_retry_delay)
         self.max_size = deserialize.byte_count(max_size)
 
         # paths
-        self.config_path = os.path.realpath(config_path)  # TODO validate
+        self.config_path = os.path.realpath(config_path)
         self._ensure_path_exists(os.path.dirname(self.config_path))
         self.store_path = os.path.realpath(store_path)
         self._ensure_path_exists(self.store_path)
 
-        # validate payout address
-        self.btctxstore = BtcTxStore()
-        if set_payout_address and (not self.btctxstore.validate_address(set_payout_address)):
-            raise exceptions.InvalidAddress(set_payout_address)
+        # init config
+        import pudb; pu.db # set break point
+        self._init_config(set_payout_address, set_wallet)
 
-        self._initialize_config(set_master_secret, set_payout_address)
+    def _init_config(self, set_payout_address, set_wallet):
+        self.config = config.get(self.btctxstore, self.config_path)
+        config_updated = False
 
-    def _initialize_config(self, set_master_secret, set_payout_address):
-        if os.path.exists(self.config_path):
-            self._load_config()
-        else:  # initialize config
-            if not set_master_secret:  # create random master secret
-                secret_data = base64.b64encode(os.urandom(256))
-                set_master_secret = secret_data.decode('utf-8')
-            if not set_payout_address:  # use root address if not given
-                set_payout_address = self._get_root_address(set_master_secret)
+        if set_payout_address: # update payout address if requested
+            self.config["payout_address"] = set_payout_address
+            config_updated = True
 
-        if set_master_secret or set_payout_address:
-            self.config = {
-                "version": __version__,
-                "master_secret": set_master_secret,
-                "payout_address": set_payout_address,
-            }
-            config.save(self.config_path, self.config)
+        if set_wallet: # update wallet if requested
+            self.config["wallet"] = set_wallet
+            config_updated = True
+
+        if config_updated: # save config if updated
+            config.save(self.btctxstore, self.config_path, self.config)
 
     def _ensure_path_exists(self, path):
         if not os.path.exists(path):
             os.makedirs(path)
 
-    def _load_config(self):
-        if self.config is None:
-            if not os.path.exists(self.config_path):
-                raise exceptions.ConfigNotFound(self.config_path)
-            self.config = config.load(self.config_path)
-
-    def _get_root_wif(self, master_secret):
-        master_secret = base64.b64decode(master_secret)
-        hwif = self.btctxstore.create_wallet(master_secret=master_secret)
-        return self.btctxstore.get_key(hwif)
-
-    def _get_root_address(self, master_secret):
-            wif = self._get_root_wif(master_secret)
-            return self.btctxstore.get_address(wif)
-
     def _init_messanger(self):
         if self.messanger is None:
-            wif = self._get_root_wif(self.config["master_secret"])
+            wif = self.btctxstore.get_key(self.config["wallet"])
             self.messanger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
                                                  self.retry_delay)
