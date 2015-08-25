@@ -41,12 +41,6 @@ class TestConfig(unittest.TestCase):
     def test_validate(self):
         pass  # TODO implement
 
-    def test_create(self):
-        pass  # TODO implement
-
-    def test_get(self):
-        pass  # TODO implement
-
 
 if __name__ == '__main__':
     unittest.main()

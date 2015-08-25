@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import sys
 
-# unavoidable dependencie for setup.py, get latest version from github
-# pip install git+git://github.com/cloudmatrix/esky.git
-from esky import bdist_esky  # FIXME only import if bdist_esky passed in args
+if "bdist_esky" in sys.argv:
+    # unavoidable dependencie for setup.py, get latest version from github
+    # pip install git+git://github.com/cloudmatrix/esky.git
+    from esky import bdist_esky
 
 
 import os
