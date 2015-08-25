@@ -14,6 +14,12 @@ class ExistingConfig(DataservClientException):
         super(ExistingConfig, self).__init__(msg)
 
 
+class InvalidConfig(DataservClientException):
+
+    def __init__(self):
+        super(InvalidConfig, self).__init__("Invalid Config!")
+
+
 class ConfigNotFound(DataservClientException):
 
     def __init__(self, path):
