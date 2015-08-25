@@ -4,7 +4,7 @@
 
 # unavoidable dependencie for setup.py, get latest version from github
 # pip install git+git://github.com/cloudmatrix/esky.git
-from esky import bdist_esky
+from esky import bdist_esky  # FIXME only import if bdist_esky passed in args
 
 
 import os
