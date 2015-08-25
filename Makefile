@@ -46,9 +46,11 @@ wheel: test
 
 
 setup: virtualenv
-	$(PIP) install $(USE_WHEEL) -r requirements.txt
-	$(PIP) install $(USE_WHEEL) -r test_requirements.txt
-	$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
+	#$(PIP) install $(USE_WHEEL) -r requirements.txt
+	#$(PIP) install $(USE_WHEEL) -r test_requirements.txt
+	#$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
+	$(PY) setup.py develop
+	$(PIP) install -r test_requirements.txt  # we need dataserv before test cmd
 
 
 shell: setup

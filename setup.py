@@ -34,8 +34,9 @@ setup(
     version=__version__,
     scripts=[SCRIPT],
     test_suite="tests",
+    dependency_links = ['git://github.com/cloudmatrix/esky.git#egg=esky'],
     install_requires=open("requirements.txt").readlines(),
-    tests_require=[],  # use `pip install -r test_requirements.txt`
+    tests_require=open("test_requirements.txt").readlines(),
     download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
     classifiers=[
