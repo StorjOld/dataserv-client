@@ -14,7 +14,6 @@ def read(path, password=None):
 
 
 def save(btctxstore, path, config, password=None):
-    # FIXME confirm overwrite previous config
     validate(btctxstore, config)
     if password is None:  # unencrypted
         with open(path, 'w') as config_file:
