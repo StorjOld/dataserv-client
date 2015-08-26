@@ -133,7 +133,7 @@ class TestBuilder(unittest.TestCase):
                                           height)
         self.assertEqual(audit_results, expected)
 
-    @unittest.ship("fixme")
+    @unittest.skip("fixme")
     def test_build_rebuild(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
