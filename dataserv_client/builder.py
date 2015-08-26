@@ -64,9 +64,9 @@ class Builder:
 
     def filter_to_resume_point(self, store_path, enum_seeds):
         class HackedCompareObject(str):
-            def __lt__(self, seed):
+            def __gt__(self, seed):
                 path = os.path.join(store_path, seed)
-                return not os.path.exists(path)
+                return os.path.exists(path)
         seeds = [seed for num, seed in enum_seeds]
         index = bisect.bisect_left(seeds, HackedCompareObject())
         if self.debug:
