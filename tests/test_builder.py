@@ -133,7 +133,6 @@ class TestBuilder(unittest.TestCase):
                                           height)
         self.assertEqual(audit_results, expected)
 
-    @unittest.skip("fixme")
     def test_build_rebuild(self):
         # generate shards for testing
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
@@ -147,7 +146,7 @@ class TestBuilder(unittest.TestCase):
         self.assertFalse(bucket.checkup(self.store_path))
 
         # rebuild
-        bucket.build(self.store_path)
+        bucket.build(self.store_path, rebuild=True)
 
         # check again, should pass
         self.assertTrue(bucket.checkup(self.store_path))
