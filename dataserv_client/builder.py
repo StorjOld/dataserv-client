@@ -58,9 +58,9 @@ class Builder:
 
         with open(path, 'rb') as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
-            if cleanup:
-                os.remove(path)
-            return file_hash
+        if cleanup:
+            os.remove(path)
+        return file_hash
 
     def filter_to_resume_point(self, store_path, enum_seeds):
         class HackedCompareObject(str):
