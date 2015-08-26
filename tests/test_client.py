@@ -196,25 +196,23 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
         hwif = self.btctxstore.create_wallet()
         payout_address = self.btctxstore.get_address(payout_wif)
         client = api.Client(debug=True, 
-                            set_wallet=hwif,
-                            set_payout_address=payout_address,
                             config_path=tempfile.mktemp())
-        config = client.show_config()
+        config = client.config(set_wallet=hwif,
+                               set_payout_address=payout_address)
         self.assertEqual(config["wallet"], hwif)
         self.assertEqual(config["payout_address"], payout_address)
 
     def test_validation(self):
         def callback():
-            client = api.Client(debug=True, 
-                                set_payout_address="invalid",
-                                config_path=tempfile.mktemp())
+            client = api.Client(debug=True, config_path=tempfile.mktemp())
+            client.config(set_payout_address="invalid")
         self.assertRaises(exceptions.InvalidConfig, callback)
 
     def test_persistance(self):
         config_path = tempfile.mktemp()
-        a = api.Client(debug=True, config_path=config_path).show_config()
-        b = api.Client(debug=True, config_path=config_path).show_config()
-        c = api.Client(debug=True, config_path=config_path).show_config()
+        a = api.Client(debug=True, config_path=config_path).config()
+        b = api.Client(debug=True, config_path=config_path).config()
+        c = api.Client(debug=True, config_path=config_path).config()
         self.assertEqual(a, b, c)
         self.assertTrue(c["wallet"] != None)
 

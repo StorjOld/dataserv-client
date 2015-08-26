@@ -3,11 +3,6 @@
 
 import sys
 
-if "bdist_esky" in sys.argv:
-    # unavoidable dependencie for setup.py, get latest version from github
-    # pip install git+git://github.com/cloudmatrix/esky.git
-    from esky import bdist_esky
-
 
 import os
 from setuptools import setup, find_packages
@@ -34,7 +29,7 @@ setup(
     version=__version__,
     scripts=[SCRIPT],
     test_suite="tests",
-    dependency_links = ['git://github.com/cloudmatrix/esky.git#egg=esky'],
+    dependency_links = [],
     install_requires=open("requirements.txt").readlines(),
     tests_require=open("test_requirements.txt").readlines(),
     download_url=DOWNLOAD_URL,

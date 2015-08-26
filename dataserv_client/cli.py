@@ -36,14 +36,6 @@ def _add_programm_args(parser):
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
 
-    # wallet
-    msg = "Set node wallet to given hwif."
-    parser.add_argument("--set_wallet", default=None, help=msg)
-
-    # payout_address
-    msg = "Root address of wallet used by default."
-    parser.add_argument("--set_payout_address", default=None, help=msg)
-
 
 def _add_version(command_parser):
     version_parser = command_parser.add_parser(  # NOQA
@@ -63,10 +55,18 @@ def _add_ping(command_parser):
     )
 
 
-def _add_show_config(command_parser):
-    show_config_parser = command_parser.add_parser(  # NOQA
-        "show_config", help="Display saved config."
+def _add_config(command_parser):
+    config_parser = command_parser.add_parser(  # NOQA
+        "config", help="Edit and display config."
     )
+
+    # wallet
+    msg = "Set node wallet to given hwif."
+    config_parser.add_argument("--set_wallet", default=None, help=msg)
+
+    # payout_address
+    msg = "Root address of wallet used by default."
+    config_parser.add_argument("--set_payout_address", default=None, help=msg)
 
 
 def _add_poll(command_parser):
@@ -130,7 +130,7 @@ def _parse_args(args):
     _add_ping(command_parser)
     _add_poll(command_parser)
     _add_build(command_parser)
-    _add_show_config(command_parser)
+    _add_config(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))
@@ -148,7 +148,5 @@ def main(args):
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
         config_path=arguments.pop("config_path"),
-        set_wallet=arguments.pop("set_wallet"),
-        set_payout_address=arguments.pop("set_payout_address"),
     )
     return getattr(client, command_name)(**arguments)

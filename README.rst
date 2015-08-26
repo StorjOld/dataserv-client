@@ -84,9 +84,9 @@ Quickstart example
 
 ::
 
-    # Optional: Payout address and wallet are generated automatically.
-    $ dataserv-client --set_payout_address=<BITCOIN_ADDRESS> show_config
-    $ dataserv-client --set_wallet=<HWIF> show_config
+    # Optionally set payout address and wallet (generated automatically)
+    $ dataserv-client config --set_payout_address=<BITCOIN_ADDRESS>
+    $ dataserv-client config --set_wallet=<HWIF>
 
     # register your node
     $ dataserv-client register
@@ -157,10 +157,6 @@ Show program help, optional arguments and commands
       --config_path CONFIG_PATH
                             Config path. (default: /home/username/.storj/config.json).
       --debug               Show debug information.
-      --set_wallet SET_WALLET
-                            Set node wallet to given hwif.
-      --set_payout_address SET_PAYOUT_ADDRESS
-                            Root address of wallet used by default.
 
     commands:
       <command>
@@ -169,7 +165,7 @@ Show program help, optional arguments and commands
         ping                Ping master node.
         poll                Let the network know your are online.
         build               Fill the farmer with data up to their max.
-        show_config         Display saved config.
+        config              Edit and display config.
 
 
 

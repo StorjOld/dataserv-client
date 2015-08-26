@@ -28,7 +28,6 @@ class Client(object):
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
-                 set_wallet=None, set_payout_address=None,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
@@ -41,28 +40,12 @@ class Client(object):
         self.max_size = deserialize.byte_count(max_size)
 
         # paths
-        self.config_path = os.path.realpath(config_path)
-        self._ensure_path_exists(os.path.dirname(self.config_path))
+        self.cfg_path = os.path.realpath(config_path)
+        self._ensure_path_exists(os.path.dirname(self.cfg_path))
         self.store_path = os.path.realpath(store_path)
         self._ensure_path_exists(self.store_path)
 
-        # init config
-        self._init_config(set_payout_address, set_wallet)
-
-    def _init_config(self, set_payout_address, set_wallet):
-        self.config = config.get(self.btctxstore, self.config_path)
-        config_updated = False
-
-        if set_payout_address: # update payout address if requested
-            self.config["payout_address"] = set_payout_address
-            config_updated = True
-
-        if set_wallet: # update wallet if requested
-            self.config["wallet"] = set_wallet
-            config_updated = True
-
-        if config_updated: # save config if updated
-            config.save(self.btctxstore, self.config_path, self.config)
+        self.cfg = config.get(self.btctxstore, self.cfg_path)
 
     def _ensure_path_exists(self, path):
         if not os.path.exists(path):
@@ -70,7 +53,7 @@ class Client(object):
 
     def _init_messanger(self):
         if self.messanger is None:
-            wif = self.btctxstore.get_key(self.config["wallet"])
+            wif = self.btctxstore.get_key(self.cfg["wallet"])
             self.messanger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
                                                  self.retry_delay)
@@ -82,7 +65,7 @@ class Client(object):
     def register(self):
         """Attempt to register the config address."""
         self._init_messanger()
-        registered = self.messanger.register(self.config["payout_address"])
+        registered = self.messanger.register(self.cfg["payout_address"])
         auth_addr = self.messanger.auth_address()
         if registered:
             print("Address {0} now registered on {1}.".format(auth_addr,
@@ -92,10 +75,26 @@ class Client(object):
                                                                   self.url))
         return True
 
-    def show_config(self):
+    def config(self, set_wallet=None, set_payout_address=None):
         """Display saved config."""
-        print(json.dumps(self.config, indent=2))
-        return self.config
+        config_updated = False
+
+        # update payout address if requested
+        if set_payout_address: 
+            self.cfg["payout_address"] = set_payout_address
+            config_updated = True
+            # FIXME update dataserv here
+
+        # update wallet if requested
+        if set_wallet: 
+            self.cfg["wallet"] = set_wallet
+            config_updated = True
+
+        if config_updated: # save config if updated
+            config.save(self.btctxstore, self.cfg_path, self.cfg)
+
+        print(json.dumps(self.cfg, indent=2))
+        return self.cfg
 
     def ping(self):
         """Attempt keep-alive with the server."""
@@ -132,7 +131,7 @@ class Client(object):
             if first or set_height or last:
                 self.messanger.height(height)
 
-        bldr = builder.Builder(self.config["payout_address"],
+        bldr = builder.Builder(self.cfg["payout_address"],
                                common.SHARD_SIZE, self.max_size,
                                debug=self.debug,
                                on_generate_shard=_on_generate_shard)
