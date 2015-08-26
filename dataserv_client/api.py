@@ -126,7 +126,7 @@ class Client(object):
         self._init_messanger()
         def _on_generate_shard(height, seed, file_hash):
             first = height == 1
-            set_height = (height % set_height_interval) == 0
+            set_height = (height % int(set_height_interval)) == 0
             last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
             if first or set_height or last:
                 self.messanger.height(height)
