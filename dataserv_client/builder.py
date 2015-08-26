@@ -48,13 +48,12 @@ class Builder:
     def build_seeds(self, height):
         return list(map(self.build_seed, range(height)))
 
-    def generate_shard(self, seed, store_path, cleanup=False, rebuild=False):
+    def generate_shard(self, seed, store_path, cleanup=False):
         """Save a shard, and return its SHA-256 hash."""
 
         # save the shard
         path = os.path.join(store_path, seed)
-        if not os.path.isfile(path) or rebuild:
-            RandomIO.RandomIO(seed).genfile(self.shard_size, path)
+        RandomIO.RandomIO(seed).genfile(self.shard_size, path)
 
         with open(path, 'rb') as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
@@ -69,9 +68,13 @@ class Builder:
                 return os.path.exists(path)
         seeds = [seed for num, seed in enum_seeds]
         index = bisect.bisect_left(seeds, HackedCompareObject())
+
+        # rebuild last shard, likely corrupt
+        index = index - 1 if index > 0 else index
+
         if self.debug:
             print("Resuming from height {0}".format(index + 1))
-        return enum_seeds[index:]  # rebuild last in case its corrupt
+        return enum_seeds[index:]
 
     def build(self, store_path, cleanup=False, rebuild=False):
         """Fill the farmer with data up to their max.
@@ -85,8 +88,7 @@ class Builder:
 
         for shard_num, seed in enum_seeds:
 
-            file_hash = self.generate_shard(seed, store_path, cleanup=cleanup,
-                                            rebuild=rebuild)
+            file_hash = self.generate_shard(seed, store_path, cleanup=cleanup)
             generated[seed] = file_hash
             if self.debug:
                 print("Saving seed {0} with SHA-256 hash {1}.".format(
