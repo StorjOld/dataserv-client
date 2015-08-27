@@ -146,7 +146,6 @@ class Client(object):
         :param rebuild: Re-generate any file shards.
         :param set_height_interval: Number of shards to generate before
                                     notifying the server.
-        :return: Number of files generated.
         """
 
         self._init_messenger()
@@ -173,4 +172,4 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
 
-        return len(generated)
+        return generated
