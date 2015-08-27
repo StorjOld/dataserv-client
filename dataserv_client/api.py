@@ -29,12 +29,13 @@ class Client(object):
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
         self.url = url
-        self.messanger = None  # lazy
         self.debug = debug
+        self.max_size = deserialize.byte_count(max_size)
+
+        self.messenger = None  # lazy
         self.btctxstore = BtcTxStore()
         self.retry_limit = deserialize.positive_integer(connection_retry_limit)
         self.retry_delay = deserialize.positive_integer(connection_retry_delay)
-        self.max_size = deserialize.byte_count(max_size)
 
         # paths
         self.cfg_path = os.path.realpath(config_path)
@@ -44,26 +45,31 @@ class Client(object):
 
         self.cfg = config.get(self.btctxstore, self.cfg_path)
 
-    def _ensure_path_exists(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-    def _init_messanger(self):
-        if self.messanger is None:
-            wif = self.btctxstore.get_key(self.cfg["wallet"])
-            self.messanger = messaging.Messaging(self.url, wif,
-                                                 self.retry_limit,
-                                                 self.retry_delay)
-
-    def version(self):
+    @staticmethod
+    def version():
         print(__version__)
         return __version__
 
+    @staticmethod
+    def _ensure_path_exists(path):
+        """To keep front writing to non-existant paths."""
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    def _init_messenger(self):
+        """Make sure messenger exists."""
+        if self.messenger is None:
+            wif = self.btctxstore.get_key(self.cfg["wallet"])
+            self.messenger = messaging.Messaging(self.url, wif,
+                                                 self.retry_limit,
+                                                 self.retry_delay)
+
     def register(self):
         """Attempt to register the config address."""
-        self._init_messanger()
-        registered = self.messanger.register(self.cfg["payout_address"])
-        auth_addr = self.messanger.auth_address()
+        self._init_messenger()
+        registered = self.messenger.register(self.cfg["payout_address"])
+        auth_addr = self.messenger.auth_address()
+
         if registered:
             print("Address {0} now registered on {1}.".format(auth_addr,
                                                               self.url))
@@ -80,7 +86,6 @@ class Client(object):
         if set_payout_address: 
             self.cfg["payout_address"] = set_payout_address
             config_updated = True
-            # FIXME update dataserv here
 
         # update wallet if requested
         if set_wallet: 
@@ -94,22 +99,24 @@ class Client(object):
         return self.cfg
 
     def ping(self):
-        """Attempt keep-alive with the server."""
-        self._init_messanger()
+        """Attempt one keep-alive with the server."""
+        self._init_messenger()
+
         print("Pinging {0} with address {1}.".format(
-            self.messanger.server_url(), self.messanger.auth_address()))
-        self.messanger.ping()
+            self.messenger.server_url(), self.messenger.auth_address()))
+        self.messenger.ping()
+
         return True
 
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
              limit=None):
-        """TODO doc string"""
+        """Attempt keep-alive with the server."""
         stop_time = _now() + timedelta(seconds=int(limit)) if limit else None
 
-        if register_address:
+        if register_address:  # in case the user forgot to register
             self.register()
 
-        while True:
+        while True:  # ping the server every X seconds
             self.ping()
 
             if stop_time and _now() >= stop_time:
@@ -118,16 +125,17 @@ class Client(object):
 
     def build(self, cleanup=False, rebuild=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
-        """TODO doc string"""
+        """Generate test files deterministically based on address."""
 
-        self._init_messanger()
+        self._init_messenger()
 
         def _on_generate_shard(height, seed, file_hash):
             first = height == 1
             set_height = (height % int(set_height_interval)) == 0
             last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
+
             if first or set_height or last:
-                self.messanger.height(height)
+                self.messenger.height(height)
 
         bldr = builder.Builder(self.cfg["payout_address"],
                                common.SHARD_SIZE, self.max_size,
@@ -136,5 +144,5 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
         height = len(generated)
-        # self.messanger.height(height)
+        # self.messenger.height(height)
         return generated

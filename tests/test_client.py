@@ -215,7 +215,7 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
         b = api.Client(debug=True, config_path=config_path).config()
         c = api.Client(debug=True, config_path=config_path).config()
         self.assertEqual(a, b, c)
-        self.assertTrue(c["wallet"] != None)
+        self.assertTrue(c["wallet"] is not None)
 
 
 if __name__ == '__main__':
