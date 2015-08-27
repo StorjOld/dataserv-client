@@ -109,6 +109,16 @@ class Builder:
             if os.path.exists(path):
                 os.remove(path)
 
+    def checkup(self, store_path):
+        """Make sure the shards exist."""
+        seeds = self.build_seeds(self.target_height)
+        for shard_num, seed in enumerate(seeds):
+            path = os.path.join(store_path, seed)
+            if not os.path.exists(path):
+                return False
+        return True
+
+    # Unused Audit Code
     def audit(self, seed, store_path, height):
         """Do an audit over the data."""
         audit_results = []
@@ -136,12 +146,3 @@ class Builder:
             print(msg.format(str(seed), hash_result, final_time))
 
         return hash_result
-
-    def checkup(self, store_path):
-        """Make sure the shards exist."""
-        seeds = self.build_seeds(self.target_height)
-        for shard_num, seed in enumerate(seeds):
-            path = os.path.join(store_path, seed)
-            if not os.path.exists(path):
-                return False
-        return True

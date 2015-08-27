@@ -129,20 +129,27 @@ class Client(object):
 
         self._init_messenger()
 
-        def _on_generate_shard(height, seed, file_hash):
-            first = height == 1
-            set_height = (height % int(set_height_interval)) == 0
-            last = (int(self.max_size / common.SHARD_SIZE) + 1) == height
+        def _on_generate_shard(cur_height, cur_seed, cur_file_hash):
+            """
+            Because URL requests are slow, only update the server when we are
+            at the first height, at some height_interval, or the last height.
+
+            :param cur_height: Current height in the building process.
+            :return: number of generated files
+            """
+            first = cur_height == 1
+            set_height = (cur_height % int(set_height_interval)) == 0
+            last = (int(self.max_size / common.SHARD_SIZE) + 1) == cur_height
 
             if first or set_height or last:
-                self.messenger.height(height)
+                self.messenger.height(cur_height)
 
+        # Initialize builder and generate/re-generate shards
         bldr = builder.Builder(self.cfg["payout_address"],
                                common.SHARD_SIZE, self.max_size,
                                debug=self.debug,
                                on_generate_shard=_on_generate_shard)
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
-        height = len(generated)
-        # self.messenger.height(height)
-        return generated
+
+        return len(generated)
