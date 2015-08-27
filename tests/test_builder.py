@@ -9,9 +9,8 @@ from datetime import datetime
 import partialhash
 from dataserv_client.builder import Builder
 
-
-my_shard_size = 1024*1024*128  # 128 MB
-my_max_size = 1024*1024*256  # 256 MB
+my_shard_size = 1024 * 1024 * 128  # 128 MB
+my_max_size = 1024 * 1024 * 256  # 256 MB
 height = int(my_max_size / my_shard_size)
 fixtures = json.load(open("tests/fixtures.json"))
 addresses = fixtures["addresses"]
@@ -23,7 +22,6 @@ def _to_bytes(string):
 
 
 class TestBuilder(unittest.TestCase):
-
     def setUp(self):
         self.store_path = tempfile.mkdtemp()
 
@@ -36,7 +34,8 @@ class TestBuilder(unittest.TestCase):
         self.assertNotEqual(Builder.sha256("not storj"), expected)
 
     def test_build_seed(self):
-        bucket = Builder(addresses["alpha"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["alpha"], my_shard_size, my_max_size,
+                         debug=True)
         hash0 = fixtures["test_build_seed"]["hash0"]
         hash3 = fixtures["test_build_seed"]["hash3"]
         self.assertEqual(bucket.build_seed(0), hash0)
@@ -44,7 +43,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_build(self):
         # generate shards for testing
-        bucket = Builder(addresses["beta"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path)
 
         # see if the shards exist
@@ -56,7 +56,8 @@ class TestBuilder(unittest.TestCase):
         bucket.clean(self.store_path)
 
         # generate shards for testing
-        bucket = Builder(addresses["gamma"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["gamma"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path, cleanup=True)
 
         # see if the shards are deleted
@@ -66,7 +67,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_clean(self):
         # generate shards for testing
-        bucket = Builder(addresses["delta"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["delta"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path)
 
         # see if the shards exist
@@ -84,7 +86,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_audit(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path)
 
         # audit
@@ -102,7 +105,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_checkup(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         debug=True)
         generated = bucket.build(self.store_path)
 
         # make sure all files are there
@@ -116,7 +120,8 @@ class TestBuilder(unittest.TestCase):
         self.assertFalse(bucket.checkup(self.store_path))
 
     def test_builder_rebuilds(self):
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         debug=True)
 
         # generate empty files to be rebuilt
         for shard_num in range(height):
@@ -135,12 +140,13 @@ class TestBuilder(unittest.TestCase):
 
     def test_build_rebuild(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path)
 
         # remove one of the files
-        remove_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
-        os.remove(os.path.join(self.store_path, remove_file))
+        r = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        os.remove(os.path.join(self.store_path, r))
 
         # check again, should fail
         self.assertFalse(bucket.checkup(self.store_path))
@@ -153,12 +159,13 @@ class TestBuilder(unittest.TestCase):
 
     def test_build_rebuild_modify(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         debug=True)
         bucket.build(self.store_path)
 
         # modify one of the files
-        org_file = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
-        path = os.path.join(self.store_path, org_file)
+        o = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        path = os.path.join(self.store_path, o)
         sha256_org_file = partialhash.compute(path)
 
         # write some data
@@ -180,18 +187,20 @@ class TestBuilder(unittest.TestCase):
         self.assertEqual(sha256_org_file, sha256_mod_file)
 
     def test_build_cont(self):
-        max_size1 = 1024*1024*384
-        max_size2 = 1024*1024*128
+        max_size1 = 1024 * 1024 * 384
+        max_size2 = 1024 * 1024 * 128
 
         # generate shards for testing
         start_time = datetime.utcnow()
-        bucket = Builder(addresses["epsilon"], my_shard_size, max_size1, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size1,
+                         debug=True)
         bucket.build(self.store_path)
         end_delta = datetime.utcnow() - start_time
 
         # should skip all shards and be faster
         start_time2 = datetime.utcnow()
-        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2, debug=True)
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2,
+                         debug=True)
         bucket.build(self.store_path)
         end_delta2 = datetime.utcnow() - start_time2
 

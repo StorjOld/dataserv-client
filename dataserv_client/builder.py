@@ -50,23 +50,43 @@ class Builder:
         return list(map(self.build_seed, range(height)))
 
     def generate_shard(self, seed, store_path, cleanup=False):
-        """Save a shard, and return its SHA-256 hash."""
+        """
+        Save a shard, and return its SHA-256 hash.
+
+        :param seed: Seed pased to RandomIO to generate file.
+        :param store_path: What path to store the file.
+        :param cleanup: Delete the file after generation.
+        :return: SHA-256 hash of the file.
+        """
 
         # save the shard
         path = os.path.join(store_path, seed)
         RandomIO.RandomIO(seed).genfile(self.shard_size, path)
 
+        # get the file hash
         with open(path, 'rb') as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
+
+        # remove file if requested
         if cleanup:
             os.remove(path)
+
         return file_hash
 
     def filter_to_resume_point(self, store_path, enum_seeds):
+        """
+        Binary search to find the proper place to resume.
+
+        :param store_path: What path to the files are stored at.
+        :param enum_seeds: List of seeds to check.
+        :return:
+        """
+
         class HackedCompareObject(str):
             def __gt__(self, seed):
                 path = os.path.join(store_path, seed)
                 return os.path.exists(path)
+
         seeds = [seed for num, seed in enum_seeds]
         index = bisect.bisect_left(seeds, HackedCompareObject())
 
@@ -78,9 +98,14 @@ class Builder:
         return enum_seeds[index:]
 
     def build(self, store_path, cleanup=False, rebuild=False):
-        """Fill the farmer with data up to their max.
-        Returns: { seed : hash, ... }
         """
+        Fill the farmer with data up to their max.
+
+        :param store_path: What path to store the file.
+        :param cleanup: Delete the file after generation.
+        :param rebuild: Re-generate the shards.
+        """
+
         generated = {}
 
         enum_seeds = list(enumerate(self.build_seeds(self.target_height)))
@@ -102,7 +127,12 @@ class Builder:
         return generated
 
     def clean(self, store_path):
-        """Delete shards from path."""
+        """
+        Delete shards from path.
+
+        :param store_path: Path the shards are stored at.
+        """
+
         seeds = self.build_seeds(self.target_height)
         for shard_num, seed in enumerate(seeds):
             path = os.path.join(store_path, seed)
@@ -110,7 +140,13 @@ class Builder:
                 os.remove(path)
 
     def checkup(self, store_path):
-        """Make sure the shards exist."""
+        """
+        Make sure the shards exist.
+
+        :param store_path: Path the shards are stored at.
+        :return True if all shards exist, False otherwise.
+        """
+
         seeds = self.build_seeds(self.target_height)
         for shard_num, seed in enumerate(seeds):
             path = os.path.join(store_path, seed)
