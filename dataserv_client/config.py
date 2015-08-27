@@ -1,6 +1,6 @@
 import os
 import json
-import btctxstore
+
 from dataserv_client import exceptions
 from dataserv_client import __version__
 

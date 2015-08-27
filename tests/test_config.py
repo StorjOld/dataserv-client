@@ -2,9 +2,9 @@ import os
 import copy
 import unittest
 import tempfile
+
 from btctxstore import BtcTxStore
 from dataserv_client import config
-from dataserv_client import version
 
 
 class TestConfig(unittest.TestCase):

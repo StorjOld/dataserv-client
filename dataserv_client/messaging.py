@@ -9,7 +9,6 @@ import urllib.error
 import urllib.request
 
 import btctxstore
-
 from dataserv_client import exceptions
 
 

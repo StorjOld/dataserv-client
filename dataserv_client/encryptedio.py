@@ -13,10 +13,10 @@ openssl aes-256-cbc -salt -in filename -out filename.enc
 openssl aes-256-cbc -d -in filename.enc -out filename
 """
 
-
 from hashlib import md5
-from Crypto.Cipher import AES
+
 from Crypto import Random
+from Crypto.Cipher import AES
 
 
 def _chr(i):

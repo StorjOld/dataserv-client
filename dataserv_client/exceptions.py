@@ -1,5 +1,3 @@
-
-
 from btctxstore.exceptions import *  # NOQA
 
 

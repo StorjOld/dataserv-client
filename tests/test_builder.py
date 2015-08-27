@@ -1,12 +1,12 @@
 import os
-import time
 import json
 import random
 import shutil
 import unittest
 import tempfile
-import partialhash
 from datetime import datetime
+
+import partialhash
 from dataserv_client.builder import Builder
 
 
@@ -200,6 +200,7 @@ class TestBuilder(unittest.TestCase):
     def test_on_generate_shard_callback(self):
         # save callback args
         on_generate_shard_called_with = []
+
         def on_generate_shard(*args):
             on_generate_shard_called_with.append(args)
 
@@ -219,5 +220,5 @@ class TestBuilder(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    #import pudb; pu.db # set break point
+    # import pudb; pu.db # set break point
     unittest.main()

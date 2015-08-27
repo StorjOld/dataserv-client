@@ -1,10 +1,11 @@
 import os
-import hashlib
-import RandomIO
-import binascii
-import partialhash
 import bisect
+import hashlib
+import binascii
 from datetime import datetime
+
+import RandomIO
+import partialhash
 
 
 class Builder:

@@ -2,22 +2,19 @@
 
 from future.standard_library import install_aliases
 install_aliases()
+
+import os
+import time
 import json
 import datetime
 from datetime import timedelta
-import os
-import time
-import base64
 from btctxstore import BtcTxStore
-
-from dataserv_client import __version__
-from dataserv_client import messaging
-from dataserv_client import builder
-from dataserv_client import exceptions
 from dataserv_client import config
 from dataserv_client import common
+from dataserv_client import builder
+from dataserv_client import messaging
 from dataserv_client import deserialize
-
+from dataserv_client import __version__
 
 _now = datetime.datetime.now
 
@@ -90,7 +87,7 @@ class Client(object):
             self.cfg["wallet"] = set_wallet
             config_updated = True
 
-        if config_updated: # save config if updated
+        if config_updated:  # save config if updated
             config.save(self.btctxstore, self.cfg_path, self.cfg)
 
         print(json.dumps(self.cfg, indent=2))
@@ -124,6 +121,7 @@ class Client(object):
         """TODO doc string"""
 
         self._init_messanger()
+
         def _on_generate_shard(height, seed, file_hash):
             first = height == 1
             set_height = (height % int(set_height_interval)) == 0
@@ -138,5 +136,5 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
         height = len(generated)
-        #self.messanger.height(height)
+        # self.messanger.height(height)
         return generated

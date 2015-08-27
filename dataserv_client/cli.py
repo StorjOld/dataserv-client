@@ -1,7 +1,8 @@
 import sys
 import argparse
-from dataserv_client import common
+
 from dataserv_client import api
+from dataserv_client import common
 
 
 def _add_programm_args(parser):
@@ -100,7 +101,7 @@ def _add_build(command_parser):
                               help="Replace previously files.")
 
     # set height interval
-    default=common.DEFAULT_SET_HEIGHT_INTERVAL
+    default = common.DEFAULT_SET_HEIGHT_INTERVAL
     build_parser.add_argument(
         "--set_height_interval", default=default,
         help="Interval at which to set height (default: {0}).".format(default)
