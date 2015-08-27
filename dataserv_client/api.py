@@ -79,7 +79,13 @@ class Client(object):
         return True
 
     def config(self, set_wallet=None, set_payout_address=None):
-        """Display saved config."""
+        """
+        Set and then show the config settings.
+
+        :param set_wallet: Set the HWIF for registration/auth address.
+        :param set_payout_address:  Set the payout address.
+        :return: Configuation object.
+        """
         config_updated = False
 
         # update payout address if requested
@@ -92,10 +98,11 @@ class Client(object):
             self.cfg["wallet"] = set_wallet
             config_updated = True
 
-        if config_updated:  # save config if updated
+        # save config if updated
+        if config_updated:
             config.save(self.btctxstore, self.cfg_path, self.cfg)
 
-        print(json.dumps(self.cfg, indent=2))
+        print(json.dumps(self.cfg, indent=2))  # should we output this?
         return self.cfg
 
     def ping(self):
@@ -110,7 +117,14 @@ class Client(object):
 
     def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
              limit=None):
-        """Attempt keep-alive with the server."""
+        """
+        Attempt continuous keep-alive with the server.
+
+        :param register_address: Registration/auth Bitcoin address.
+        :param delay: Delay in seconds per ping of the server.
+        :param limit: Number of seconds in the future to stop polling.
+        :return: True, if limit is reached. None, if otherwise.
+        """
         stop_time = _now() + timedelta(seconds=int(limit)) if limit else None
 
         if register_address:  # in case the user forgot to register
@@ -125,7 +139,15 @@ class Client(object):
 
     def build(self, cleanup=False, rebuild=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
-        """Generate test files deterministically based on address."""
+        """
+        Generate test files deterministically based on address.
+
+        :param cleanup: Remove files in shard directory.
+        :param rebuild: Re-generate any file shards.
+        :param set_height_interval: Number of shards to generate before
+                                    notifying the server.
+        :return: Number of files generated.
+        """
 
         self._init_messenger()
 
@@ -135,7 +157,6 @@ class Client(object):
             at the first height, at some height_interval, or the last height.
 
             :param cur_height: Current height in the building process.
-            :return: number of generated files
             """
             first = cur_height == 1
             set_height = (cur_height % int(set_height_interval)) == 0
