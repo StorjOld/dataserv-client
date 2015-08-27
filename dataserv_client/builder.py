@@ -25,19 +25,9 @@ class Builder:
         content = content.encode('utf-8')
         return hashlib.sha256(content).hexdigest()
 
-# FIXME how is this not equivelant to the methods below
-#   def build_seeds(self, height):
-#       """Deterministically build seeds."""
-#       seed = self.sha256(self.address)
-#       seeds = []
-#       for i in range(height):
-#           seed = self.sha256(seed)
-#           seeds.append(seed)
-#       return seeds if seeds else [seed]
-
-#   def build_seed(self, height):
-#       """Deterministically build a seed."""
-#       return self.build_seeds(height).pop()
+    def pop_seed(self, height):
+        """Deterministically build a seed."""
+        return self.build_seeds(height-1).pop()
 
     def build_seed(self, height):
         """Deterministically build a seed."""
