@@ -138,5 +138,5 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
         height = len(generated)
-        self.messanger.height(height)
+        #self.messanger.height(height)
         return generated
