@@ -67,16 +67,17 @@ class Client(object):
     def register(self):
         """Attempt to register the config address."""
         self._init_messenger()
-        registered = self.messenger.register(self.cfg["payout_address"])
-        auth_addr = self.messenger.auth_address()
-
+        auth_address = self.messenger.auth_address()
+        payout_address = self.cfg["payout_address"]
+        registered = self.messenger.register(payout_address)
         if registered:
-            print("Address {0} now registered on {1}.".format(auth_addr,
-                                                              self.url))
+            msg = "Address {0} registered on {1} with payout address {2}."
+            print(msg.format(auth_address, self.url, payout_address))
         else:
-            print("Failed to register address {0} on {1}.".format(auth_addr,
-                                                                  self.url))
-        return True
+            msg = ("Failed to register address {0} "
+                   "on {1} with payout address {2}!")
+            print(msg.format(auth_address, self.url, payout_address))
+        return registered
 
     def config(self, set_wallet=None, set_payout_address=None):
         """
@@ -89,12 +90,12 @@ class Client(object):
         config_updated = False
 
         # update payout address if requested
-        if set_payout_address: 
+        if set_payout_address:
             self.cfg["payout_address"] = set_payout_address
             config_updated = True
 
         # update wallet if requested
-        if set_wallet: 
+        if set_wallet:
             self.cfg["wallet"] = set_wallet
             config_updated = True
 
