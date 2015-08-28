@@ -56,10 +56,9 @@ shell: setup
 
 
 test_single:
-	$(PIP) uninstall dataserv-client
+	#$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
-	$(PY) test.py
-	#$(PY) -m unittest tests.test_builder.TestBuilder.test_build_rebuild
+	$(PY) -m unittest tests.test_config
 	#time dataserv-client --debug --url=http://78.46.188.55:5000 --max_size=5368709120 build
 
 

@@ -41,6 +41,16 @@ class TestConfig(unittest.TestCase):
     def test_validate(self):
         pass  # TODO implement
 
+    def test_migrate(self):
+        path = tempfile.mktemp()
+        cfg = {
+            "version": "2.0.0",
+            "master_secret": "test_master_secret",
+            "payout_address": "1A8WqiJDh3tGVeEefbMN5BVDYxx2XSoWgG",
+        }
+        cfg = config.migrate(self.btctxstore, path, cfg)
+        self.assertTrue(config.validate(self.btctxstore, cfg))
+
 
 if __name__ == '__main__':
     unittest.main()
