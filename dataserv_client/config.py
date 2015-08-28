@@ -58,7 +58,7 @@ def validate(btctxstore, cfg):
 def get(btctxstore, path, password=None):
     if os.path.exists(path):
         cfg = read(path, password=password)
-        # TODO migrate here
+        cfg = migrate(btctxstore, path, cfg, password=password)
         validate(btctxstore, cfg)
         return cfg
     return create(btctxstore, path, password=password)
