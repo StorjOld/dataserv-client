@@ -160,7 +160,7 @@ class Client(object):
             """
             first = cur_height == 1
             set_height = (cur_height % int(set_height_interval)) == 0
-            last = (int(self.max_size / common.SHARD_SIZE) + 1) == cur_height
+            last = int(self.max_size / common.SHARD_SIZE) == cur_height
 
             if first or set_height or last:
                 self.messenger.height(cur_height)
