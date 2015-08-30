@@ -17,6 +17,13 @@ from dataserv_client import deserialize
 from dataserv_client import __version__
 
 
+SHOW_CONFIG_TEMPLATE = """Current configuration.
+
+    Authentication address: {0}
+    Payout address: {0}
+"""
+
+
 class Client(object):
 
     def __init__(self, url=common.DEFAULT_URL, debug=False,
@@ -82,6 +89,7 @@ class Client(object):
         :param set_payout_address:  Set the payout address.
         :return: Configuation object.
         """
+        self._init_messenger()
         config_updated = False
 
         # update payout address if requested
@@ -98,7 +106,11 @@ class Client(object):
         if config_updated:
             config.save(self.btctxstore, self.cfg_path, self.cfg)
 
-        print(json.dumps(self.cfg, indent=2))
+        # display config
+        print(SHOW_CONFIG_TEMPLATE.format(
+            self.cfg["payout_address"],
+            self.messenger.auth_address(),
+        ))
         return self.cfg
 
     def ping(self):
