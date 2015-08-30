@@ -76,6 +76,7 @@ class Client(object):
         payout_address = self.cfg["payout_address"]
         self.messenger.register(payout_address)
         print("Registered on server '{0}'.".format(self.url))
+        return True
 
     def config(self, set_wallet=None, set_payout_address=None):
         """
@@ -185,7 +186,7 @@ class Client(object):
 
     def start(self):
         """ Fully automatic client for users wishing a simple turnkey solution.
-        This will run all functions automaticly with the most sane defaults
+        This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
         """
         try:
