@@ -6,7 +6,7 @@ install_aliases()
 import os
 import time
 import json
-import datetime
+from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
 from dataserv_client import config
@@ -15,8 +15,6 @@ from dataserv_client import builder
 from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
-
-_now = datetime.datetime.now
 
 
 class Client(object):
@@ -62,21 +60,18 @@ class Client(object):
             wif = self.btctxstore.get_key(self.cfg["wallet"])
             self.messenger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
-                                                 self.retry_delay)
+                                                 self.retry_delay,
+                                                 debug=self.debug)
 
     def register(self):
         """Attempt to register the config address."""
         self._init_messenger()
-        auth_address = self.messenger.auth_address()
         payout_address = self.cfg["payout_address"]
         registered = self.messenger.register(payout_address)
         if registered:
-            msg = "Address {0} registered on {1} with payout address {2}."
-            print(msg.format(auth_address, self.url, payout_address))
+            print("Registered on server '{0}'.".format(self.url))
         else:
-            msg = ("Failed to register address {0} "
-                   "on {1} with payout address {2}!")
-            print(msg.format(auth_address, self.url, payout_address))
+            print("Failed to register on server '{0}'!".format(self.url))
         return registered
 
     def config(self, set_wallet=None, set_payout_address=None):
@@ -103,15 +98,15 @@ class Client(object):
         if config_updated:
             config.save(self.btctxstore, self.cfg_path, self.cfg)
 
-        print(json.dumps(self.cfg, indent=2))  # should we output this?
+        print(json.dumps(self.cfg, indent=2))
         return self.cfg
 
     def ping(self):
         """Attempt one keep-alive with the server."""
         self._init_messenger()
 
-        print("Pinging {0} with address {1}.".format(
-            self.messenger.server_url(), self.messenger.auth_address()))
+        msg = "Pinging server '{0}' at {1:%Y-%m-%d %H:%M:%S}."
+        print(msg.format(self.messenger.server_url(), datetime.now()))
         self.messenger.ping()
 
         return True
@@ -126,7 +121,9 @@ class Client(object):
         :param limit: Number of seconds in the future to stop polling.
         :return: True, if limit is reached. None, if otherwise.
         """
-        stop_time = _now() + timedelta(seconds=int(limit)) if limit else None
+        stop_time = None
+        if limit:
+            stop_time = datetime.now() + timedelta(seconds=int(limit))
 
         if register_address:  # in case the user forgot to register
             self.register()
@@ -134,7 +131,7 @@ class Client(object):
         while True:  # ping the server every X seconds
             self.ping()
 
-            if stop_time and _now() >= stop_time:
+            if stop_time and datetime.now() >= stop_time:
                 return True
             time.sleep(int(delay))
 

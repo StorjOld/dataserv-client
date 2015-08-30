@@ -84,9 +84,9 @@ Quickstart example
 
 ::
 
-    # Optionally set payout address and wallet (generated automatically)
+    # Optionally set a cold storage payout address.
+    # You can set your counterparty wallet address here.
     $ dataserv-client config --set_payout_address=<BITCOIN_ADDRESS>
-    $ dataserv-client config --set_wallet=<HWIF>
 
     # register your node
     $ dataserv-client register

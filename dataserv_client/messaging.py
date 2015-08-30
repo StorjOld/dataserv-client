@@ -15,11 +15,12 @@ from dataserv_client import exceptions
 class Messaging(object):
 
     def __init__(self, server_url, wif, connection_retry_limit,
-                 connection_retry_delay):
+                 connection_retry_delay, debug=False):
         self._server_url = server_url
         self._server_address = None
         self._connection_retry_limit = connection_retry_limit
         self._connection_retry_delay = connection_retry_delay
+        self.debug = debug
 
         # FIXME pass testnet and dryrun options
         self._btctxstore = btctxstore.BtcTxStore()
@@ -37,15 +38,20 @@ class Messaging(object):
 
     def _url_query(self, api_path, retries=0, authenticate=True):
         try:
-            req = urllib.request.Request(self._server_url + api_path)
+            query_url = self._server_url + api_path
+            req = urllib.request.Request(query_url)
             if self._get_wif() and authenticate:
                 headers = self._create_authentication_headers()
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
+            if self.debug:
+                print("Query: {0}".format(query_url))
             response = urllib.request.urlopen(req)
             if response.code == 200:
                 return response.read()
         except urllib.error.HTTPError as e:
+            if self.debug:
+                print("Error: {0}".format(repr(e)))
             if e.code == 409:
                 raise exceptions.AddressAlreadyRegistered(self.auth_address(),
                                                           self._server_url)
@@ -57,11 +63,17 @@ class Messaging(object):
                 raise exceptions.FarmerError(self._server_url)
             else:
                 raise e  # pragma: no cover
-        except http.client.HTTPException:
+        except http.client.HTTPException as e:
+            if self.debug:
+                print("Error: {0}".format(repr(e)))
             self._handle_connection_error(api_path, retries, authenticate)
-        except urllib.error.URLError:
+        except urllib.error.URLError as e:
+            if self.debug:
+                print("Error: {0}".format(repr(e)))
             self._handle_connection_error(api_path, retries, authenticate)
-        except socket.error:
+        except socket.error as e:
+            if self.debug:
+                print("Error: {0}".format(repr(e)))
             self._handle_connection_error(api_path, retries, authenticate)
 
     def _get_node_address(self):
