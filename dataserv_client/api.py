@@ -12,6 +12,7 @@ from btctxstore import BtcTxStore
 from dataserv_client import config
 from dataserv_client import common
 from dataserv_client import builder
+from dataserv_client import exceptions
 from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
