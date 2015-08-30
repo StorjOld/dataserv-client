@@ -79,14 +79,13 @@ Command line interface usage
 ============================
 
 
-Farmer quickstart example
--------------------------
+Farmer quickstart guide
+-----------------------
 
-Configure your farmer node.
-###########################
+**Configure your farmer node**
 
 Optionally set a cold storage payout address.
-You can set your counterparty wallet address here.
+You can set a counterparty wallet address here.
 All configuration mest be done before starting the node.
 
 ::
@@ -95,14 +94,13 @@ All configuration mest be done before starting the node.
 
 
 
-Start your farmer node.
-#######################
+**Start your farmer node**
 
 Optionally specifiy the path to store data path and available space.
 
 ::
 
-    dataserv-client --store_path=<PATH> --max_size=<SIZE_IN_BYTES> start
+    dataserv-client --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm
 
 Optional max_size syntax
 

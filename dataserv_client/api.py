@@ -185,7 +185,7 @@ class Client(object):
         print("Build finished")
         return generated
 
-    def start(self):
+    def farm(self):
         """ Fully automatic client for users wishing a simple turnkey solution.
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.

@@ -108,9 +108,9 @@ def _add_build(command_parser):
     )
 
 
-def _add_start(command_parser):
-    start_parser = command_parser.add_parser(
-        "start", help="Fully automatic client."
+def _add_farm(command_parser):
+    farm_parser = command_parser.add_parser(
+        "farm", help="Start farmer."
     )
 
 
@@ -138,7 +138,7 @@ def _parse_args(args):
     _add_poll(command_parser)
     _add_build(command_parser)
     _add_config(command_parser)
-    _add_start(command_parser)
+    _add_farm(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))
