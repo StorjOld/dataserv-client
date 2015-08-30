@@ -9,8 +9,8 @@ from datetime import datetime
 import partialhash
 from dataserv_client.builder import Builder
 
-my_shard_size = 1024 * 1024 * 128  # 128 MB
-my_max_size = 1024 * 1024 * 256  # 256 MB
+my_shard_size = 1024 * 128  # 128K 
+my_max_size = 1024 * 256  # 256 !
 height = int(my_max_size / my_shard_size)
 fixtures = json.load(open("tests/fixtures.json"))
 addresses = fixtures["addresses"]

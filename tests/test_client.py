@@ -1,3 +1,7 @@
+from dataserv_client import common
+
+common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
+
 import time
 import tempfile
 import unittest
@@ -114,14 +118,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
     def test_build(self):
         client = api.Client(url=url, debug=True,
                             config_path=tempfile.mktemp(),
-                            max_size=1024 * 1024 * 256)  # 256MB
+                            max_size=1024 * 256)  # 256K
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated))
 
         client = api.Client(url=url, debug=True,
                             config_path=tempfile.mktemp(),
-                            max_size=1024 * 1024 * 512)  # 512MB
+                            max_size=1024 * 512)  # 512K
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)

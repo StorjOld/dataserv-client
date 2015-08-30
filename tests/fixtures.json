@@ -33,8 +33,8 @@
         "hash3" : "4192fe2dd784eb5bc770258e5a494a3025b43025304def4b088c574dc4fa8821"
     },
     "test_builder_audit" : {
-        "result0" : "ba5a1733144184f8a9a479048d6e451b3639292f4f805e8eccb27aead92cbf93",
-        "result1" : "c790ba29ee4b43218637c84bececc41644e1e03718c824bd41c3adc960da3160",
-        "expected" : "8d48bf4684c2f8d3bdedfa9b88d29ebdb447263713268bd92a7c7c21881389a2"
+        "result0" : "fe1c53216c9caf86d59223d748523e517e14f5aea93e795df1970020e2e85bce",
+        "result1" : "4d37964e85db33544f6e5e1fb862a6f42baf9166b447e8d93e573f79dcd79812",
+        "expected" : "2442550929857fd6046f7d4c53ef6a7360aee0f28c7b5ae3bdfdc02f7087c9ea"
     }
 }
