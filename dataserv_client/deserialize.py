@@ -1,4 +1,5 @@
 from btctxstore.deserialize import *  # NOQA
+import decimal
 
 
 def byte_count(byte_count):  # ugly but much faster and safer then regex
@@ -11,7 +12,7 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)
         if byte_count[-char_num:] == postfix:
-            return int(byte_count[:-char_num]) * (base ** exponant)
+            return decimal.Decimal(byte_count[:-char_num]) * (base ** exponant)
         return None
 
     # check base 1024
