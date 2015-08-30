@@ -75,12 +75,8 @@ Update client
     $ dataserv-client version
 
 
-Command line interface usage
-============================
-
-
 Farmer quickstart guide
------------------------
+=======================
 
 **Configure your farmer node**
 
@@ -118,6 +114,10 @@ Optional max_size syntax
     --max_size=1PB # 1000^5 bytes
 
 
+Command line interface usage
+============================
+
+
 Argument ordering
 -----------------
 
@@ -142,8 +142,7 @@ Show program help, optional arguments and commands
     $ dataserv-client --help
     usage: dataserv-client [-h] [--url URL] [--max_size MAX_SIZE]
                            [--store_path STORE_PATH] [--config_path CONFIG_PATH]
-                           [--debug] [--set_wallet SET_WALLET]
-                           [--set_payout_address SET_PAYOUT_ADDRESS]
+                           [--debug]
                            <command> ...
 
     Dataserve client command-line interface.
@@ -154,9 +153,9 @@ Show program help, optional arguments and commands
                             http://status.driveshare.org).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
       --store_path STORE_PATH
-                            Storage path. (default: /home/username/.storj/store).
+                            Storage path. (default: /home/fabe/.storj/store).
       --config_path CONFIG_PATH
-                            Config path. (default: /home/username/.storj/config.json).
+                            Config path. (default: /home/fabe/.storj/config.json).
       --debug               Show debug information.
 
     commands:
@@ -167,7 +166,7 @@ Show program help, optional arguments and commands
         poll                Let the network know your are online.
         build               Fill the farmer with data up to their max.
         config              Edit and display config.
-
+        farm                Start farmer.
 
 
 Show command help and optional arguments
@@ -175,14 +174,14 @@ Show command help and optional arguments
 
 ::
 
-    $ dataserv-client build --help
-    usage: dataserv-client build [-h] [--cleanup] [--rebuild]
-                                 [--set_height_interval SET_HEIGHT_INTERVAL]
+    $ dataserv-client config --help
+    usage: dataserv-client config [-h] [--set_wallet SET_WALLET]
+                                  [--set_payout_address SET_PAYOUT_ADDRESS]
 
     optional arguments:
       -h, --help            show this help message and exit
-      --cleanup             Remove generated files.
-      --rebuild             Replace previously files.
-      --set_height_interval SET_HEIGHT_INTERVAL
-                            Interval at which to set height (default: 25).
+      --set_wallet SET_WALLET
+                            Set node wallet to given hwif.
+      --set_payout_address SET_PAYOUT_ADDRESS
+                            Root address of wallet used by default.
 
