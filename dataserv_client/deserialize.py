@@ -12,7 +12,8 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)
         if byte_count[-char_num:] == postfix:
-            return int(decimal.Decimal(byte_count[:-char_num]) * (base ** exponant))
+            count = byte_count[:-char_num]  # remove postfix
+            return int(decimal.Decimal(count) * (base ** exponant))
         return None
 
     # check base 1024
