@@ -79,32 +79,35 @@ Command line interface usage
 ============================
 
 
-Quickstart example
-------------------
+Farmer quickstart example
+-------------------------
+
+Configure your farmer node.
+###########################
+
+Optionally set a cold storage payout address.
+You can set your counterparty wallet address here.
+All configuration mest be done before starting the node.
 
 ::
 
-    # Optionally set a cold storage payout address.
-    # You can set your counterparty wallet address here.
-    $ dataserv-client config --set_payout_address=<BITCOIN_ADDRESS>
-
-    # register your node
-    $ dataserv-client register
-
-    # create shards
-    $ dataserv-client build
-
-    # let the network know you are online
-    $ dataserv-client poll
+    dataserv-client config --set_payout_address=<BITCOIN_ADDRESS>
 
 
-Build with custom max data size and store path
+
+Start your farmer node.
+#######################
+
+Optionally specifiy the path to store data path and available space.
 
 ::
 
-    $ dataserv-client --store_path=<PATH_TO_FOLDER> --max_size=<MAX_DATA_SIZE_IN_BYTES> build
+    dataserv-client --store_path=<PATH> --max_size=<SIZE_IN_BYTES> start
 
-    # optional max_size syntax
+Optional max_size syntax
+
+::
+
     --max_size=1K  # 1024^1 bytes
     --max_size=1KB # 1000^1 bytes
     --max_size=1M  # 1024^2 bytes
