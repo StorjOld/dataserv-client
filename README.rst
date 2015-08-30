@@ -130,7 +130,7 @@ Argument ordering example
 
 ::
 
-    $ dataserv-client --max_size=10G build --rebuild
+    $ dataserv-client --debug build --rebuild
 
 
 Show program help, optional arguments and commands

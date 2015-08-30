@@ -108,6 +108,12 @@ def _add_build(command_parser):
     )
 
 
+def _add_start(command_parser):
+    start_parser = command_parser.add_parser(
+        "start", help="Fully automatic client."
+    )
+
+
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):
         def error(self, message):
@@ -132,6 +138,7 @@ def _parse_args(args):
     _add_poll(command_parser)
     _add_build(command_parser)
     _add_config(command_parser)
+    _add_start(command_parser)
 
     # get values
     arguments = vars(parser.parse_args(args=args))

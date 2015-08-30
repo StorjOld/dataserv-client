@@ -74,12 +74,8 @@ class Client(object):
         """Attempt to register the config address."""
         self._init_messenger()
         payout_address = self.cfg["payout_address"]
-        registered = self.messenger.register(payout_address)
-        if registered:
-            print("Registered on server '{0}'.".format(self.url))
-        else:
-            print("Failed to register on server '{0}'!".format(self.url))
-        return registered
+        self.messenger.register(payout_address)
+        print("Registered on server '{0}'.".format(self.url))
 
     def config(self, set_wallet=None, set_payout_address=None):
         """
@@ -159,6 +155,7 @@ class Client(object):
         """
 
         self._init_messenger()
+        print("Starting build")
 
         def _on_generate_shard(cur_height, cur_seed, cur_file_hash):
             """
@@ -173,6 +170,7 @@ class Client(object):
 
             if first or set_height or last:
                 self.messenger.height(cur_height)
+                print("Current height at {0}.".format(cur_height))
 
         # Initialize builder and generate/re-generate shards
         bldr = builder.Builder(self.cfg["payout_address"],
@@ -182,4 +180,17 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
 
+        print("Build finished")
         return generated
+
+    def start(self):
+        """ Fully automatic client for users wishing a simple turnkey solution.
+        This will run all functions automaticly with the most sane defaults
+        and as little user interface as possible.
+        """
+        try:
+            self.register()
+        except exceptions.AddressAlreadyRegistered:
+            pass  # already registered ...
+        self.build()
+        self.poll()
