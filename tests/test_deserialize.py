@@ -43,27 +43,27 @@ class TestByteCount(unittest.TestCase):
 
     def test_base_1000(self):
         self.assertEqual(deserialize.byte_count("0KB"), 0 * (1000 ** 1))
-        self.assertEqual(deserialize.byte_count("0.49KB"), 0.49 * (1000 ** 1))
+        self.assertEqual(deserialize.byte_count("0.49KB"), int(0.49 * (1000 ** 1)))
         self.assertEqual(deserialize.byte_count("1KB"), 1 * (1000 ** 1))
         self.assertEqual(deserialize.byte_count("2KB"), 2 * (1000 ** 1))
 
         self.assertEqual(deserialize.byte_count("0MB"), 0 * (1000 ** 2))
-        self.assertEqual(deserialize.byte_count("0.49MB"), 0.49 * (1000 ** 2))
+        self.assertEqual(deserialize.byte_count("0.49MB"), int(0.49 * (1000 ** 2)))
         self.assertEqual(deserialize.byte_count("1MB"), 1 * (1000 ** 2))
         self.assertEqual(deserialize.byte_count("2MB"), 2 * (1000 ** 2))
 
         self.assertEqual(deserialize.byte_count("0GB"), 0 * (1000 ** 3))
-        self.assertEqual(deserialize.byte_count("0.49GB"), 0.49 * (1000 ** 3))
+        self.assertEqual(deserialize.byte_count("0.49GB"), int(0.49 * (1000 ** 3)))
         self.assertEqual(deserialize.byte_count("1GB"), 1 * (1000 ** 3))
         self.assertEqual(deserialize.byte_count("2GB"), 2 * (1000 ** 3))
 
         self.assertEqual(deserialize.byte_count("0TB"), 0 * (1000 ** 4))
-        self.assertEqual(deserialize.byte_count("0.49TB"), 0.49 * (1000 ** 4))
+        self.assertEqual(deserialize.byte_count("0.49TB"), int(0.49 * (1000 ** 4)))
         self.assertEqual(deserialize.byte_count("1TB"), 1 * (1000 ** 4))
         self.assertEqual(deserialize.byte_count("2TB"), 2 * (1000 ** 4))
 
         self.assertEqual(deserialize.byte_count("0PB"), 0 * (1000 ** 5))
-        self.assertEqual(deserialize.byte_count("0.49PB"), 0.49 * (1000 ** 5))
+        self.assertEqual(deserialize.byte_count("0.49PB"), int(0.49 * (1000 ** 5)))
         self.assertEqual(deserialize.byte_count("1PB"), 1 * (1000 ** 5))
         self.assertEqual(deserialize.byte_count("2PB"), 2 * (1000 ** 5))
 
