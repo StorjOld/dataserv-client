@@ -36,7 +36,7 @@ class Client(object):
 
         self.url = url
         self.debug = debug
-        self.max_size = deserialize.byte_count(max_size)
+        self.max_size = deserialize.positive_integer(deserialize.byte_count(max_size))
 
         self.messenger = None  # lazy
         self.btctxstore = BtcTxStore()
@@ -155,6 +155,7 @@ class Client(object):
         :param set_height_interval: Number of shards to generate before
                                     notifying the server.
         """
+        set_height_interval = deserialize.positive_integer(set_height_interval)
 
         self._init_messenger()
         print("Starting build")
