@@ -56,11 +56,11 @@ class Messaging(object):
                 raise exceptions.AddressAlreadyRegistered(self.auth_address(),
                                                           self._server_url)
             elif e.code == 404:
-                raise exceptions.FarmerNotFound(self._server_url)
+                raise exceptions.ServerNotFound(self._server_url)
             elif e.code == 400:
                 raise exceptions.InvalidAddress(self.auth_address())
             elif e.code == 500:  # pragma: no cover
-                raise exceptions.FarmerError(self._server_url)
+                raise exceptions.ServerError(self._server_url)
             else:
                 raise e  # pragma: no cover
         except http.client.HTTPException as e:

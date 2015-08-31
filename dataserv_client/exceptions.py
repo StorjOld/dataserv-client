@@ -38,18 +38,18 @@ class AddressAlreadyRegistered(DataservClientException):
         super(AddressAlreadyRegistered, self).__init__(msg)
 
 
-class FarmerNotFound(DataservClientException):
+class ServerNotFound(DataservClientException):
 
     def __init__(self, url):
-        msg = "Farmer not found at {0}!".format(url)
-        super(FarmerNotFound, self).__init__(msg)
+        msg = "Server not found at {0}!".format(url)
+        super(ServerNotFound, self).__init__(msg)
 
 
-class FarmerError(DataservClientException):
+class ServerError(DataservClientException):
 
     def __init__(self, url):
-        msg = "Farmer error at {0}!".format(url)  # pragma: no cover
-        super(FarmerError, self).__init__(msg)  # pragma: no cover
+        msg = "Server error at {0}!".format(url)  # pragma: no cover
+        super(ServerError, self).__init__(msg)  # pragma: no cover
 
 
 class InvalidAddress(DataservClientException):

@@ -43,7 +43,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 config_path=tempfile.mktemp())
             client.register()
 
-        self.assertRaises(exceptions.FarmerNotFound, callback)
+        self.assertRaises(exceptions.ServerNotFound, callback)
 
 
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
@@ -59,7 +59,7 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
                                 config_path=tempfile.mktemp())
             client.ping()
 
-        self.assertRaises(exceptions.FarmerNotFound, callback)
+        self.assertRaises(exceptions.ServerNotFound, callback)
 
 
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
