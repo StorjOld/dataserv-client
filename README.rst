@@ -102,16 +102,16 @@ Optional max_size syntax
 
 ::
 
-    --max_size=1K  # 1024^1 bytes
-    --max_size=1KB # 1000^1 bytes
-    --max_size=1M  # 1024^2 bytes
-    --max_size=1MB # 1000^2 bytes
-    --max_size=1G  # 1024^3 bytes
-    --max_size=1GB # 1000^3 bytes
-    --max_size=1T  # 1024^4 bytes
-    --max_size=1TB # 1000^4 bytes
-    --max_size=1P  # 1024^5 bytes
-    --max_size=1PB # 1000^5 bytes
+    --max_size=1.0K  # 1024^1 bytes
+    --max_size=1.0KB # 1000^1 bytes
+    --max_size=1.0M  # 1024^2 bytes
+    --max_size=1.0MB # 1000^2 bytes
+    --max_size=1.0G  # 1024^3 bytes
+    --max_size=1.0GB # 1000^3 bytes
+    --max_size=1.0T  # 1024^4 bytes
+    --max_size=1.0TB # 1000^4 bytes
+    --max_size=1.0P  # 1024^5 bytes
+    --max_size=1.0PB # 1000^5 bytes
 
 
 Command line interface usage
