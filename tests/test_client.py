@@ -66,7 +66,7 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         client = api.Client(url=url, debug=True,
                             config_path=tempfile.mktemp())
-        self.assertTrue(client.poll(register_address=True, limit=60))
+        self.assertTrue(client.poll(register_address=True, delay=2, limit=10))
 
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
