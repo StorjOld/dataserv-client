@@ -165,7 +165,9 @@ class Client(object):
         :param set_height_interval: Number of shards to generate before
                                     notifying the server.
         """
-        set_height_interval = deserialize.positive_integer(set_height_interval)
+        set_height_interval = deserialize.positive_nonzero_integer(
+            set_height_interval
+        )
         cleanup = deserialize.flag(cleanup)
         rebuild = deserialize.flag(rebuild)
 

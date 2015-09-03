@@ -5,6 +5,13 @@ import decimal
 from dataserv_client import exceptions
 
 
+def positive_nonzero_integer(i):
+    i = positive_integer(i)
+    if i == 0:
+        raise InvalidInput("Value must be greater then 0!")
+    return i
+
+
 def url(urlstr):
     # source http://stackoverflow.com/a/7160778/90351
     regex = re.compile(
@@ -25,13 +32,13 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
 
     # default value or python api used
     if isinstance(byte_count, int):
-        return positive_integer(byte_count)
+        return positive_nonzero_integer(byte_count)
 
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)
         if byte_count[-char_num:] == postfix:
             count = decimal.Decimal(byte_count[:-char_num])  # remove postfix
-            return positive_integer(count * (base ** exponant))
+            return positive_nonzero_integer(count * (base ** exponant))
         return None
 
     # check base 1024
@@ -56,6 +63,6 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
         if n is not None:
             return n
 
-    return positive_integer(byte_count)
+    return positive_nonzero_integer(byte_count)
 
 
