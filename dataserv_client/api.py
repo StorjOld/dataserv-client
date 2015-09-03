@@ -5,7 +5,6 @@ install_aliases()
 
 import os
 import time
-import json
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
@@ -34,9 +33,9 @@ class Client(object):
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
-        self.url = url
-        self.debug = debug
-        self.max_size = deserialize.positive_integer(deserialize.byte_count(max_size))
+        self.url = deserialize.url(url)
+        self.debug = deserialize.flag(debug)
+        self.max_size = deserialize.byte_count(max_size)
 
         self.messenger = None  # lazy
         self.btctxstore = BtcTxStore()
@@ -87,6 +86,10 @@ class Client(object):
         :param set_payout_address:  Set the payout address.
         :return: Configuation object.
         """
+        if((set_payout_address is not None) and
+                (not self.btctxstore.validate_address(set_payout_address))):
+            raise exceptions.InvalidAddress(set_payout_address)
+
         self._init_messenger()
         config_updated = False
 
@@ -97,7 +100,7 @@ class Client(object):
 
         # update wallet if requested
         if set_wallet:
-            self.cfg["wallet"] = set_wallet
+            self.cfg["wallet"] = set_wallet  # FIXME validate hwif
             config_updated = True
 
         # save config if updated
@@ -121,7 +124,9 @@ class Client(object):
 
         return True
 
-    def poll(self, register_address=False, delay=common.DEFAULT_DELAY,
+    def poll(self,
+             register_address=False,  # FIXME remove argument
+             delay=common.DEFAULT_DELAY,
              limit=None):
         """
         Attempt continuous keep-alive with the server.
@@ -131,6 +136,7 @@ class Client(object):
         :param limit: Number of seconds in the future to stop polling.
         :return: True, if limit is reached. None, if otherwise.
         """
+        delay = deserialize.positive_integer(delay)
         stop_time = None
         if limit:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
@@ -156,6 +162,8 @@ class Client(object):
                                     notifying the server.
         """
         set_height_interval = deserialize.positive_integer(set_height_interval)
+        cleanup = deserialize.flag(cleanup)
+        rebuild = deserialize.flag(rebuild)
 
         self._init_messenger()
         print("Starting build")

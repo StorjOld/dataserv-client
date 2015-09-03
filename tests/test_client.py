@@ -83,14 +83,14 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
                        config_path=tempfile.mktemp())
 
         self.assertRaises(exceptions.InvalidInput, callback)
-        
+
     def test_invalid_max_size(self):
         def callback():
             api.Client(max_size=-1, debug=True,
                        config_path=tempfile.mktemp())
 
         self.assertRaises(exceptions.InvalidInput, callback)
-    
+
     def test_invalid_set_height_interval(self):
         def callback():
             client = api.Client(debug=True, config_path=tempfile.mktemp())
@@ -225,7 +225,7 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
             client = api.Client(debug=True, config_path=tempfile.mktemp())
             client.config(set_payout_address="invalid")
 
-        self.assertRaises(exceptions.InvalidConfig, callback)
+        self.assertRaises(exceptions.InvalidAddress, callback)
 
     def test_persistance(self):
         config_path = tempfile.mktemp()

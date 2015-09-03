@@ -1,5 +1,23 @@
 from btctxstore.deserialize import *  # NOQA
+
+import re
 import decimal
+from dataserv_client import exceptions
+
+
+def url(urlstr):
+    # source http://stackoverflow.com/a/7160778/90351
+    regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  #domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE
+    )
+    if not bool(regex.match(urlstr)):
+        raise exceptions.InvalidUrl()
+    return urlstr
 
 
 def byte_count(byte_count):  # ugly but much faster and safer then regex
@@ -7,13 +25,13 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
 
     # default value or python api used
     if isinstance(byte_count, int):
-        return byte_count
+        return positive_integer(byte_count)
 
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)
         if byte_count[-char_num:] == postfix:
-            count = byte_count[:-char_num]  # remove postfix
-            return int(decimal.Decimal(count) * (base ** exponant))
+            count = decimal.Decimal(byte_count[:-char_num])  # remove postfix
+            return positive_integer(count * (base ** exponant))
         return None
 
     # check base 1024
@@ -38,5 +56,6 @@ def byte_count(byte_count):  # ugly but much faster and safer then regex
         if n is not None:
             return n
 
-    return int(byte_count)
+    return positive_integer(byte_count)
+
 

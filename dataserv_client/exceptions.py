@@ -12,6 +12,12 @@ class ExistingConfig(DataservClientException):
         super(ExistingConfig, self).__init__(msg)
 
 
+class InvalidUrl(DataservClientException):
+
+    def __init__(self):
+        super(InvalidUrl, self).__init__("Invalid Url!")
+
+
 class InvalidConfig(DataservClientException):
 
     def __init__(self):
