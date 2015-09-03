@@ -84,9 +84,16 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
-    def test_invalid_max_size(self):
+    def test_invalid_negativ_max_size(self):
         def callback():
             api.Client(max_size=-1, debug=True,
+                       config_path=tempfile.mktemp())
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_invalid_zero_max_size(self):
+        def callback():
+            api.Client(max_size=0, debug=True,
                        config_path=tempfile.mktemp())
 
         self.assertRaises(exceptions.InvalidInput, callback)
