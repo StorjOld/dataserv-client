@@ -89,6 +89,9 @@ class Client(object):
         if((set_payout_address is not None) and
                 (not self.btctxstore.validate_address(set_payout_address))):
             raise exceptions.InvalidAddress(set_payout_address)
+        if((set_wallet is not None) and
+                (not self.btctxstore.validate_wallet(set_wallet))):
+            raise exceptions.InvalidHWIF(set_wallet)
 
         self._init_messenger()
         config_updated = False

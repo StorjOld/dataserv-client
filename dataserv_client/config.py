@@ -49,8 +49,7 @@ def validate(btctxstore, cfg):
         raise exceptions.InvalidConfig()
 
     # has valid wallet
-    wif = btctxstore.get_key(cfg.get("wallet"))
-    if not btctxstore.validate_key(wif):
+    if not btctxstore.validate_wallet(cfg.get("wallet")):
         raise exceptions.InvalidConfig()
     return True
 
