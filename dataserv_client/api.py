@@ -140,6 +140,7 @@ class Client(object):
         :return: True, if limit is reached. None, if otherwise.
         """
         delay = deserialize.positive_integer(delay)
+        register_address = deserialize.flag(register_address)
         stop_time = None
         if limit:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
