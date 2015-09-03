@@ -8,7 +8,7 @@ from dataserv_client import exceptions
 def positive_nonzero_integer(i):
     i = positive_integer(i)
     if i == 0:
-        raise InvalidInput("Value must be greater then 0!")
+        raise exceptions.InvalidInput("Value must be greater then 0!")
     return i
 
 
