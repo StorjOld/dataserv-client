@@ -84,20 +84,33 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
-    def test_invalid_max_size(self):
+    def test_invalid_negativ_max_size(self):
         def callback():
             api.Client(max_size=-1, debug=True,
                        config_path=tempfile.mktemp())
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
-    def test_invalid_set_height_interval(self):
+    def test_invalid_zero_max_size(self):
+        def callback():
+            api.Client(max_size=0, debug=True,
+                       config_path=tempfile.mktemp())
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(debug=True, config_path=tempfile.mktemp())
             client.build(set_height_interval=-1)
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
+    def test_invalid_zero_set_height_interval(self):
+        def callback():
+            client = api.Client(debug=True, config_path=tempfile.mktemp())
+            client.build(set_height_interval=0)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
 
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
     def test_no_retry(self):
