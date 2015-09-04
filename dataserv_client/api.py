@@ -17,6 +17,10 @@ from dataserv_client import deserialize
 from dataserv_client import __version__
 
 
+from dataserv_client.common import logging
+logger = logging.getLogger(__name__)
+
+
 SHOW_CONFIG_TEMPLATE = """Current configuration.
 
     Authentication address: {0}
@@ -75,7 +79,7 @@ class Client(object):
         self._init_messenger()
         payout_address = self.cfg["payout_address"]
         self.messenger.register(payout_address)
-        print("Registered on server '{0}'.".format(self.url))
+        logger.info("Registered on server '{0}'.".format(self.url))
         return True
 
     def config(self, set_wallet=None, set_payout_address=None):
@@ -122,7 +126,7 @@ class Client(object):
         self._init_messenger()
 
         msg = "Pinging server '{0}' at {1:%Y-%m-%d %H:%M:%S}."
-        print(msg.format(self.messenger.server_url(), datetime.now()))
+        logger.info(msg.format(self.messenger.server_url(), datetime.now()))
         self.messenger.ping()
 
         return True
@@ -172,7 +176,7 @@ class Client(object):
         rebuild = deserialize.flag(rebuild)
 
         self._init_messenger()
-        print("Starting build")
+        logger.info("Starting build")
 
         def _on_generate_shard(cur_height, cur_seed, cur_file_hash):
             """
@@ -187,7 +191,7 @@ class Client(object):
 
             if first or set_height or last:
                 self.messenger.height(cur_height)
-                print("Current height at {0}.".format(cur_height))
+                logger.info("Current height at {0}.".format(cur_height))
 
         # Initialize builder and generate/re-generate shards
         bldr = builder.Builder(self.cfg["payout_address"],
@@ -197,7 +201,7 @@ class Client(object):
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
 
-        print("Build finished")
+        logger.info("Build finished")
         return generated
 
     def farm(self):
@@ -205,6 +209,11 @@ class Client(object):
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
         """
+
+        # farmer never gives up
+        self._init_messenger()
+        self.messenger.retry_limit = 99999999999999999999999999999999999999
+
         try:
             self.register()
         except exceptions.AddressAlreadyRegistered:

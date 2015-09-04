@@ -8,6 +8,10 @@ import RandomIO
 import partialhash
 
 
+from dataserv_client.common import logging
+logger = logging.getLogger(__name__)
+
+
 class Builder:
 
     def __init__(self, address, shard_size, max_size, on_generate_shard=None,
@@ -87,7 +91,7 @@ class Builder:
         index = index - 1 if index > 0 else index
 
         if self.debug:
-            print("Resuming from height {0}".format(index + 1))
+            logger.info("Resuming from height {0}".format(index + 1))
         return enum_seeds[index:]
 
     def build(self, store_path, cleanup=False, rebuild=False):
@@ -110,7 +114,7 @@ class Builder:
             file_hash = self.generate_shard(seed, store_path, cleanup=cleanup)
             generated[seed] = file_hash
             if self.debug:
-                print("Saving seed {0} with SHA-256 hash {1}.".format(
+                logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
                     seed, file_hash
                 ))
 
@@ -172,6 +176,6 @@ class Builder:
         if self.debug:
             final_time = (datetime.utcnow() - start_time).seconds
             msg = "Seed: {0} with Audit Result: {1} in {2} seconds."
-            print(msg.format(str(seed), hash_result, final_time))
+            logger.info(msg.format(str(seed), hash_result, final_time))
 
         return hash_result

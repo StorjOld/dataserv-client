@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 DEFAULT_URL = "http://status.driveshare.org"
@@ -16,6 +17,9 @@ DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
 
 
 # connection retry
-DEFAULT_CONNECTION_RETRY_LIMIT = 12  # 12 * 5 mins = 1 hour
-DEFAULT_CONNECTION_RETRY_DELAY = 300   # 5 mins
+DEFAULT_CONNECTION_RETRY_LIMIT = 120  # 120 * 30sec = 1 hour
+DEFAULT_CONNECTION_RETRY_DELAY = 30
 
+
+_log_format = "%(levelname)s %(name)s %(lineno)d: %(message)s"      
+logging.basicConfig(format=_log_format, level=logging.DEBUG)

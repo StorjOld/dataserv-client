@@ -11,6 +11,9 @@ import urllib.request
 import btctxstore
 from dataserv_client import exceptions
 
+from dataserv_client.common import logging
+logger = logging.getLogger(__name__)
+
 
 class Messaging(object):
 
@@ -18,8 +21,8 @@ class Messaging(object):
                  connection_retry_delay, debug=False):
         self._server_url = server_url
         self._server_address = None
-        self._connection_retry_limit = connection_retry_limit
-        self._connection_retry_delay = connection_retry_delay
+        self.retry_limit = connection_retry_limit
+        self.retry_delay = connection_retry_delay
         self.debug = debug
 
         # FIXME pass testnet and dryrun options
@@ -45,13 +48,13 @@ class Messaging(object):
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
             if self.debug:
-                print("Query: {0}".format(query_url))
+                logger.info("Query: {0}".format(query_url))
             response = urllib.request.urlopen(req)
             if response.code == 200:
                 return response.read()
         except urllib.error.HTTPError as e:
             if self.debug:
-                print("Error: {0}".format(repr(e)))
+                logger.warning(repr(e))
             if e.code == 409:
                 raise exceptions.AddressAlreadyRegistered(self.auth_address(),
                                                           self._server_url)
@@ -65,16 +68,25 @@ class Messaging(object):
                 raise e  # pragma: no cover
         except http.client.HTTPException as e:
             if self.debug:
-                print("Error: {0}".format(repr(e)))
+                logger.warning(repr(e))
             self._handle_connection_error(api_path, retries, authenticate)
         except urllib.error.URLError as e:
             if self.debug:
-                print("Error: {0}".format(repr(e)))
+                logger.warning(repr(e))
             self._handle_connection_error(api_path, retries, authenticate)
         except socket.error as e:
             if self.debug:
-                print("Error: {0}".format(repr(e)))
+                logger.warning(repr(e))
             self._handle_connection_error(api_path, retries, authenticate)
+
+    def _handle_connection_error(self, api_path, retries, authenticate):
+        if retries >= self.retry_limit:
+            logger.error("Failed to connect to {0}".format(self._server_url))
+            raise exceptions.ConnectionError(self._server_url)
+        delay = self.retry_delay
+        logger.info("Query retry in {0} seconds.".format(delay))
+        time.sleep(delay)
+        return self._url_query(api_path, retries + 1, authenticate)
 
     def _get_node_address(self):
         if not self._server_address:
@@ -89,12 +101,6 @@ class Messaging(object):
         msg = self._get_node_address() + " " + header_date
         header_authorization = self._btctxstore.sign_unicode(self._get_wif(), msg)
         return {"Date": header_date, "Authorization": header_authorization}
-
-    def _handle_connection_error(self, api_path, retries, authenticate):
-        if retries >= self._connection_retry_limit:
-            raise exceptions.ConnectionError(self._server_url)
-        time.sleep(self._connection_retry_delay)
-        return self._url_query(api_path, retries + 1, authenticate)
 
     def server_url(self):
         return self._server_url
