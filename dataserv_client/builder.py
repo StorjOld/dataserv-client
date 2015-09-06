@@ -8,6 +8,7 @@ import RandomIO
 import partialhash
 
 
+from dataserv_client import control
 from dataserv_client.common import logging
 logger = logging.getLogger(__name__)
 
@@ -15,12 +16,13 @@ logger = logging.getLogger(__name__)
 class Builder:
 
     def __init__(self, address, shard_size, max_size, on_generate_shard=None,
-                 debug=False):
+                 debug=False, use_folder_tree=False):
         self.debug = debug
         self.target_height = int(max_size / shard_size)
         self.address = address
         self.shard_size = shard_size
         self.max_size = max_size
+        self.use_folder_tree = use_folder_tree
         self.on_generate_shard = on_generate_shard
 
     @staticmethod
@@ -46,6 +48,14 @@ class Builder:
         """Deterministically build a seed."""
         return self._build_all_seeds(height).pop()
 
+    def _get_shard_path(self, store_path, seed, create_needed_folders=False):
+        if self.use_folder_tree:
+            folders = os.path.join(*control.util.chunks(seed, 3))
+            store_path = os.path.join(store_path, folders)
+            if create_needed_folders:
+                control.util.ensure_path_exists(store_path)
+        return os.path.join(store_path, seed)
+
     def generate_shard(self, seed, store_path, cleanup=False):
         """
         Save a shard, and return its SHA-256 hash.
@@ -57,7 +67,8 @@ class Builder:
         """
 
         # save the shard
-        path = os.path.join(store_path, seed)
+        path = self._get_shard_path(store_path, seed,
+                                    create_needed_folders=True)
         RandomIO.RandomIO(seed).genfile(self.shard_size, path)
 
         # get the file hash
@@ -78,10 +89,9 @@ class Builder:
         :param enum_seeds: List of seeds to check.
         :return:
         """
-
         class HackedCompareObject(str):
-            def __gt__(self, seed):
-                path = os.path.join(store_path, seed)
+            def __gt__(hco_self, seed):
+                path = self._get_shard_path(store_path, seed)
                 return os.path.exists(path)
 
         seeds = [seed for num, seed in enum_seeds]
@@ -132,7 +142,7 @@ class Builder:
 
         seeds = self.build_seeds(self.target_height)
         for shard_num, seed in enumerate(seeds):
-            path = os.path.join(store_path, seed)
+            path = self._get_shard_path(store_path, seed)
             if os.path.exists(path):
                 os.remove(path)
 
@@ -146,7 +156,7 @@ class Builder:
 
         seeds = self.build_seeds(self.target_height)
         for shard_num, seed in enumerate(seeds):
-            path = os.path.join(store_path, seed)
+            path = self._get_shard_path(store_path, seed)
             if not os.path.exists(path):
                 return False
         return True
@@ -157,7 +167,7 @@ class Builder:
         audit_results = []
         seeds = self.build_seeds(height)
         for shard_num, seed_hash in enumerate(seeds):
-            seed_path = os.path.join(store_path, seed_hash)
+            seed_path = self._get_shard_path(store_path, seed_hash)
             digest = partialhash.sample(seed_path, 1024, sample_count=3,
                                         seed=seed)
             audit_results.append(binascii.hexlify(digest))

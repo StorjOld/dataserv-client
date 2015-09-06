@@ -200,7 +200,8 @@ class Client(object):
         bldr = builder.Builder(self.cfg["payout_address"],
                                common.SHARD_SIZE, self.max_size,
                                debug=self.debug,
-                               on_generate_shard=_on_generate_shard)
+                               on_generate_shard=_on_generate_shard,
+                               use_folder_tree=self.use_folder_tree)
         generated = bldr.build(self.store_path, cleanup=cleanup,
                                rebuild=rebuild)
 
