@@ -7,9 +7,26 @@ from datetime import datetime
 import RandomIO
 import partialhash
 
+from functools import partial
+from concurrent.futures import ProcessPoolExecutor
+
 
 from dataserv_client.common import logging
 logger = logging.getLogger(__name__)
+
+
+def generate_shard_worker(enum_seed_i, builder, store_path, cleanup=False):
+    shard_num, seed = enum_seed_i
+    file_hash = builder.generate_shard(seed, store_path, cleanup=cleanup)
+    if builder.debug:
+        logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
+            seed, file_hash
+        ))
+
+    if builder.on_generate_shard:
+        builder.on_generate_shard(shard_num + 1, seed, file_hash)
+
+    return (seed, file_hash)
 
 
 class Builder:
@@ -94,7 +111,7 @@ class Builder:
             logger.info("Resuming from height {0}".format(index + 1))
         return enum_seeds[index:]
 
-    def build(self, store_path, cleanup=False, rebuild=False):
+    def build(self, store_path, cleanup=False, rebuild=False, num_cores=1):
         """
         Fill the farmer with data up to their max.
 
@@ -103,23 +120,19 @@ class Builder:
         :param rebuild: Re-generate the shards.
         """
 
-        generated = {}
-
         enum_seeds = list(enumerate(self.build_seeds(self.target_height)))
         if not rebuild:
             enum_seeds = self.filter_to_resume_point(store_path, enum_seeds)
 
-        for shard_num, seed in enum_seeds:
-
-            file_hash = self.generate_shard(seed, store_path, cleanup=cleanup)
-            generated[seed] = file_hash
-            if self.debug:
-                logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
-                    seed, file_hash
-                ))
-
-            if self.on_generate_shard:
-                self.on_generate_shard(shard_num + 1, seed, file_hash)
+        worker = partial(
+            generate_shard_worker,
+            builder=self,
+            store_path=store_path,
+            cleanup=cleanup
+        )
+        with ProcessPoolExecutor(max_workers=num_cores) as executor:
+            g = executor.map(worker, enum_seeds)
+        generated = dict(list(g))
 
         return generated
 

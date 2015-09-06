@@ -107,6 +107,13 @@ def _add_build(command_parser):
         help="Interval at which to set height (default: {0}).".format(default)
     )
 
+    # specify the number of shards to build in parallel
+    default = common.DEFAULT_NUMCORES
+    build_parser.add_argument(
+        "--num_cores", default=default,
+        help="Number shards to build in parallel"
+    )
+
 
 def _add_farm(command_parser):
     farm_parser = command_parser.add_parser(
