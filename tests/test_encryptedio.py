@@ -1,7 +1,7 @@
 import hashlib
 import unittest
 import tempfile
-from dataserv_client import encryptedio
+from dataserv_client.control import encryptedio
 
 
 class TestConfig(unittest.TestCase):

@@ -18,6 +18,13 @@ class InvalidUrl(DataservClientException):
         super(InvalidUrl, self).__init__("Invalid Url!")
 
 
+class PartitionTypeNotFound(DataservClientException):
+
+    def __init__(self, path):
+        msg = "Couldn't find partition type for path: '{0}'!".format(path)
+        super(PartitionTypeNotFound, self).__init__(msg)
+
+
 class InvalidConfig(DataservClientException):
 
     def __init__(self):

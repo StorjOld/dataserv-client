@@ -26,6 +26,7 @@ clean:
 	rm -rf dist
 	rm -rf *.egg
 	rm -rf *.egg-info
+	find | grep -i ".*__pycache__.*$$" | xargs -r -L1 rm -rf
 	find | grep -i ".*\.pyc$$" | xargs -r -L1 rm
 
 

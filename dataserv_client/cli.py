@@ -37,6 +37,12 @@ def _add_programm_args(parser):
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
 
+    # use folder tree
+    parser.add_argument(
+        '--use_folder_tree', action='store_true',
+        help="Use folder tree to store files (always on for fat32 store_path)."
+    )
+
 
 def _add_version(command_parser):
     version_parser = command_parser.add_parser(  # NOQA
@@ -153,6 +159,7 @@ def main(args):
     client = api.Client(
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
+        use_folder_tree=arguments.pop("use_folder_tree"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
         config_path=arguments.pop("config_path"),

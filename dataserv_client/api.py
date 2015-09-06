@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
-from dataserv_client import config
+from dataserv_client import control
 from dataserv_client import common
 from dataserv_client import builder
 from dataserv_client import exceptions
@@ -28,9 +28,13 @@ SHOW_CONFIG_TEMPLATE = """Current configuration.
 """
 
 
+# FIXME move all logic to control, api should only deserialize/validate input
+
+
 class Client(object):
 
-    def __init__(self, url=common.DEFAULT_URL, debug=False,
+    def __init__(self, url=common.DEFAULT_URL,
+                 debug=False, use_folder_tree=False,
                  max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
@@ -38,6 +42,7 @@ class Client(object):
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
         self.url = deserialize.url(url)
+        self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.debug = deserialize.flag(debug)
         self.max_size = deserialize.byte_count(max_size)
 
@@ -48,22 +53,20 @@ class Client(object):
 
         # paths
         self.cfg_path = os.path.realpath(config_path)
-        self._ensure_path_exists(os.path.dirname(self.cfg_path))
+        control.util.ensure_path_exists(os.path.dirname(self.cfg_path))
         self.store_path = os.path.realpath(store_path)
-        self._ensure_path_exists(self.store_path)
+        control.util.ensure_path_exists(self.store_path)
 
-        self.cfg = config.get(self.btctxstore, self.cfg_path)
+        # check for vfat partions
+        if control.util.get_fs_type(self.store_path) == "vfat":
+            self.use_folder_tree = True
+
+        self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
     @staticmethod
     def version():
         print(__version__)
         return __version__
-
-    @staticmethod
-    def _ensure_path_exists(path):
-        """To keep front writing to non-existant paths."""
-        if not os.path.exists(path):
-            os.makedirs(path)
 
     def _init_messenger(self):
         """Make sure messenger exists."""
@@ -112,7 +115,7 @@ class Client(object):
 
         # save config if updated
         if config_updated:
-            config.save(self.btctxstore, self.cfg_path, self.cfg)
+            control.config.save(self.btctxstore, self.cfg_path, self.cfg)
 
         # display config
         print(SHOW_CONFIG_TEMPLATE.format(

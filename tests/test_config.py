@@ -4,7 +4,7 @@ import unittest
 import tempfile
 
 from btctxstore import BtcTxStore
-from dataserv_client import config
+from dataserv_client.control import config
 
 
 class TestConfig(unittest.TestCase):
