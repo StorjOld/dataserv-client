@@ -31,7 +31,7 @@ class Builder:
         content = content.encode('utf-8')
         return hashlib.sha256(content).hexdigest()
 
-    def _build_all_seeds(self,height):
+    def _build_all_seeds(self, height):
         """Includes seed for height 0."""
         seed = self.sha256(self.address)
         seeds = [seed]

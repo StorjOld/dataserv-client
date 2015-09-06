@@ -24,9 +24,11 @@ def _to_bytes(string):
 class TestBuilder(unittest.TestCase):
     def setUp(self):
         self.store_path = tempfile.mkdtemp()
+        print(self.store_path)
 
     def tearDown(self):
-        shutil.rmtree(self.store_path)
+        pass
+        #shutil.rmtree(self.store_path)
 
     def test_sha256(self):
         expected = fixtures["test_sha256"]["expected"]
@@ -227,6 +229,23 @@ class TestBuilder(unittest.TestCase):
             height = on_generate_shard_called_with[num][0]
             self.assertEqual(num + 1, height)
 
+    def test_use_folder_tree_clean(self):
+        bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         debug=True, use_folder_tree=True)
+        bucket.build(self.store_path)
+        self.assertTrue(bucket.checkup(self.store_path))
+        bucket.clean(self.store_path)
+        def callback(a, d, files):
+            self.assertTrue(len(files) == 0)
+        os.walk(self.store_path, callback, None)
+
+    def test_use_folder_tree_cleanup(self):
+        bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         debug=True, use_folder_tree=True)
+        bucket.build(self.store_path, cleanup=True)
+        def callback(a, d, files):
+            self.assertTrue(len(files) == 0)
+        os.walk(self.store_path, callback, None)
 
 if __name__ == '__main__':
     # import pudb; pu.db # set break point
