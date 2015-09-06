@@ -27,8 +27,7 @@ class TestBuilder(unittest.TestCase):
         print(self.store_path)
 
     def tearDown(self):
-        pass
-        #shutil.rmtree(self.store_path)
+        shutil.rmtree(self.store_path)
 
     def test_sha256(self):
         expected = fixtures["test_sha256"]["expected"]
