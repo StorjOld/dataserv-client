@@ -66,7 +66,8 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         client = api.Client(url=url, debug=True,
                             config_path=tempfile.mktemp())
-        self.assertTrue(client.poll(register_address=True, delay=2, limit=10))
+        client.register()
+        self.assertTrue(client.poll(delay=2, limit=10))
 
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
@@ -167,11 +168,19 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_poll(self):
+        path = tempfile.mktemp()
+
         args = [
             "--url=" + url,
-            "--config_path=" + tempfile.mktemp(),
+            "--config_path=" + path,
+            "register",
+        ]
+        cli.main(args)
+
+        args = [
+            "--url=" + url,
+            "--config_path=" + path,
             "poll",
-            "--register_address",
             "--delay=2",
             "--limit=10"
         ]
@@ -209,11 +218,16 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_input_error(self):
         def callback():
+            path = tempfile.mktemp()
             cli.main([
                 "--url=" + url,
-                "--config_path=" + tempfile.mktemp(),
+                "--config_path=" + path,
+                "register",
+            ])
+            cli.main([
+                "--url=" + url,
+                "--config_path=" + path,
                 "poll",
-                "--register_address",
                 "--delay=5",
                 "--limit=xyz"
             ])

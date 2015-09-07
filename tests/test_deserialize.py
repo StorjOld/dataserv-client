@@ -35,7 +35,21 @@ class TestUrl(unittest.TestCase):
 
 class TestByteCount(unittest.TestCase):
 
-    # FIXME test failure modes
+    def test_types(self):
+
+        # accepted types
+        self.assertEqual(deserialize.byte_count(1), 1)
+        self.assertEqual(deserialize.byte_count("1"), 1)
+        self.assertEqual(deserialize.byte_count(b"1"), 1)
+        self.assertEqual(deserialize.byte_count(u"1"), 1)
+
+        def callback():
+            deserialize.byte_count(None)
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+        def callback():
+            deserialize.byte_count(1.0)
+        self.assertRaises(exceptions.InvalidInput, callback)
 
     def test_int(self):
         self.assertEqual(deserialize.byte_count(1), 1)

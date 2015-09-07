@@ -87,10 +87,6 @@ def _add_poll(command_parser):
     poll_parser.add_argument(
         "--limit", default=None, help="Limit poll time in seconds."
     )
-    poll_parser.add_argument(
-        '--register_address', action='store_true',
-        help="Register address before polling."
-    )
 
 
 def _add_build(command_parser):

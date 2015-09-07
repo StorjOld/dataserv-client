@@ -28,7 +28,7 @@ class TestConfig(unittest.TestCase):
             output_hash = hashlib.sha256(output_file.read()).hexdigest()
         self.assertEqual(input_hash, output_hash)
 
-        # FIXME add openssl compatibility tests (already tested manually)
+        # TODO add openssl compatibility tests (already tested manually)
 
 
 if __name__ == '__main__':

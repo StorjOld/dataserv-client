@@ -25,7 +25,7 @@ class Messaging(object):
         self.retry_delay = connection_retry_delay
         self.debug = debug
 
-        # FIXME pass testnet and dryrun options
+        # TODO pass testnet and dryrun options
         self.btctxstore = btctxstore.BtcTxStore()
         self.wif = wif
 

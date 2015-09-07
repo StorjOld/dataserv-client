@@ -28,7 +28,7 @@ SHOW_CONFIG_TEMPLATE = """Current configuration.
 """
 
 
-# FIXME move all logic to control, api should only deserialize/validate input
+# TODO move all logic to control, api should only deserialize/validate input
 
 
 class Client(object):
@@ -110,7 +110,7 @@ class Client(object):
 
         # update wallet if requested
         if set_wallet:
-            self.cfg["wallet"] = set_wallet  # FIXME validate hwif
+            self.cfg["wallet"] = set_wallet
             config_updated = True
 
         # save config if updated
@@ -134,26 +134,17 @@ class Client(object):
 
         return True
 
-    def poll(self,
-             register_address=False,  # FIXME remove argument
-             delay=common.DEFAULT_DELAY,
-             limit=None):
-        """
-        Attempt continuous keep-alive with the server.
+    def poll(self, delay=common.DEFAULT_DELAY, limit=None):
+        """Attempt continuous keep-alive with the server.
 
-        :param register_address: Registration/auth Bitcoin address.
         :param delay: Delay in seconds per ping of the server.
         :param limit: Number of seconds in the future to stop polling.
         :return: True, if limit is reached. None, if otherwise.
         """
         delay = deserialize.positive_integer(delay)
-        register_address = deserialize.flag(register_address)
         stop_time = None
         if limit:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
-
-        if register_address:  # in case the user forgot to register
-            self.register()
 
         while True:  # ping the server every X seconds
             self.ping()
@@ -164,8 +155,7 @@ class Client(object):
 
     def build(self, cleanup=False, rebuild=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
-        """
-        Generate test files deterministically based on address.
+        """Generate test files deterministically based on address.
 
         :param cleanup: Remove files in shard directory.
         :param rebuild: Re-generate any file shards.

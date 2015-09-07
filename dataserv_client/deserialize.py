@@ -28,11 +28,12 @@ def url(urlstr):
 
 
 def byte_count(byte_count):  # ugly but much faster and safer then regex
-    # FIXME handle parse errors
 
     # default value or python api used
     if isinstance(byte_count, int):
         return positive_nonzero_integer(byte_count)
+
+    byte_count = unicode_str(byte_count)
 
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)
