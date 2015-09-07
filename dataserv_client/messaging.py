@@ -81,30 +81,32 @@ class Messaging(object):
         time.sleep(delay)
         return self._url_query(api_path, retries + 1, authenticate)
 
-    def _get_node_address(self):
+    def _get_server_address(self):
         if not self._server_address:
-            # TODO validate address
-            self._server_address = self.address()
+            data = self._url_query("/api/address", authenticate=False)
+            self._server_address = json.loads(data.decode("utf-8"))["address"]
+            if not self.btctxstore.validate_address(self._server_address):
+                logger.error("Invalid server address '{0}'".format(
+                    self._server_address
+                ))
+                raise exceptions.InvalidAddress(self._server_address)
         return self._server_address
 
     def _create_authentication_headers(self):
         header_date = email.utils.formatdate(
             timeval=time.mktime(datetime.datetime.now().timetuple()),
             localtime=True, usegmt=True)
-        msg = self._get_node_address() + " " + header_date
+        msg = self._get_server_address() + " " + header_date
         header_authorization = self.btctxstore.sign_unicode(self.wif, msg)
         return {"Date": header_date, "Authorization": header_authorization}
 
     def server_url(self):
         return self._server_url
 
-    def address(self):
-        data = self._url_query("/api/address", authenticate=False)
-        return json.loads(data.decode("utf-8"))["address"]
-
     def register(self, payout_addr):
         """Attempt to register this client address."""
         if payout_addr and not self.btctxstore.validate_address(payout_addr):
+            logger.error("Invalid payout address '{0}'".format(payout_addr))
             raise exceptions.InvalidAddress(payout_addr)
         if payout_addr:
             return self._url_query("/api/register/{0}/{1}".format(
