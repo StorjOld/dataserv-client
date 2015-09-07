@@ -29,7 +29,7 @@ class TestUrl(unittest.TestCase):
 
         # test invalid
         def callback():
-            deserialize.url("/äöpb--?%>=_`~$")
+            deserialize.url("--?%>=_`~$")
         self.assertRaises(exceptions.InvalidUrl, callback)
 
 
