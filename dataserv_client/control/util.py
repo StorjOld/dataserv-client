@@ -28,7 +28,7 @@ def baskets(items, count):
     return list(filter(None, _baskets))
 
 
-def get_fs_type(path):  # FIXME find a way to unit test this
+def get_fs_type(path):
     """Returns: path filesystem type or None.
 
     Example:

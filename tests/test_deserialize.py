@@ -1,5 +1,36 @@
 import unittest
 from dataserv_client import deserialize
+from dataserv_client import exceptions
+
+
+class TestUrl(unittest.TestCase):
+
+    def test_url(self):
+
+        # test http
+        urlstr = "http://test.url.com"
+        self.assertEqual(deserialize.url(urlstr), urlstr)
+
+        # test https
+        urlstr = "https://test.url.com"
+        self.assertEqual(deserialize.url(urlstr), urlstr)
+
+        # test ip
+        urlstr = "https://127.0.0.1"
+        self.assertEqual(deserialize.url(urlstr), urlstr)
+
+        # test port
+        urlstr = "https://127.0.0.1:5000"
+        self.assertEqual(deserialize.url(urlstr), urlstr)
+
+        # test ignores case
+        urlstr = "HTTP://TEST.URL.COM"
+        self.assertEqual(deserialize.url(urlstr), urlstr)
+
+        # test invalid
+        def callback():
+            deserialize.url("/äöpb--?%>=_`~$")
+        self.assertRaises(exceptions.InvalidUrl, callback)
 
 
 class TestByteCount(unittest.TestCase):
