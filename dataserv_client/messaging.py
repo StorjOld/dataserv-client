@@ -26,24 +26,17 @@ class Messaging(object):
         self.debug = debug
 
         # FIXME pass testnet and dryrun options
-        self._btctxstore = btctxstore.BtcTxStore()
-        self._wif = wif
-
-    def _get_wif(self):
-        if not self._wif:
-            raise exceptions.AuthWifRequired()
-        if not self._btctxstore.validate_key(self._wif):
-            raise exceptions.InvalidWif(self._wif)
-        return self._wif
+        self.btctxstore = btctxstore.BtcTxStore()
+        self.wif = wif
 
     def auth_address(self):
-        return self._btctxstore.get_address(self._get_wif())
+        return self.btctxstore.get_address(self.wif)
 
     def _url_query(self, api_path, retries=0, authenticate=True):
         try:
             query_url = self._server_url + api_path
             req = urllib.request.Request(query_url)
-            if self._get_wif() and authenticate:
+            if self.wif and authenticate:
                 headers = self._create_authentication_headers()
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
@@ -99,7 +92,7 @@ class Messaging(object):
             timeval=time.mktime(datetime.datetime.now().timetuple()),
             localtime=True, usegmt=True)
         msg = self._get_node_address() + " " + header_date
-        header_authorization = self._btctxstore.sign_unicode(self._get_wif(), msg)
+        header_authorization = self.btctxstore.sign_unicode(self.wif, msg)
         return {"Date": header_date, "Authorization": header_authorization}
 
     def server_url(self):
@@ -111,7 +104,7 @@ class Messaging(object):
 
     def register(self, payout_addr):
         """Attempt to register this client address."""
-        if payout_addr and not self._btctxstore.validate_address(payout_addr):
+        if payout_addr and not self.btctxstore.validate_address(payout_addr):
             raise exceptions.InvalidAddress(payout_addr)
         if payout_addr:
             return self._url_query("/api/register/{0}/{1}".format(
