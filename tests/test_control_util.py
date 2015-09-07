@@ -23,6 +23,7 @@ class TestControlUtil(unittest.TestCase):
 
         # test positile
         fstype = util.get_fs_type(os.path.realpath(__file__))
+        print("### fstype", fstype)
         self.assertTrue(fstype in fstypes)
 
         # test negative
