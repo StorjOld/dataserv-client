@@ -19,11 +19,10 @@ class TestControlUtil(unittest.TestCase):
         )
 
     def test_get_fs_type(self):
-        fstypes = ["ext4", "ext", "vfat", "ntfs"]
+        fstypes = ["xfs", "ext4", "ext", "vfat", "ntfs"]
 
         # test positile
         fstype = util.get_fs_type(os.path.realpath(__file__))
-        print("### fstype", fstype)
         self.assertTrue(fstype in fstypes)
 
         # test negative
