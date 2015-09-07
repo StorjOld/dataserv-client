@@ -24,19 +24,6 @@ class InvalidConfig(DataservClientException):
         super(InvalidConfig, self).__init__("Invalid Config!")
 
 
-class ConfigNotFound(DataservClientException):
-
-    def __init__(self, path):
-        msg = "Config not found at '{0}'!".format(path)
-        super(ConfigNotFound, self).__init__(msg)
-
-
-class InvalidArgument(DataservClientException):
-
-    def __init__(self):
-        super(InvalidArgument, self).__init__("Invalid argument given!")
-
-
 class AddressAlreadyRegistered(DataservClientException):
 
     def __init__(self, address, url):
