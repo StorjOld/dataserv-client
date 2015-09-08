@@ -37,6 +37,10 @@ def _add_programm_args(parser):
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
 
+    # debug
+    parser.add_argument('--quiet', action='store_true',
+                        help="Only show warning and error information.")
+
     # use folder tree
     parser.add_argument(
         '--use_folder_tree', action='store_true',
@@ -155,6 +159,7 @@ def main(args):
     client = api.Client(
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
+        quiet=arguments.pop("quiet"),
         use_folder_tree=arguments.pop("use_folder_tree"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),

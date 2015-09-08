@@ -17,8 +17,7 @@ from dataserv_client import deserialize
 from dataserv_client import __version__
 
 
-from dataserv_client.common import logging
-logger = logging.getLogger(__name__)
+logger = common.logging.getLogger(__name__)
 
 
 SHOW_CONFIG_TEMPLATE = """Current configuration.
@@ -33,17 +32,18 @@ SHOW_CONFIG_TEMPLATE = """Current configuration.
 
 class Client(object):
 
-    def __init__(self, url=common.DEFAULT_URL,
-                 debug=False, use_folder_tree=False,
-                 max_size=common.DEFAULT_MAX_SIZE,
+    def __init__(self, url=common.DEFAULT_URL, debug=False, quiet=False,
+                 use_folder_tree=False, max_size=common.DEFAULT_MAX_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
+        debug = deserialize.flag(debug)
+        quiet = deserialize.flag(quiet)
+
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
-        self.debug = deserialize.flag(debug)
         self.max_size = deserialize.byte_count(max_size)
 
         self.messenger = None  # lazy
@@ -63,6 +63,12 @@ class Client(object):
 
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
+        logger.debug("test debug")
+        logger.info("test info")
+        logger.warning("test warning")
+        logger.error("test error")
+        logger.critical("test critical")
+
     @staticmethod
     def version():
         print(__version__)
@@ -74,8 +80,7 @@ class Client(object):
             wif = self.btctxstore.get_key(self.cfg["wallet"])
             self.messenger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
-                                                 self.retry_delay,
-                                                 debug=self.debug)
+                                                 self.retry_delay)
 
     def register(self):
         """Attempt to register the config address."""
@@ -189,7 +194,6 @@ class Client(object):
         # Initialize builder and generate/re-generate shards
         bldr = builder.Builder(self.cfg["payout_address"],
                                common.SHARD_SIZE, self.max_size,
-                               debug=self.debug,
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
         generated = bldr.build(self.store_path, cleanup=cleanup,

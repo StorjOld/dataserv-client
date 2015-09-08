@@ -16,8 +16,7 @@ logger = logging.getLogger(__name__)
 class Builder:
 
     def __init__(self, address, shard_size, max_size, on_generate_shard=None,
-                 debug=False, use_folder_tree=False):
-        self.debug = debug
+                 use_folder_tree=False):
         self.target_height = int(max_size / shard_size)
         self.address = address
         self.shard_size = shard_size
@@ -100,8 +99,7 @@ class Builder:
         # rebuild last shard, likely corrupt
         index = index - 1 if index > 0 else index
 
-        if self.debug:
-            logger.info("Resuming from height {0}".format(index + 1))
+        logger.info("Resuming from height {0}".format(index + 1))
         return enum_seeds[index:]
 
     def build(self, store_path, cleanup=False, rebuild=False):
@@ -123,10 +121,9 @@ class Builder:
 
             file_hash = self.generate_shard(seed, store_path, cleanup=cleanup)
             generated[seed] = file_hash
-            if self.debug:
-                logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
-                    seed, file_hash
-                ))
+            logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
+                seed, file_hash
+            ))
 
             if self.on_generate_shard:
                 self.on_generate_shard(shard_num + 1, seed, file_hash)
@@ -183,9 +180,8 @@ class Builder:
             hash_result += str(audit.decode("utf-8"))
         hash_result = self.sha256(hash_result)
 
-        if self.debug:
-            final_time = (datetime.utcnow() - start_time).seconds
-            msg = "Seed: {0} with Audit Result: {1} in {2} seconds."
-            logger.info(msg.format(str(seed), hash_result, final_time))
+        final_time = (datetime.utcnow() - start_time).seconds
+        msg = "Seed: {0} with Audit Result: {1} in {2} seconds."
+        logger.info(msg.format(str(seed), hash_result, final_time))
 
         return hash_result

@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 
 
@@ -21,5 +22,11 @@ DEFAULT_CONNECTION_RETRY_LIMIT = 120  # 120 * 30sec = 1 hour
 DEFAULT_CONNECTION_RETRY_DELAY = 30
 
 
-_log_format = "%(levelname)s %(name)s %(lineno)d: %(message)s"      
-logging.basicConfig(format=_log_format, level=logging.DEBUG)
+# logging
+LOG_FORMAT = "%(levelname)s %(name)s %(lineno)d: %(message)s"      
+if "--debug" in sys.argv:
+    logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
+elif "--quiet" in sys.argv:
+    logging.basicConfig(format=LOG_FORMAT, level=logging.WARNING)
+else:
+    logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
