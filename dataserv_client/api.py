@@ -23,7 +23,7 @@ logger = common.logging.getLogger(__name__)
 SHOW_CONFIG_TEMPLATE = """Current configuration.
 
     Authentication address: {0}
-    Payout address: {0}
+    Payout address: {1}
 """
 
 
@@ -124,8 +124,8 @@ class Client(object):
 
         # display config
         print(SHOW_CONFIG_TEMPLATE.format(
-            self.cfg["payout_address"],
             self.messenger.auth_address(),
+            self.cfg["payout_address"]
         ))
         return self.cfg
 
