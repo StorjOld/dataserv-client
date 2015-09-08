@@ -7,12 +7,12 @@ import time
 import urllib
 import urllib.error
 import urllib.request
-
 import btctxstore
 from dataserv_client import exceptions
+from dataserv_client import common
 
-from dataserv_client.common import logging
-logger = logging.getLogger(__name__)
+
+logger = common.logging.getLogger(__name__)
 
 
 class Messaging(object):

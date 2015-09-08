@@ -2,15 +2,14 @@ import os
 import bisect
 import hashlib
 import binascii
-from datetime import datetime
-
 import RandomIO
 import partialhash
-
-
+from datetime import datetime
 from dataserv_client import control
-from dataserv_client.common import logging
-logger = logging.getLogger(__name__)
+from dataserv_client import common
+
+
+logger = common.logging.getLogger(__name__)
 
 
 class Builder:
