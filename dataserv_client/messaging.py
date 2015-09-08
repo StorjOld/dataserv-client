@@ -52,6 +52,9 @@ class Messaging(object):
                 raise exceptions.ServerNotFound(self._server_url)
             elif e.code == 400:
                 raise exceptions.InvalidAddress(self.auth_address())
+            elif e.code == 401:  # auth error (likely clock off)
+                logger.warning(repr(e))
+                self._handle_connection_error(api_path, retries, authenticate)
             elif e.code == 500:  # pragma: no cover
                 raise exceptions.ServerError(self._server_url)
             else:
