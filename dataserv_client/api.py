@@ -63,12 +63,6 @@ class Client(object):
 
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
-        logger.debug("test debug")
-        logger.info("test info")
-        logger.warning("test warning")
-        logger.error("test error")
-        logger.critical("test critical")
-
     @staticmethod
     def version():
         print(__version__)
