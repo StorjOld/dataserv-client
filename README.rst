@@ -82,7 +82,7 @@ Farmer quickstart guide
 
 Optionally set a cold storage payout address.
 You can set a counterparty wallet address here.
-All configuration mest be done before starting the node.
+All configuration must be done before starting the node.
 
 ::
 
