@@ -5,13 +5,6 @@ class DataservClientException(Exception):
     pass
 
 
-class ExistingConfig(DataservClientException):
-
-    def __init__(self, path):
-        msg = "Config already exists at '{0}'!".format(path)
-        super(ExistingConfig, self).__init__(msg)
-
-
 class InvalidUrl(DataservClientException):
 
     def __init__(self):
@@ -22,19 +15,6 @@ class InvalidConfig(DataservClientException):
 
     def __init__(self):
         super(InvalidConfig, self).__init__("Invalid Config!")
-
-
-class ConfigNotFound(DataservClientException):
-
-    def __init__(self, path):
-        msg = "Config not found at '{0}'!".format(path)
-        super(ConfigNotFound, self).__init__(msg)
-
-
-class InvalidArgument(DataservClientException):
-
-    def __init__(self):
-        super(InvalidArgument, self).__init__("Invalid argument given!")
 
 
 class AddressAlreadyRegistered(DataservClientException):

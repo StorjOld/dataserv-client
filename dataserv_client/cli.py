@@ -1,6 +1,5 @@
 import sys
 import argparse
-
 from dataserv_client import api
 from dataserv_client import common
 
@@ -36,6 +35,16 @@ def _add_programm_args(parser):
     # debug
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
+
+    # debug
+    parser.add_argument('--quiet', action='store_true',
+                        help="Only show warning and error information.")
+
+    # use folder tree
+    parser.add_argument(
+        '--use_folder_tree', action='store_true',
+        help="Use folder tree to store files (always on for fat32 store_path)."
+    )
 
 
 def _add_version(command_parser):
@@ -80,10 +89,6 @@ def _add_poll(command_parser):
     )
     poll_parser.add_argument(
         "--limit", default=None, help="Limit poll time in seconds."
-    )
-    poll_parser.add_argument(
-        '--register_address', action='store_true',
-        help="Register address before polling."
     )
 
 
@@ -153,6 +158,8 @@ def main(args):
     client = api.Client(
         url=arguments.pop("url"),
         debug=arguments.pop("debug"),
+        quiet=arguments.pop("quiet"),
+        use_folder_tree=arguments.pop("use_folder_tree"),
         max_size=arguments.pop("max_size"),
         store_path=arguments.pop("store_path"),
         config_path=arguments.pop("config_path"),

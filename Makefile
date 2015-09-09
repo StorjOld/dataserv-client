@@ -26,6 +26,7 @@ clean:
 	rm -rf dist
 	rm -rf *.egg
 	rm -rf *.egg-info
+	find | grep -i ".*__pycache__.*$$" | xargs -r -L1 rm -rf
 	find | grep -i ".*\.pyc$$" | xargs -r -L1 rm
 
 
@@ -56,9 +57,9 @@ shell: setup
 
 
 test_single:
-	#$(PIP) uninstall dataserv-client
+	$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
-	$(PY) -m unittest tests.test_config
+	$(PY) -m unittest tests.test_control_util
 	#time dataserv-client --debug --url=http://78.46.188.55:5000 --max_size=5368709120 build
 
 

@@ -16,7 +16,7 @@ def url(urlstr):
     # source http://stackoverflow.com/a/7160778/90351
     regex = re.compile(
         r'^(?:http|ftp)s?://' # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  #domain...
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
         r'localhost|'  # localhost...
         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
         r'(?::\d+)?'  # optional port
@@ -28,11 +28,12 @@ def url(urlstr):
 
 
 def byte_count(byte_count):  # ugly but much faster and safer then regex
-    # FIXME handle parse errors
 
     # default value or python api used
     if isinstance(byte_count, int):
         return positive_nonzero_integer(byte_count)
+
+    byte_count = unicode_str(byte_count)
 
     def _get_byte_count(postfix, base, exponant):
         char_num = len(postfix)

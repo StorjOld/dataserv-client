@@ -84,7 +84,11 @@ _MIGRATIONS = {
     "2.0.0": _migrate_200_to_201,
     "2.0.1": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.0.2'),
     "2.0.2": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.0.3'),
-    # FIXME add smarter version ranges so no new line needed for every version
+    "2.0.3": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.0'),
+    "2.1.0": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.1'),
+    "2.1.1": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.2'),
+    "2.1.2": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.3'),
+    # TODO add smarter version ranges so no new line needed for every version
 }
 
 

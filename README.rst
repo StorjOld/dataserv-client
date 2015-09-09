@@ -25,7 +25,7 @@ Setup
 Windows
 -------
 
-Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`_. 
+Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`_.
 
 Extarct the zip file to the folder where you wish to have it installed.
 
@@ -63,7 +63,7 @@ Install client
 ::
 
     $ brew install python3
-    $ rehash 
+    $ rehash
     $ pip3 install dataserv-client
     $ dataserv-client version
 
@@ -82,7 +82,7 @@ Farmer quickstart guide
 
 Optionally set a cold storage payout address.
 You can set a counterparty wallet address here.
-All configuration mest be done before starting the node.
+All configuration must be done before starting the node.
 
 ::
 
@@ -142,7 +142,7 @@ Show program help, optional arguments and commands
     $ dataserv-client --help
     usage: dataserv-client [-h] [--url URL] [--max_size MAX_SIZE]
                            [--store_path STORE_PATH] [--config_path CONFIG_PATH]
-                           [--debug]
+                           [--debug] [--use_folder_tree]
                            <command> ...
 
     Dataserve client command-line interface.
@@ -153,10 +153,12 @@ Show program help, optional arguments and commands
                             http://status.driveshare.org).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
       --store_path STORE_PATH
-                            Storage path. (default: /home/fabe/.storj/store).
+                            Storage path. (default: /home/user/.storj/store).
       --config_path CONFIG_PATH
-                            Config path. (default: /home/fabe/.storj/config.json).
+                            Config path. (default: /home/user/.storj/config.json).
       --debug               Show debug information.
+      --use_folder_tree     Use folder tree to store files (always on for fat32
+                            store_path).
 
     commands:
       <command>
