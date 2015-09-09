@@ -26,9 +26,8 @@ class TestControlUtil(unittest.TestCase):
         self.assertTrue(fstype in fstypes)
 
         # test negative
-        def callback():
-            util.get_fs_type("bad/path")
-        self.assertRaises(exceptions.PartitionTypeNotFound, callback)
+        fstype = util.get_fs_type("bad/path")
+        self.assertEqual(fstype, None)
 
 
 if __name__ == '__main__':

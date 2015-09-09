@@ -58,8 +58,13 @@ class Client(object):
         control.util.ensure_path_exists(self.store_path)
 
         # check for vfat partions
-        if control.util.get_fs_type(self.store_path) == "vfat":
+        fstype = control.util.get_fs_type(self.store_path)
+        if fstype == "vfat":
+            logger.info("Detected vfat partition, using folder tree.")
             self.use_folder_tree = True
+        if fstype is None:
+            msg = "Couldn't detected partition type for '{0}'"
+            logger.warning(msg.format(self.store_path))
 
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
