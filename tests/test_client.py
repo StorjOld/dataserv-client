@@ -109,6 +109,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
+
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
     def test_no_retry(self):
         def callback():

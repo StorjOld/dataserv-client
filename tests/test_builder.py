@@ -223,6 +223,7 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path)
         self.assertTrue(bucket.checkup(self.store_path))
         bucket.clean(self.store_path)
+
         def callback(a, d, files):
             self.assertTrue(len(files) == 0)
         os.walk(self.store_path, callback, None)
@@ -231,6 +232,7 @@ class TestBuilder(unittest.TestCase):
         bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
                          use_folder_tree=True)
         bucket.build(self.store_path, cleanup=True)
+
         def callback(a, d, files):
             self.assertTrue(len(files) == 0)
         os.walk(self.store_path, callback, None)
