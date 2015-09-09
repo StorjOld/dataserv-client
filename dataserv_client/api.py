@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from future.standard_library import install_aliases
+install_aliases()
 
 from datetime import datetime
 from datetime import timedelta
@@ -15,7 +16,6 @@ from dataserv_client import __version__
 import os
 import time
 
-install_aliases()
 logger = common.logging.getLogger(__name__)
 
 
