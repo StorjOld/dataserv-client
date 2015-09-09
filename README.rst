@@ -186,3 +186,4 @@ Show command help and optional arguments
                             Set node wallet to given hwif.
       --set_payout_address SET_PAYOUT_ADDRESS
                             Root address of wallet used by default.
+

@@ -1,24 +1,26 @@
 from dataserv_client import common
 
-common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
-
 import time
 import tempfile
 import unittest
 import datetime
 
-from btctxstore import BtcTxStore
 from dataserv_client import cli
 from dataserv_client import api
+from btctxstore import BtcTxStore
 from dataserv_client import exceptions
 
 
 url = "http://127.0.0.1:5000"
+common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
 
 
 class AbstractTestSetup(object):
-    def setUp(self):
+    def __init__(self):
         self.btctxstore = BtcTxStore()
+
+    @staticmethod
+    def setUp():
         time.sleep(2)  # avoid collision
 
 
