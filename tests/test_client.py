@@ -15,13 +15,13 @@ url = "http://127.0.0.1:5000"
 common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
 
 
-class AbstractTestSetup(object):
+class AbstractTestSetup(unittest.TestCase):
     def setUp(self):
         self.btctxstore = BtcTxStore()
         time.sleep(2)  # avoid collision
 
 
-class TestClientRegister(AbstractTestSetup, unittest.TestCase):
+class TestClientRegister(AbstractTestSetup):
     def test_register(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         self.assertTrue(client.register())
@@ -43,7 +43,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ServerNotFound, callback)
 
 
-class TestClientPing(AbstractTestSetup, unittest.TestCase):
+class TestClientPing(AbstractTestSetup):
     def test_ping(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         self.assertTrue(client.register())
@@ -58,14 +58,14 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ServerNotFound, callback)
 
 
-class TestClientPoll(AbstractTestSetup, unittest.TestCase):
+class TestClientPoll(AbstractTestSetup):
     def test_poll(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         client.register()
         self.assertTrue(client.poll(delay=2, limit=10))
 
 
-class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
+class TestInvalidArgument(AbstractTestSetup):
     def test_invalid_retry_limit(self):
         def callback():
             api.Client(connection_retry_limit=-1,
@@ -107,7 +107,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.InvalidInput, callback)
 
 
-class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
+class TestConnectionRetry(AbstractTestSetup):
     def test_no_retry(self):
         def callback():
             client = api.Client(url="http://invalid.url",
@@ -135,7 +135,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(datetime.timedelta(seconds=25) < (after - before))
 
 
-class TestClientBuild(AbstractTestSetup, unittest.TestCase):
+class TestClientBuild(AbstractTestSetup):
     def test_build(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
@@ -152,7 +152,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(len(generated) == 4)
 
 
-class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
+class TestClientCliArgs(AbstractTestSetup):
     def test_version(self):
         args = [
             "--config_path=" + tempfile.mktemp(),
@@ -228,7 +228,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(ValueError, callback)
 
 
-class TestConfig(AbstractTestSetup, unittest.TestCase):
+class TestConfig(AbstractTestSetup):
     def test_show(self):
         payout_wif = self.btctxstore.create_key()
         hwif = self.btctxstore.create_wallet()
