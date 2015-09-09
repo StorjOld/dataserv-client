@@ -16,11 +16,8 @@ common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
 
 
 class AbstractTestSetup(object):
-    def __init__(self):
+    def setUp(self):
         self.btctxstore = BtcTxStore()
-
-    @staticmethod
-    def setUp():
         time.sleep(2)  # avoid collision
 
 
