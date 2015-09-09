@@ -48,7 +48,7 @@ def get_fs_type(path):
         subpath = os.sep.join(splitpath[:i])
         if subpath in partitions:
             return partitions[subpath][0]
-    raise exceptions.PartitionTypeNotFound(path)
+    return None
 
 
 def ensure_path_exists(path):
