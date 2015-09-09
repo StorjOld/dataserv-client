@@ -1,5 +1,3 @@
-import datetime
-import email.utils
 import json
 import http.client
 import socket
@@ -10,6 +8,7 @@ import urllib.request
 import btctxstore
 from dataserv_client import exceptions
 from dataserv_client import common
+from dataserv_client import control
 
 
 logger = common.logging.getLogger(__name__)
@@ -36,7 +35,9 @@ class Messaging(object):
             query_url = self._server_url + api_path
             req = urllib.request.Request(query_url)
             if self.wif and authenticate:
-                headers = self._create_authentication_headers()
+                headers = control.auth.create_authentication_headers(
+                    self.btctxstore, self._get_server_address(), self.wif
+                )
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
             logger.info("Query: {0}".format(query_url))
@@ -89,14 +90,6 @@ class Messaging(object):
                 raise exceptions.InvalidAddress(self._server_address)
         return self._server_address
 
-    def _create_authentication_headers(self):
-        header_date = email.utils.formatdate(
-            timeval=time.mktime(datetime.datetime.now().timetuple()),
-            localtime=True, usegmt=True)
-        msg = self._get_server_address() + " " + header_date
-        header_authorization = self.btctxstore.sign_unicode(self.wif, msg)
-        return {"Date": header_date, "Authorization": header_authorization}
-
     def server_url(self):
         return self._server_url
 
@@ -112,7 +105,7 @@ class Messaging(object):
         data = self._url_query("/api/register/{0}".format(self.auth_address()))
         data = json.loads(data.decode("utf-8"))
         payout_addr = payout_addr if payout_addr else self.auth_address()
-        return (data["btc_addr"] == self.auth_address() and 
+        return (data["btc_addr"] == self.auth_address() and
                 data["payout_addr"] == payout_addr)
 
     def ping(self):

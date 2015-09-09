@@ -1,6 +1,5 @@
 import psutil
 import os
-from dataserv_client import exceptions
 
 
 def chunks(items, size):
