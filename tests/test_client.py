@@ -26,6 +26,10 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         self.assertTrue(client.register())
 
+        result = urllib.urlopen(url + "/api/online/json")
+        expected = json.dumps({"farmers": [{"btc_addr": self.btctxstore, "height": 0, "last_seen": 0, "payout_addr": self.btctxstore}]})
+        self.assertEqual(json.loads(result.read(), expected)
+
     def test_already_registered(self):
         def callback():
             client = api.Client(url=url, config_path=tempfile.mktemp())
