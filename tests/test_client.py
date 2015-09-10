@@ -37,7 +37,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
     def test_register_online(self):
         api.Client(url=url, config_path=tempfile.mktemp()).register()
         result = urlopen(url + "/api/online/json")
-        expected = json.dumps({"farmers": [{"btc_addr": self.btctxstore, "height": 0, "last_seen": 0, "payout_addr": self.btctxstore}]})
+        expected = json.dumps({"farmers": [{"btc_addr": self.btctxstore.get_address(payout_wif), "height": 0, "last_seen": 0, "payout_addr": self.btctxstore.get_address(payout_wif)}]})
         #self.assertTrue(expected)
         self.assertEqual(json.loads(result.read()), expected)
 
