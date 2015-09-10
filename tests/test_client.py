@@ -44,7 +44,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 "height": 0, "last_seen": 0,
                                 "payout_addr": config["payout_address"]}]}
 
-        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.loads(expected))
+        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.dump(expected))
 
     def test_already_registered(self):
         def callback():
@@ -197,7 +197,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                                 "height": 2, "last_seen": 0,
                                 "payout_addr": config["payout_address"]}]}
 
-        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.loads(expected))
+        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.dump(expected))
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
