@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import datetime
 import json
+import urllib
 
 from dataserv_client import cli
 from dataserv_client import api
