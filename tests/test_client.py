@@ -39,12 +39,14 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
 
-        result = urlopen(url + "/api/online/json")
+        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
+        result = [farmer for farmer in result["farmer"]
+                    if farmer["btc_addr"] == config["wallet"]]
         expected = {"farmers": [{"btc_addr": config["wallet"],
                                 "height": 0, "last_seen": 0,
                                 "payout_addr": config["payout_address"]}]}
 
-        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.dumps(expected))
+        self.assertEqual(result,json.dumps(expected))
 
     def test_already_registered(self):
         def callback():
@@ -192,12 +194,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client.register()
         client.build(set_height_interval=100)
 
-        result = urlopen(url + "/api/online/json")
+        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
+        result = [farmer for farmer in result["farmer"]
+                    if farmer["btc_addr"] == config["wallet"]]
         expected = {"farmers": [{"btc_addr": config["wallet"],
                                 "height": 2, "last_seen": 0,
                                 "payout_addr": config["payout_address"]}]}
 
-        self.assertEqual(json.loads(result.readall().decode('utf-8')),json.dumps(expected))
+        self.assertEqual(result,json.dumps(expected))
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
