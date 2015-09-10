@@ -32,7 +32,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         Client(url=url, config_path=tempfile.mktemp()).register()
         result = urllib.urlopen(url + "/api/online/json")
         expected = None
-        self.assertEqual(json.loads(result.read(), expected)
+        self.assertTrue(json.loads(result.read())
 
     def test_already_registered(self):
         def callback():
