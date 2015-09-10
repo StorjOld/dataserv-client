@@ -239,7 +239,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         args = [
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
-            "--max_size=" 1024 * 256,  # 256K
+            "--max_size=" + 1024 * 256,  # 256K
             "farm",
             "--cleanup",
             "--rebuild",
