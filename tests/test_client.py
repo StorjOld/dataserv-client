@@ -38,10 +38,11 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         client.register()
+
         result = urlopen(url + "/api/online/json")
-        expected = json.dumps({"farmers": [{"btc_addr": config["wallet"], "height": 0, "last_seen": 0, "payout_addr": config["payout_address"]}]})
-        #self.assertTrue(expected)
-        self.assertEqual(json.loads(result.read()), expected)
+        expected = {"farmers": [{"btc_addr": config["wallet"], "height": 0, "last_seen": 0, "payout_addr": config["payout_address"]}]}
+
+        self.assertEqual(result.read(), expected)
 
     def test_already_registered(self):
         def callback():
@@ -181,6 +182,17 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
+
+    def test_build_online(self):
+        client = api.Client(url=url, config_path=tempfile.mktemp(),max_size=1024 * 256)
+        config = client.config()
+        client.register()
+        client.build(set_height_interval=100)
+
+        result = urlopen(url + "/api/online/json")
+        expected = json.dumps({"farmers": [{"btc_addr": config["wallet"], "height": 2, "last_seen": 0, "payout_addr": config["payout_address"]}]})
+
+        self.assertEqual(json.loads(result.read()), expected)
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
