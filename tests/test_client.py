@@ -29,7 +29,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(client.register())
 
     def test_register_online(self):
-        Client(url=url, config_path=tempfile.mktemp()).register()
+        api.Client(url=url, config_path=tempfile.mktemp()).register()
         result = urllib.urlopen(url + "/api/online/json")
         expected = None
         self.assertTrue(json.loads(result.read())
