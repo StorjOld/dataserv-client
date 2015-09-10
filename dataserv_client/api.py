@@ -205,6 +205,12 @@ class Client(object):
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
         """
+        
+        set_height_interval = deserialize.positive_nonzero_integer(
+            set_height_interval
+        )
+        cleanup = deserialize.flag(cleanup)
+        rebuild = deserialize.flag(rebuild)
 
         # farmer never gives up
         self._init_messenger()
