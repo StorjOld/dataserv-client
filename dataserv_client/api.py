@@ -222,3 +222,4 @@ class Client(object):
             pass  # already registered ...
         self.build(cleanup=cleanup, rebuild=rebuild, set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
+        return True
