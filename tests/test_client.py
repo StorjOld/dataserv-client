@@ -5,7 +5,7 @@ import tempfile
 import unittest
 import datetime
 import json
-import urllib
+import urllib.request
 
 from dataserv_client import cli
 from dataserv_client import api
@@ -29,10 +29,10 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(client.register())
 
     def test_register_online(self):
-        client = api.Client(url=url, config_path=tempfile.mktemp())
-        client.register()
+        api.Client(url=url, config_path=tempfile.mktemp()).register()
         result = urllib.urlopen(url + "/api/online/json")
-        self.assertTrue(json.loads(result.read()))
+        expected = json.dumps({"farmers": [{"btc_addr": self.btctxstore, "height": 0, "last_seen": 0, "payout_addr": self.btctxstore}]}
+        self.assertEqual(json.loads(result.read()), expected)
 
     def test_already_registered(self):
         def callback():
