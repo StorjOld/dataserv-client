@@ -200,11 +200,17 @@ class Client(object):
         logger.info("Build finished")
         return generated
 
-    def farm(self):
+    def farm(self, cleanup=False, rebuild=False, set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL, delay=common.DEFAULT_DELAY, limit=None):
         """ Fully automatic client for users wishing a simple turnkey solution.
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
         """
+        
+        set_height_interval = deserialize.positive_nonzero_integer(
+            set_height_interval
+        )
+        cleanup = deserialize.flag(cleanup)
+        rebuild = deserialize.flag(rebuild)
 
         # farmer never gives up
         self._init_messenger()
@@ -214,5 +220,6 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
-        self.build()
-        self.poll()
+        self.build(cleanup=cleanup, rebuild=rebuild, set_height_interval=set_height_interval)
+        self.poll(delay=delay, limit=limit)
+        return True

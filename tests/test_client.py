@@ -92,14 +92,28 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
-    def test_invalid_negative_set_height_interval(self):
+    def test_build_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
             client.build(set_height_interval=-1)
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
-    def test_invalid_zero_set_height_interval(self):
+    def test_farm_invalid_zero_set_height_interval(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.farm(set_height_interval=0)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+        
+    def test_farm_invalid_negative_set_height_interval(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.farm(set_height_interval=-1)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_build_invalid_zero_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
             client.build(set_height_interval=0)
@@ -151,6 +165,19 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
 
+class TestClientFarm(AbstractTestSetup, unittest.TestCase):
+    def test_farm(self):
+        client = api.Client(url=url,
+                            config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)  # 256K
+        self.assertTrue(client.farm(delay=2,limit=2))
+    
+    def test_farm_registered(self):
+        client = api.Client(url=url,
+                            config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)  # 256K
+        client.register()
+        self.assertTrue(client.farm(delay=2,limit=2))
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
@@ -184,6 +211,41 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "register"
+        ]
+        self.assertTrue(cli.main(args))
+
+    def test_build(self):
+        path = tempfile.mktemp()
+
+        args = [
+            "--url=" + url,
+            "--config_path=" + path,
+            "register",
+        ]
+        cli.main(args)
+
+        args = [
+            "--url=" + url,
+            "--config_path=" + path,
+            "--max_size=" + str(1024 * 256),  # 256K
+            "build",
+            "--cleanup",
+            "--rebuild",
+            "--set_height_interval=3"
+        ]
+        self.assertTrue(cli.main(args))
+        
+    def test_farm(self):
+        args = [
+            "--url=" + url,
+            "--config_path=" + tempfile.mktemp(),
+            "--max_size=" + str(1024 * 256),  # 256K
+            "farm",
+            "--cleanup",
+            "--rebuild",
+            "--set_height_interval=3",
+            "--delay=2",
+            "--limit=10"
         ]
         self.assertTrue(cli.main(args))
 
