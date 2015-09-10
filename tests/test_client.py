@@ -42,7 +42,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = urlopen(url + "/api/online/json")
         expected = {"farmers": [{"btc_addr": config["wallet"], "height": 0, "last_seen": 0, "payout_addr": config["payout_address"]}]}
 
-        self.assertEqual(result.read(), expected)
+        self.assertEqual(json.loads(result.read()),json.loads(expected))
 
     def test_already_registered(self):
         def callback():
