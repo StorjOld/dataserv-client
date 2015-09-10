@@ -125,14 +125,14 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         def callback():
             client = api.Client(url="http://invalid.url",
                                 config_path=tempfile.mktemp(),
-                                connection_retry_limit=5,
-                                connection_retry_delay=5)
+                                connection_retry_limit=2,
+                                connection_retry_delay=2)
             client.register()
 
         before = datetime.datetime.now()
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
-        self.assertTrue(datetime.timedelta(seconds=25) < (after - before))
+        self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
