@@ -166,13 +166,13 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(len(generated) == 4)
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
-    def test_farm(self)
+    def test_farm(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
         self.assertTrue(client.farm(delay=2,limit=2))
     
-    def test_farm_registered(self)
+    def test_farm_registered(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
