@@ -114,7 +114,7 @@ Optional max_size syntax
     --max_size=1.0PB # 1000^5 bytes
 
 
-Multi disc farmer guide
+Farmer multi disc guide
 =======================
 
 In order to farm on multiple discs you will have to run several instances,
@@ -126,6 +126,7 @@ Disc 1
 ------
 
 ::
+
     dataserv-client --config_path=<CONFIG 1> config --set_payout_address=<BITCOIN_ADDRESS>
     dataserv-client --config_path=<CONFIG 1> --store_path=<PATH 1> --max_size=<SIZE 1> farm
 
@@ -134,6 +135,7 @@ Disc n
 ------
 
 ::
+
     dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS>
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
 
