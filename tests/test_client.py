@@ -39,7 +39,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
 
-        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
+        result = json.loads(urlopen(url + "/api/online/json").readall())
         result = [farmers for farmers in result["farmers"]
                     if farmers["last_seen"] == 0]
         expected = {"btc_addr": config["wallet"],
@@ -194,7 +194,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client.register()
         client.build(set_height_interval=100)
 
-        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
+        result = json.loads(urlopen(url + "/api/online/json").readall())
         result = [farmers for farmers in result["farmers"]
                     if farmers["last_seen"] == 0]
         expected = {"btc_addr": config["wallet"],
