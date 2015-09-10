@@ -42,9 +42,9 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
         result = [farmers for farmers in result["farmers"]
                     if farmers["last_seen"] == 0]
-        expected = {"farmers": [{"btc_addr": config["wallet"],
-                                "height": 0, "last_seen": 0,
-                                "payout_addr": config["payout_address"]}]}
+        expected = {"btc_addr": config["wallet"],
+                    "height": 0, "last_seen": 0,
+                    "payout_addr": config["payout_address"]}
 
         self.assertEqual(result,json.dumps(expected))
 
@@ -196,10 +196,10 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
         result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf-8'))
         result = [farmers for farmers in result["farmers"]
-                    if farmers["btc_addr"] == config["wallet"]]
-        expected = {"farmers": [{"btc_addr": config["wallet"],
-                                "height": 2, "last_seen": 0,
-                                "payout_addr": config["payout_address"]}]}
+                    if farmers["last_seen"] == 0]
+        expected = {"btc_addr": config["wallet"],
+                    "height": 2, "last_seen": 0,
+                    "payout_addr": config["payout_address"]}
 
         self.assertEqual(result,json.dumps(expected))
 
