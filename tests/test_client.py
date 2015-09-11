@@ -43,7 +43,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['last_seen'] == 0]
         expected = json.dumps({'height': 0,
-                    'btc_addr': self.btctxstore.get_address(config['wallet']),
+                    'btc_addr': self.btctxstore.get_key(config['wallet']),
                     'last_seen': 0,
                     'payout_addr': config['payout_address']})
         print(result)
