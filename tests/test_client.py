@@ -43,9 +43,9 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['last_seen'] == 0]
         expected = json.dumps({'height': 0,
-                    'btc_addr': self.btctxstore.get_key(config['wallet']),
-                    'last_seen': 0,
-                    'payout_addr': config['payout_address']})
+                                'btc_addr': config['payout_address'],
+                                'last_seen': 0,
+                                'payout_addr': config['payout_address']})
         print(result)
         print(expected)
         self.assertEqual(result, expected)
@@ -196,15 +196,17 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client.register()
         client.build(set_height_interval=100)
 
-        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf8'))
-        result = [farmers for farmers in result["farmers"]
-                    if farmers["last_seen"] == 0]
-        expected = {"btc_addr": config["wallet"],
-                    "height": 2, "last_seen": 0,
-                    "payout_addr": config["payout_address"]}
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        expected = json.dumps({'height': 2, 
+                                'btc_addr': config['payout_address'],
+                                'last_seen': 0,
+                                'payout_addr': config['payout_address']})
 
         print(result)
-        self.assertEqual(result,json.dumps(expected))
+        print(expected)
+        self.assertEqual(result,expected)
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
