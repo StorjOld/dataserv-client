@@ -42,13 +42,13 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['last_seen'] == 0]
-        expected = {'height': 0,
-                    'btc_addr': config['wallet'],
+        expected = json.dumps({'height': 0,
+                    'btc_addr': self.btctxstore.get_address(config['wallet']),
                     'last_seen': 0,
-                    'payout_addr': config['payout_address']}
+                    'payout_addr': config['payout_address']})
         print(result)
         print(expected)
-        self.assertEqual(result,json.dumps(expected))
+        self.assertEqual(result, expected)
 
     def test_already_registered(self):
         def callback():
