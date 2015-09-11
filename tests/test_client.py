@@ -206,8 +206,6 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
 
-        print(result)
-        print(expected)
         self.assertEqual(result,expected)
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
@@ -229,7 +227,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             max_size=1024 * 256)
         config = client.config()
         client.register()
-        client.farm(set_height_interval=100, limit=0)
+        client.farm(set_height_interval=100, delay=0, limit=0)
 
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
