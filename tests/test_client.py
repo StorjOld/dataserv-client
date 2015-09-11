@@ -220,14 +220,14 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
         client.register()
-        self.assertTrue(client.farm(delay=2,limit=2))
+        self.assertTrue(client.farm(delay=0,limit=1))
 
     def test_farm_online(self):
         client = api.Client(url=url, config_path=tempfile.mktemp(),
                             max_size=1024 * 256)
         config = client.config()
         client.register()
-        client.farm(set_height_interval=100, delay=0, limit=0)
+        client.farm(set_height_interval=100, delay=0, limit=1)
 
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
