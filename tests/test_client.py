@@ -39,9 +39,10 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
 
-        result = json.dumps(json.loads(urlopen(url + '/api/online/json').readall().decode('utf8')), sort_keys=True)
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
+        result = json.dumps(result, sort_keys=True)
         expected = json.dumps({'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
