@@ -232,10 +232,11 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
+        last_seen = result[0]['last_seen']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 2, 
                                 'btc_addr': config['payout_address'],
-                                'last_seen': 0,
+                                'last_seen': last_seen,
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
 
