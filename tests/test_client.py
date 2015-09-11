@@ -46,7 +46,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         expected = json.dumps([{'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']]},
+                                'payout_addr': config['payout_address']}],
                                 sort_keys=True)
         self.assertEqual(result, expected)
 
@@ -203,7 +203,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         expected = json.dumps([{'height': 2, 
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']]},
+                                'payout_addr': config['payout_address']}],
                                 sort_keys=True)
 
         print(result)
