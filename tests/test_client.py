@@ -221,7 +221,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
         client.register()
-        self.assertTrue(client.farm(delay=0,limit=1))
+        self.assertTrue(client.farm(delay=2,limit=2))
 
     def test_farm_online(self):
         client = api.Client(url=url, config_path=tempfile.mktemp(),
