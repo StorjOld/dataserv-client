@@ -199,7 +199,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
-        result = result.dumps(result, sort_keys=True)
+        result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 2, 
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
@@ -223,6 +223,25 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             max_size=1024 * 256)  # 256K
         client.register()
         self.assertTrue(client.farm(delay=2,limit=2))
+
+    def test_farm_online(self):
+        client = api.Client(url=url, config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)
+        config = client.config()
+        client.register()
+        client.farm(set_height_interval=100, limit=0)
+
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        result = json.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': 2, 
+                                'btc_addr': config['payout_address'],
+                                'last_seen': 0,
+                                'payout_addr': config['payout_address']}],
+                                sort_keys=True)
+
+        self.assertEqual(result,expected)
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
