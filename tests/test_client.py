@@ -45,7 +45,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         expected = {"btc_addr": config["wallet"],
                     "height": 0, "last_seen": 0,
                     "payout_addr": config["payout_address"]}
-        print result
+        print(result)
         self.assertEqual(result,json.dumps(expected))
 
     def test_already_registered(self):
@@ -201,7 +201,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                     "height": 2, "last_seen": 0,
                     "payout_addr": config["payout_address"]}
 
-        print result
+        print(result)
         self.assertEqual(result,json.dumps(expected))
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
