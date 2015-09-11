@@ -41,7 +41,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
-                    if farmers['last_seen'] == 0]
+                    if farmers['btc_addr'] == config['payout_address']]
         expected = json.dumps({'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
