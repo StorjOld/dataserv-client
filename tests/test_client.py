@@ -227,7 +227,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             max_size=1024 * 256)
         config = client.config()
         client.register()
-        client.farm(set_height_interval=100, delay=16, limit=2)
+        client.farm(set_height_interval=100,delay=0,limit=0)
 
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
