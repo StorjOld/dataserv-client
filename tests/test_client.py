@@ -39,12 +39,12 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
 
-        result = json.loads(urlopen(url + "/api/online/json").readall().decode('utf8'))
-        result = [farmers for farmers in result["farmers"]
-                    if farmers["last_seen"] == 0]
-        expected = {"btc_addr": config["wallet"],
-                    "height": 0, "last_seen": 0,
-                    "payout_addr": config["payout_address"]}
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['last_seen'] == 0]
+        expected = {'btc_addr': config['wallet'],
+                    'height': 0, 'last_seen': 0,
+                    'payout_addr': config['payout_address']}
         print(result)
         self.assertEqual(result,json.dumps(expected))
 
