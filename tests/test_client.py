@@ -39,13 +39,14 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
 
-        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'), sort_keys=True)
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         expected = json.dumps({'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']})
+                                'payout_addr': config['payout_address']},
+                                sort_keys=True)
         print(result)
         print(expected)
         self.assertEqual(result, expected)
@@ -196,13 +197,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client.register()
         client.build(set_height_interval=100)
 
-        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
+        result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'), sort_keys=True)
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         expected = json.dumps({'height': 2, 
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']})
+                                'payout_addr': config['payout_address']},
+                                sort_keys=True)
 
         print(result)
         print(expected)
