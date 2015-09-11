@@ -43,13 +43,11 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps({'height': 0,
+        expected = json.dumps([{'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']},
+                                'payout_addr': config['payout_address']]},
                                 sort_keys=True)
-        print(result)
-        print(expected)
         self.assertEqual(result, expected)
 
     def test_already_registered(self):
@@ -201,10 +199,11 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(urlopen(url + '/api/online/json').readall().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
-        expected = json.dumps({'height': 2, 
+        result = result.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': 2, 
                                 'btc_addr': config['payout_address'],
                                 'last_seen': 0,
-                                'payout_addr': config['payout_address']},
+                                'payout_addr': config['payout_address']]},
                                 sort_keys=True)
 
         print(result)
