@@ -6,9 +6,9 @@ import urllib
 import urllib.error
 import urllib.request
 import btctxstore
+import storjcore
 from dataserv_client import exceptions
 from dataserv_client import common
-from dataserv_client import control
 
 
 logger = common.logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class Messaging(object):
             query_url = self._server_url + api_path
             req = urllib.request.Request(query_url)
             if self.wif and authenticate:
-                headers = control.auth.create_authentication_headers(
+                headers = storjcore.auth.create_headers(
                     self.btctxstore, self._get_server_address(), self.wif
                 )
                 req.add_header("Date", headers["Date"])
