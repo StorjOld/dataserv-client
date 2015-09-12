@@ -146,7 +146,7 @@ class Client(object):
         """
         delay = deserialize.positive_integer(delay)
         stop_time = None
-        if limit:
+        if limit is not None:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
 
         while True:  # ping the server every X seconds
