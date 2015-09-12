@@ -4,6 +4,14 @@ import time
 import tempfile
 import unittest
 import datetime
+import json
+
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 
 from dataserv_client import cli
 from dataserv_client import api
@@ -25,6 +33,22 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
     def test_register(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         self.assertTrue(client.register())
+
+    def test_register_online(self):
+        client = api.Client(url=url, config_path=tempfile.mktemp())
+        config = client.config()
+        client.register()
+
+        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        result = json.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': 0,
+                                'btc_addr': config['payout_address'],
+                                'last_seen': 0,
+                                'payout_addr': config['payout_address']}],
+                                sort_keys=True)
+        self.assertEqual(result, expected)
 
     def test_already_registered(self):
         def callback():
@@ -165,6 +189,26 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
 
+    def test_build_online(self):
+        client = api.Client(url=url, config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)
+        config = client.config()
+        client.register()
+        client.build(set_height_interval=100)
+
+        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        last_seen = result[0]['last_seen']
+        result = json.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': 2, 
+                                'btc_addr': config['payout_address'],
+                                'last_seen': last_seen,
+                                'payout_addr': config['payout_address']}],
+                                sort_keys=True)
+
+        self.assertEqual(result,expected)
+
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
         client = api.Client(url=url,
@@ -178,6 +222,26 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             max_size=1024 * 256)  # 256K
         client.register()
         self.assertTrue(client.farm(delay=2,limit=2))
+
+    def test_farm_online(self):
+        client = api.Client(url=url, config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)
+        config = client.config()
+        client.register()
+        client.farm(delay=0,limit=1)
+
+        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        last_seen = result[0]['last_seen']
+        result = json.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': 2, 
+                                'btc_addr': config['payout_address'],
+                                'last_seen': last_seen,
+                                'payout_addr': config['payout_address']}],
+                                sort_keys=True)
+
+        self.assertEqual(result,expected)
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
