@@ -32,12 +32,8 @@ class AbstractTestSetup(object):
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
     def test_register(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
-        self.assertTrue(client.register())
-
-    def test_register_online(self):
-        client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
-        client.register()
+        self.assertTrue(client.register())
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
@@ -48,7 +44,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 'last_seen': 0,
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
-        self.assertEqual(result, expected)
+        self.assertEqual(result, expected) #check that register add height=0 to server list
 
     def test_already_registered(self):
         def callback():
@@ -86,8 +82,12 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         client.register()
-        self.assertTrue(client.poll(delay=2, limit=10))
 
+        before = datetime.datetime.now()
+        self.assertTrue(client.poll(delay=2, limit=2))
+        after = datetime.datetime.now()
+
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - before)) #check that poll did 2 pings with 2 sec delay
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_invalid_retry_limit(self):
@@ -129,7 +129,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
             client.farm(set_height_interval=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
-        
+
     def test_farm_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
@@ -185,63 +185,61 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 512)  # 512K
+        config = client.config()
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
-
-    def test_build_online(self):
-        client = api.Client(url=url, config_path=tempfile.mktemp(),
-                            max_size=1024 * 256)
-        config = client.config()
-        client.register()
-        client.build(set_height_interval=100)
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': 2, 
+        expected = json.dumps([{'height': 4,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
 
-        self.assertEqual(result,expected)
+        self.assertEqual(result,expected) #check that build send height=4 to the online list
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
-        self.assertTrue(client.farm(delay=2,limit=2))
-    
+
+        befor = datetime.datetime.now()
+        self.assertTrue(client.farm(delay=2,limit=2)) #check farm return true
+        after = datetime.datetime.now()
+
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor)) # check that farm did 2 pings with 2 sec delay
+
     def test_farm_registered(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
-        client.register()
-        self.assertTrue(client.farm(delay=2,limit=2))
-
-    def test_farm_online(self):
-        client = api.Client(url=url, config_path=tempfile.mktemp(),
-                            max_size=1024 * 256)
         config = client.config()
         client.register()
-        client.farm(delay=0,limit=1)
+
+        befor = datetime.datetime.now()
+        self.assertTrue(client.farm(delay=2,limit=2)) #check farm return true
+        after = datetime.datetime.now()
+
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor)) # check that farm did 2 pings with 2 sec delay
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': 2, 
+        expected = json.dumps([{'height': 2,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
 
-        self.assertEqual(result,expected)
+        self.assertEqual(result,expected) #check that farm send height=2 to online list
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
@@ -265,9 +263,9 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "--config_path=" + path,
             "poll",
-            "--delay=2",
-            "--limit=10"
-        ]
+            "--delay=0",
+            "--limit=0"
+        ] #no pings needed for check args
         self.assertTrue(cli.main(args))
 
     def test_register(self):
@@ -298,7 +296,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--set_height_interval=3"
         ]
         self.assertTrue(cli.main(args))
-        
+
     def test_farm(self):
         args = [
             "--url=" + url,
@@ -308,9 +306,9 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--cleanup",
             "--rebuild",
             "--set_height_interval=3",
-            "--delay=2",
-            "--limit=10"
-        ]
+            "--delay=0",
+            "--limit=0"
+        ] #no pings needed for check args
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
