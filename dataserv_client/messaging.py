@@ -55,20 +55,20 @@ class Messaging(object):
                 raise exceptions.InvalidAddress(self.auth_address())
             elif e.code == 401:  # auth error (likely clock off)
                 logger.warning(e) #log "HTTP Error 401: UNAUTHORIZED"
-                self._handle_connection_error(api_path, retries, authenticate)
+                return self._handle_connection_error(api_path, retries, authenticate)
             elif e.code == 500:  # pragma: no cover
                 raise exceptions.ServerError(self._server_url)
             else:
                 raise e  # pragma: no cover
         except http.client.HTTPException as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
         except urllib.error.URLError as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
         except socket.error as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
 
     def _handle_connection_error(self, api_path, retries, authenticate):
         if retries >= self.retry_limit:
