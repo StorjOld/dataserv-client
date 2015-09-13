@@ -27,13 +27,13 @@ Windows
 
 Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`_.
 
-Extarct the zip file to the folder where you wish to have it installed.
+Extract the zip file to the folder where you wish to have it installed.
 
 ::
 
     $ dataserv-client.exe version
 
-The dataserv-client will automaticlly update when new releases are made.
+The dataserv-client will automatically update when new releases are made.
 
 
 Ubuntu Linux
@@ -92,7 +92,7 @@ All configuration must be done before starting the node.
 
 **Start your farmer node**
 
-Optionally specifiy the path to store data path and available space.
+Optionally specify the path to store data path and available space.
 
 ::
 
@@ -119,7 +119,10 @@ Farmer multi disc guide
 
 In order to farm on multiple discs you will have to run several instances,
 as multiple paths are not yet supported. To do this you will need one config
-for each disc. Each instance can share a common payout address however.
+for each disc.
+
+Each instance can share a common payout address, however it is recommended
+to use a different payout address for each instance.
 
 
 Disc 1
@@ -127,7 +130,7 @@ Disc 1
 
 ::
 
-    dataserv-client --config_path=<CONFIG 1> config --set_payout_address=<BITCOIN_ADDRESS>
+    dataserv-client --config_path=<CONFIG 1> config --set_payout_address=<BITCOIN_ADDRESS 1>
     dataserv-client --config_path=<CONFIG 1> --store_path=<PATH 1> --max_size=<SIZE 1> farm
 
 
@@ -136,7 +139,7 @@ Disc n
 
 ::
 
-    dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS>
+    dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS n>
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
 
 
