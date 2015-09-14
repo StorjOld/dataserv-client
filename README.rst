@@ -92,7 +92,7 @@ All configuration must be done before starting the node.
 
 **Start your farmer node**
 
-Optionally specify the path to store data path and available space.
+Optionally specify the path to store data and the available space.
 
 ::
 
