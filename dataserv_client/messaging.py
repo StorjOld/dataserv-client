@@ -102,11 +102,6 @@ class Messaging(object):
             return self._url_query("/api/register/{0}/{1}".format(
                 self.auth_address(), payout_addr
             ))
-        data = self._url_query("/api/register/{0}".format(self.auth_address()))
-        data = json.loads(data.decode("utf-8"))
-        payout_addr = payout_addr if payout_addr else self.auth_address()
-        return (data["btc_addr"] == self.auth_address() and
-                data["payout_addr"] == payout_addr)
 
     def ping(self):
         """Send a heartbeat message for this client address."""
