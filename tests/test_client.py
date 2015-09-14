@@ -47,7 +47,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         self.assertEqual(result, expected) #check that register add height=0 to server list
 
     def test_register(self): #register without createing a config
-        client = api.Client(url=url, config_path=tempfile.mktemp())
+        client = api.Client(url=url)
         self.assertTrue(client.register())
 
     def test_already_registered(self):
