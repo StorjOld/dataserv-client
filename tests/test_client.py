@@ -159,9 +159,22 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=15) > (after - before))
 
-    def test_default_retry(self):
+    def test_retry_server_not_found(self):
         def callback():
-            client = api.Client(url="http://invalid.url",
+            client = api.Client(url="http://ServerNotFound.url",
+                                config_path=tempfile.mktemp(),
+                                connection_retry_limit=2,
+                                connection_retry_delay=2)
+            client.register()
+
+        before = datetime.datetime.now()
+        self.assertRaises(exceptions.ConnectionError, callback)
+        after = datetime.datetime.now()
+        self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
+        
+    def test_retry_invalid_url(self):
+        def callback():
+            client = api.Client(url="http://InvalidUrl",
                                 config_path=tempfile.mktemp(),
                                 connection_retry_limit=2,
                                 connection_retry_delay=2)
