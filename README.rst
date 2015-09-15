@@ -21,6 +21,7 @@ dataserv-client
 Setup
 =====
 
+-----------
 
 Windows
 -------
@@ -75,8 +76,9 @@ Update client
     $ dataserv-client version
 
 
-Farmer quickstart guide
+Farmer Quickstart Guide
 =======================
+-----------
 
 **Configure your farmer node**
 
@@ -114,8 +116,9 @@ Optional max_size syntax
     --max_size=1.0PB # 1000^5 bytes
 
 
-Farmer multi disc guide
+Farmer Multi Disc Guide
 =======================
+-----------
 
 In order to farm on multiple discs you will have to run several instances,
 as multiple paths are not yet supported. To do this you will need one config
@@ -143,9 +146,9 @@ Disc n
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
 
 
-Command line interface usage
+Command Line Interface Usage
 ============================
-
+-----------
 
 Argument ordering
 -----------------
