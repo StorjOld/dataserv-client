@@ -30,7 +30,7 @@ class AbstractTestSetup(object):
 
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
-    def test_register(self):
+    def test_register_payout(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         self.assertTrue(client.register())
@@ -45,6 +45,10 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list
+
+    def test_register(self): #register without createing a config
+        client = api.Client(url=url)
+        self.assertTrue(client.register())
 
     def test_already_registered(self):
         def callback():
@@ -159,9 +163,22 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=15) > (after - before))
 
-    def test_default_retry(self):
+    def test_retry_server_not_found(self):
         def callback():
-            client = api.Client(url="http://invalid.url",
+            client = api.Client(url="http://ServerNotFound.url",
+                                config_path=tempfile.mktemp(),
+                                connection_retry_limit=2,
+                                connection_retry_delay=2)
+            client.register()
+
+        before = datetime.datetime.now()
+        self.assertRaises(exceptions.ConnectionError, callback)
+        after = datetime.datetime.now()
+        self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
+        
+    def test_retry_invalid_url(self):
+        def callback():
+            client = api.Client(url="http://127.0.0.257",
                                 config_path=tempfile.mktemp(),
                                 connection_retry_limit=2,
                                 connection_retry_delay=2)

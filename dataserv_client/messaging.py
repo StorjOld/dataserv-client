@@ -45,7 +45,7 @@ class Messaging(object):
             if response.code == 200:
                 return response.read()
         except urllib.error.HTTPError as e:
-            logger.warning(repr(e))
+            #logger.warning(repr(e)) duplicate log entry
             if e.code == 409:
                 raise exceptions.AddressAlreadyRegistered(self.auth_address(),
                                                           self._server_url)
@@ -54,21 +54,21 @@ class Messaging(object):
             elif e.code == 400:
                 raise exceptions.InvalidAddress(self.auth_address())
             elif e.code == 401:  # auth error (likely clock off)
-                logger.warning(repr(e))
-                self._handle_connection_error(api_path, retries, authenticate)
+                logger.warning(e) #log "HTTP Error 401: UNAUTHORIZED"
+                return self._handle_connection_error(api_path, retries, authenticate)
             elif e.code == 500:  # pragma: no cover
                 raise exceptions.ServerError(self._server_url)
             else:
                 raise e  # pragma: no cover
         except http.client.HTTPException as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
         except urllib.error.URLError as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
         except socket.error as e:
             logger.warning(repr(e))
-            self._handle_connection_error(api_path, retries, authenticate)
+            return self._handle_connection_error(api_path, retries, authenticate)
 
     def _handle_connection_error(self, api_path, retries, authenticate):
         if retries >= self.retry_limit:
@@ -102,11 +102,6 @@ class Messaging(object):
             return self._url_query("/api/register/{0}/{1}".format(
                 self.auth_address(), payout_addr
             ))
-        data = self._url_query("/api/register/{0}".format(self.auth_address()))
-        data = json.loads(data.decode("utf-8"))
-        payout_addr = payout_addr if payout_addr else self.auth_address()
-        return (data["btc_addr"] == self.auth_address() and
-                data["payout_addr"] == payout_addr)
 
     def ping(self):
         """Send a heartbeat message for this client address."""
