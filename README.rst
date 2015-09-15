@@ -18,9 +18,15 @@ dataserv-client
 .. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
+Contributing
+============
+-----------
+
+We welcome contributions if you have a little extra time and Python experience. We ask that you make your pull requests on the `develop <https://github.com/Storj/dataserv-client/tree/develop>`_ branch, as we only use `master <https://github.com/Storj/dataserv-client/tree/master>`_ for releases. Please follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, and make sure you document anything new. If you have any questions, you can find the entire team on `Slack <http://slack.storj.io/>`_.
+
+
 Setup
 =====
-
 -----------
 
 Windows
