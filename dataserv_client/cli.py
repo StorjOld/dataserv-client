@@ -119,11 +119,11 @@ def _add_farm(command_parser):
     )
     # cleanup
     farm_parser.add_argument('--cleanup', action='store_true',
-                              help="Remove generated files.")
+                             help="Remove generated files.")
 
     # rebuild
     farm_parser.add_argument('--rebuild', action='store_true',
-                              help="Replace previously files.")
+                             help="Replace previously files.")
 
     # set height interval
     default = common.DEFAULT_SET_HEIGHT_INTERVAL
