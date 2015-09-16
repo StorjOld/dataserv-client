@@ -4,7 +4,7 @@ import logging
 
 
 DEFAULT_URL = "http://status.driveshare.org"
-DEFAULT_DELAY = 15
+DEFAULT_DELAY = 60
 
 DEFAULT_APP_HOME = os.path.join(os.path.expanduser("~"), ".storj")
 DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_APP_HOME, "config.json")
