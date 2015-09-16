@@ -1,5 +1,6 @@
-Develop
+v2.1.4
 
+ * Increased default ping interval.
  * Added missing arguments to farm command.
 
 v2.1.3
