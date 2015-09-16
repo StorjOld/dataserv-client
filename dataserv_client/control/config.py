@@ -60,7 +60,7 @@ def get(btctxstore, path, password=None):
         cfg = migrate(btctxstore, path, cfg, password=password)
         validate(btctxstore, cfg)
         return cfg
-    return create(btctxstore, path, password=password)
+    raise exceptions.MissingConfig(path)
 
 
 def _set_version(btctxstore, cfg, new_version):
