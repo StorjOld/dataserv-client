@@ -17,7 +17,8 @@ before_script:
 # run tests, e.g. python setup.py test
 script:
   - export DATASERV_MAX_PING=10
-  - python -m dataserv.app < /dev/null &>/dev/null &
+  - python -m dataserv.app db upgrade
+  - python -m dataserv.app runserver < /dev/null &>/dev/null &
   - coverage run --source="dataserv_client" setup.py test
 
 # run coverage

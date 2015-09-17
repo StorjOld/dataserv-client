@@ -64,7 +64,9 @@ test_single:
 
 
 test: setup
-	screen -S testserver -d -m $(PY) -m dataserv.app
+	export DATASERV_MAX_PING=10
+	$(PY) -m dataserv.app db upgrade
+	screen -S testserver -d -m $(PY) -m dataserv.app runserver
 	$(PY) setup.py test
 	screen -S testserver -X kill
 
