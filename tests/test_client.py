@@ -46,11 +46,6 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list
 
-    def test_register(self): #register without createing a config
-        client = api.Client(url=url)
-        client.config()
-        self.assertTrue(client.register())
-
     def test_already_registered(self):
         def callback():
             client = api.Client(url=url, config_path=tempfile.mktemp())
@@ -446,6 +441,41 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
         self.assertEqual(a, b, c)
         self.assertTrue(c["wallet"] is not None)
 
+class TestMissingConfig(AbstractTestSetup, unittest.TestCase):
+    def test_register(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.register()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_build(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.build()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_farm(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.farm()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_ping(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.ping()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_poll(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.poll()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
 
 if __name__ == '__main__':
     unittest.main()
