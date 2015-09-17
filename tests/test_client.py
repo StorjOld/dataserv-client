@@ -31,8 +31,9 @@ class AbstractTestSetup(object):
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
     def test_register_payout(self):
-        client = api.Client(url=url, config_path=tempfile.mktemp())
-        config = client.config()
+        config_path=tempfile.mktemp()
+        client = api.Client(url=url, config_path=config_path)
+        config = client.config(config_path=config_path)
         self.assertTrue(client.register())
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
