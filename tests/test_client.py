@@ -31,9 +31,8 @@ class AbstractTestSetup(object):
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
     def test_register_payout(self):
-        config_path=tempfile.mktemp()
-        client = api.Client(url=url, config_path=config_path)
-        config = client.config(config_path=config_path)
+        client = api.Client(url=url, config_path=tempfile.mktemp())
+        config = client.config()
         self.assertTrue(client.register())
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
@@ -283,18 +282,24 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_poll(self):
-        path = tempfile.mktemp()
+        config_path = tempfile.mktemp()
+
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "register",
         ]
         cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "poll",
             "--delay=0",
             "--limit=0"
@@ -302,26 +307,38 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+
         args = [
             "--url=" + url,
-            "--config_path=" + tempfile.mktemp(),
+            "--config_path=" + config_path,
             "register"
         ]
         self.assertTrue(cli.main(args))
 
     def test_build(self):
-        path = tempfile.mktemp()
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "register",
         ]
         cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "--max_size=" + str(1024 * 256),  # 256K
             "build",
             "--cleanup",
@@ -331,9 +348,16 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_farm(self):
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+        
         args = [
             "--url=" + url,
-            "--config_path=" + tempfile.mktemp(),
+            "--config_path=" + config_path,
             "--max_size=" + str(1024 * 256),  # 256K
             "farm",
             "--cleanup",
@@ -345,6 +369,13 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+        
         config_path = tempfile.mktemp()
         args = [
             "--url=" + url,
@@ -368,15 +399,19 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_input_error(self):
         def callback():
-            path = tempfile.mktemp()
+            config_path = tempfile.mktemp()
+            cli.main([
+                "--config_path=" + config_path,
+                "config",
+            ])
             cli.main([
                 "--url=" + url,
-                "--config_path=" + path,
+                "--config_path=" + config_path,
                 "register",
             ])
             cli.main([
                 "--url=" + url,
-                "--config_path=" + path,
+                "--config_path=" + config_path,
                 "poll",
                 "--delay=5",
                 "--limit=xyz"
