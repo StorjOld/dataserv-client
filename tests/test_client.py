@@ -370,8 +370,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "config",
         ]
         cli.main(args)
-        
-        config_path = tempfile.mktemp()
+
         args = [
             "--url=" + url,
             "--config_path=" + config_path,
