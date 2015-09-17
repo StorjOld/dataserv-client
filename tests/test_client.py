@@ -46,13 +46,10 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list
 
-    def test_register(self): #register without createing a config
-        client = api.Client(url=url)
-        self.assertTrue(client.register())
-
     def test_already_registered(self):
         def callback():
             client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.config()
             client.register()
             client.register()
 
@@ -62,6 +59,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         def callback():
             client = api.Client(url=url + "/xyz",
                                 config_path=tempfile.mktemp())
+            client.config()
             client.register()
 
         self.assertRaises(exceptions.ServerNotFound, callback)
@@ -70,6 +68,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 class TestClientPing(AbstractTestSetup, unittest.TestCase):
     def test_ping(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
+        client.config()
         self.assertTrue(client.register())
         self.assertTrue(client.ping())
 
@@ -77,6 +76,7 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
         def callback():
             client = api.Client(url=url + "/xyz",
                                 config_path=tempfile.mktemp())
+            client.config()
             client.ping()
 
         self.assertRaises(exceptions.ServerNotFound, callback)
@@ -85,6 +85,7 @@ class TestClientPing(AbstractTestSetup, unittest.TestCase):
 class TestClientPoll(AbstractTestSetup, unittest.TestCase):
     def test_poll(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
+        client.config()
         client.register()
 
         before = datetime.datetime.now()
@@ -123,6 +124,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_build_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
+            client.config()
             client.build(set_height_interval=-1)
 
         self.assertRaises(exceptions.InvalidInput, callback)
@@ -130,6 +132,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_farm_invalid_zero_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
+            client.config()
             client.farm(set_height_interval=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
@@ -137,6 +140,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_farm_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
+            client.config()
             client.farm(set_height_interval=-1)
 
         self.assertRaises(exceptions.InvalidInput, callback)
@@ -144,6 +148,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_build_invalid_zero_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
+            client.config()
             client.build(set_height_interval=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
@@ -156,6 +161,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
                                 connection_retry_limit=0,
                                 connection_retry_delay=0,
                                 config_path=tempfile.mktemp())
+            client.config()
             client.register()
 
         before = datetime.datetime.now()
@@ -169,6 +175,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
                                 config_path=tempfile.mktemp(),
                                 connection_retry_limit=2,
                                 connection_retry_delay=2)
+            client.config()
             client.register()
 
         before = datetime.datetime.now()
@@ -182,6 +189,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
                                 config_path=tempfile.mktemp(),
                                 connection_retry_limit=2,
                                 connection_retry_delay=2)
+            client.config()
             client.register()
 
         before = datetime.datetime.now()
@@ -195,6 +203,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
+        client.config()
         client.register()
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated))
@@ -225,6 +234,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
+        client.config()
 
         befor = datetime.datetime.now()
         self.assertTrue(client.farm(delay=2,limit=2)) #check farm return true
@@ -267,18 +277,24 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_poll(self):
-        path = tempfile.mktemp()
+        config_path = tempfile.mktemp()
+
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "register",
         ]
         cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "poll",
             "--delay=0",
             "--limit=0"
@@ -286,26 +302,38 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_register(self):
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+
         args = [
             "--url=" + url,
-            "--config_path=" + tempfile.mktemp(),
+            "--config_path=" + config_path,
             "register"
         ]
         self.assertTrue(cli.main(args))
 
     def test_build(self):
-        path = tempfile.mktemp()
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "register",
         ]
         cli.main(args)
 
         args = [
             "--url=" + url,
-            "--config_path=" + path,
+            "--config_path=" + config_path,
             "--max_size=" + str(1024 * 256),  # 256K
             "build",
             "--cleanup",
@@ -315,9 +343,16 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
     def test_farm(self):
+        config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+        
         args = [
             "--url=" + url,
-            "--config_path=" + tempfile.mktemp(),
+            "--config_path=" + config_path,
             "--max_size=" + str(1024 * 256),  # 256K
             "farm",
             "--cleanup",
@@ -330,6 +365,12 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_ping(self):
         config_path = tempfile.mktemp()
+        args = [
+            "--config_path=" + config_path,
+            "config",
+        ]
+        cli.main(args)
+
         args = [
             "--url=" + url,
             "--config_path=" + config_path,
@@ -352,15 +393,19 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_input_error(self):
         def callback():
-            path = tempfile.mktemp()
+            config_path = tempfile.mktemp()
+            cli.main([
+                "--config_path=" + config_path,
+                "config",
+            ])
             cli.main([
                 "--url=" + url,
-                "--config_path=" + path,
+                "--config_path=" + config_path,
                 "register",
             ])
             cli.main([
                 "--url=" + url,
-                "--config_path=" + path,
+                "--config_path=" + config_path,
                 "poll",
                 "--delay=5",
                 "--limit=xyz"
@@ -395,6 +440,41 @@ class TestConfig(AbstractTestSetup, unittest.TestCase):
         self.assertEqual(a, b, c)
         self.assertTrue(c["wallet"] is not None)
 
+class TestMissingConfig(AbstractTestSetup, unittest.TestCase):
+    def test_register(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.register()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_build(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.build()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_farm(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.farm()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_ping(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.ping()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
+
+    def test_poll(self):
+        def callback():
+            client = api.Client(url=url, config_path=tempfile.mktemp())
+            client.poll()
+            
+        self.assertRaises(exceptions.MissingConfig, callback)
 
 if __name__ == '__main__':
     unittest.main()

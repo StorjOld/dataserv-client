@@ -16,6 +16,11 @@ class InvalidConfig(DataservClientException):
     def __init__(self):
         super(InvalidConfig, self).__init__("Invalid Config!")
 
+class MissingConfig(DataservClientException):
+
+    def __init__(self, path):
+        msg = "Missing config file {0}!".format(path)
+        super(MissingConfig, self).__init__(msg)
 
 class AddressAlreadyRegistered(DataservClientException):
 

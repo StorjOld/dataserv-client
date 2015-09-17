@@ -46,6 +46,7 @@ class Client(object):
         self.max_size = deserialize.byte_count(max_size)
 
         self.messenger = None  # lazy
+        self.cfg = None
         self.btctxstore = BtcTxStore()
         self.retry_limit = deserialize.positive_integer(connection_retry_limit)
         self.retry_delay = deserialize.positive_integer(connection_retry_delay)
@@ -65,7 +66,6 @@ class Client(object):
             msg = "Couldn't detected partition type for '{0}'"
             logger.warning(msg.format(self.store_path))
 
-        self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
     @staticmethod
     def version():
@@ -75,6 +75,7 @@ class Client(object):
     def _init_messenger(self):
         """Make sure messenger exists."""
         if self.messenger is None:
+            self.cfg = control.config.get(self.btctxstore, self.cfg_path)            
             wif = self.btctxstore.get_key(self.cfg["wallet"])
             self.messenger = messaging.Messaging(self.url, wif,
                                                  self.retry_limit,
@@ -103,6 +104,8 @@ class Client(object):
                 (not self.btctxstore.validate_wallet(set_wallet))):
             raise exceptions.InvalidHWIF(set_wallet)
 
+        if not control.config.exists(self.cfg_path):
+            self.cfg = control.config.create(self.btctxstore, self.cfg_path)
         self._init_messenger()
         config_updated = False
 
