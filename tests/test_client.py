@@ -31,7 +31,6 @@ class AbstractTestSetup(object):
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
-    @unittest.skip("FIXME test broken")
     def test_register_payout(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()

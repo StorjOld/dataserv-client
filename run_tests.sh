@@ -28,5 +28,5 @@ $PY setup.py test
 
 
 # clean up
-#screen -S testserver -X kill
+screen -S testserver -X kill
 rm -rf $TMP_SERVER_DIR
