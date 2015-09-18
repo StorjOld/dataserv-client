@@ -9,15 +9,12 @@ install:
   - pip install -r test_requirements.txt
 
 before_script:
-  - touch dataserv.db
-  - touch dataserv_test.db
-  - mkdir data
-  - mkdir tmp
+  - bash travis_setup.sh
 
 # run tests, e.g. python setup.py test
 script:
-  - export DATASERV_MAX_PING=10
-  - bash create_test_server.sh < /dev/null &>/dev/null &
+  - export DATASERV_MAX_PING="10"
+  - export DATASERV_CLIENT_CONNECTION_RETRY_DELAY="1"
   - coverage run --source="dataserv_client" setup.py test
 
 # run coverage
