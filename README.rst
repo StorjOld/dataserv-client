@@ -18,22 +18,29 @@ dataserv-client
 .. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
+Contributing
+============
+-----------
+
+We welcome contributions if you have a little extra time and Python experience. We ask that you make your pull requests on the `develop <https://github.com/Storj/dataserv-client/tree/develop>`_ branch, as we only use `master <https://github.com/Storj/dataserv-client/tree/master>`_ for releases. Please follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, and make sure you document anything new. If you have any questions, you can find the entire team on `Slack <http://slack.storj.io/>`_. Note: If you plan on running the unit tests for the repo, you will also need to have `dataserv <https://github.com/Storj/dataserv>`_ running locally.
+
+
 Setup
 =====
-
+-----------
 
 Windows
 -------
 
 Download `latest windows release from github <https://github.com/Storj/dataserv-client/releases>`_.
 
-Extarct the zip file to the folder where you wish to have it installed.
+Extract the zip file to the folder where you wish to have it installed.
 
 ::
 
     $ dataserv-client.exe version
 
-The dataserv-client will automaticlly update when new releases are made.
+The dataserv-client will automatically update when new releases are made.
 
 
 Ubuntu Linux
@@ -75,8 +82,9 @@ Update client
     $ dataserv-client version
 
 
-Farmer quickstart guide
+Farmer Quickstart Guide
 =======================
+-----------
 
 **Configure your farmer node**
 
@@ -92,7 +100,7 @@ All configuration must be done before starting the node.
 
 **Start your farmer node**
 
-Optionally specifiy the path to store data path and available space.
+Optionally specify the path to store data and the available space.
 
 ::
 
@@ -114,9 +122,39 @@ Optional max_size syntax
     --max_size=1.0PB # 1000^5 bytes
 
 
-Command line interface usage
-============================
+Farmer Multi Disc Guide
+=======================
+-----------
 
+In order to farm on multiple discs you will have to run several instances,
+as multiple paths are not yet supported. To do this you will need one config
+for each disc.
+
+Each instance can share a common payout address, however it is recommended
+to use a different payout address for each instance.
+
+
+Disc 1
+------
+
+::
+
+    dataserv-client --config_path=<CONFIG 1> config --set_payout_address=<BITCOIN_ADDRESS 1>
+    dataserv-client --config_path=<CONFIG 1> --store_path=<PATH 1> --max_size=<SIZE 1> farm
+
+
+Disc n
+------
+
+::
+
+    dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS n>
+    dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
+
+
+Command Line Interface Usage
+============================
+-----------
 
 Argument ordering
 -----------------
@@ -186,3 +224,4 @@ Show command help and optional arguments
                             Set node wallet to given hwif.
       --set_payout_address SET_PAYOUT_ADDRESS
                             Root address of wallet used by default.
+

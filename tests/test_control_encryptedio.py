@@ -14,11 +14,13 @@ class TestConfig(unittest.TestCase):
         print("output_path", output_path)
 
         # encrypt
-        with open(input_path, 'rb') as in_file, open(encrypted_path, 'wb') as out_file:
+        with open(input_path, 'rb') as in_file, open(encrypted_path, 'wb') as\
+                out_file:
             encryptedio.encrypt(in_file, out_file, b"test")
 
         # decrypt
-        with open(encrypted_path, 'rb') as in_file, open(output_path, 'wb') as out_file:
+        with open(encrypted_path, 'rb') as in_file, open(output_path, 'wb') as\
+                out_file:
             encryptedio.decrypt(in_file, out_file, b"test")
 
         # check hashes

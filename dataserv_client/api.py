@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-
 from future.standard_library import install_aliases
 install_aliases()
 
-import os
-import time
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
@@ -16,6 +13,8 @@ from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
 
+import os
+import time
 
 logger = common.logging.getLogger(__name__)
 
@@ -58,8 +57,13 @@ class Client(object):
         control.util.ensure_path_exists(self.store_path)
 
         # check for vfat partions
-        if control.util.get_fs_type(self.store_path) == "vfat":
+        fstype = control.util.get_fs_type(self.store_path)
+        if fstype == "vfat":
+            logger.info("Detected vfat partition, using folder tree.")
             self.use_folder_tree = True
+        if fstype is None:
+            msg = "Couldn't detected partition type for '{0}'"
+            logger.warning(msg.format(self.store_path))
 
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
@@ -142,7 +146,7 @@ class Client(object):
         """
         delay = deserialize.positive_integer(delay)
         stop_time = None
-        if limit:
+        if limit is not None:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
 
         while True:  # ping the server every X seconds
@@ -196,11 +200,19 @@ class Client(object):
         logger.info("Build finished")
         return generated
 
-    def farm(self):
+    def farm(self, cleanup=False, rebuild=False,
+             set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
+             delay=common.DEFAULT_DELAY, limit=None):
         """ Fully automatic client for users wishing a simple turnkey solution.
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
         """
+
+        set_height_interval = deserialize.positive_nonzero_integer(
+            set_height_interval
+        )
+        cleanup = deserialize.flag(cleanup)
+        rebuild = deserialize.flag(rebuild)
 
         # farmer never gives up
         self._init_messenger()
@@ -210,5 +222,7 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
-        self.build()
-        self.poll()
+        self.build(cleanup=cleanup, rebuild=rebuild,
+                   set_height_interval=set_height_interval)
+        self.poll(delay=delay, limit=limit)
+        return True
