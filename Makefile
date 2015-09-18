@@ -63,12 +63,12 @@ test_single:
 	#time dataserv-client --debug --url=http://78.46.188.55:5000 --max_size=5368709120 build
 
 
-test: setup
+test:
 	export DATASERV_MAX_PING="10"
-	$(PY) -m dataserv.app db upgrade
-	screen -S testserver -d -m $(PY) -m dataserv.app runserver
+	screen -S testserver -d -m bash create_temp_server.sh
 	$(PY) setup.py test
 	screen -S testserver -X kill
+	rm -rf /tmp/dataserv_*
 
 
 publish: test
