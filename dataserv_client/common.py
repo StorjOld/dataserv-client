@@ -26,7 +26,12 @@ DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
 
 # connection retry
 DEFAULT_CONNECTION_RETRY_LIMIT = 120  # 120 * 30sec = 1 hour
-DEFAULT_CONNECTION_RETRY_DELAY = 30
+_retry_delay_label = "DATASERV_CLIENT_CONNECTION_RETRY_DELAY"
+if os.environ.get(_retry_delay_label):
+    DEFAULT_CONNECTION_RETRY_DELAY = int(os.environ.get(_retry_delay_label))
+else:
+    DEFAULT_CONNECTION_RETRY_DELAY = 30
+print("DEFAULT_CONNECTION_RETRY_DELAY", DEFAULT_CONNECTION_RETRY_DELAY)
 
 
 # logging
