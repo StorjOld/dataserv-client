@@ -59,14 +59,11 @@ shell: setup
 test_single:
 	$(PIP) uninstall dataserv-client
 	$(PY) setup.py install
-	$(PY) -m unittest tests.test_control_util
-	#time dataserv-client --debug --url=http://78.46.188.55:5000 --max_size=5368709120 build
+	$(PY) -m unittest tests.test_client.TestClientRegister
 
 
 test: setup
-	screen -S testserver -d -m $(PY) -m dataserv.app
-	$(PY) setup.py test
-	screen -S testserver -X kill
+	bash run_tests.sh
 
 
 publish: test

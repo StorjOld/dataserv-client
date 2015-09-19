@@ -112,10 +112,40 @@ def _add_build(command_parser):
         help="Interval at which to set height (default: {0}).".format(default)
     )
 
+    # specify the number of shards to build in parallel
+    default = common.DEFAULT_NUMCORES
+    build_parser.add_argument(
+        "--num_cores", default=default,
+        help="Number shards to build in parallel"
+    )
+
 
 def _add_farm(command_parser):
     farm_parser = command_parser.add_parser(
         "farm", help="Start farmer."
+    )
+    # cleanup
+    farm_parser.add_argument('--cleanup', action='store_true',
+                             help="Remove generated files.")
+
+    # rebuild
+    farm_parser.add_argument('--rebuild', action='store_true',
+                             help="Replace previously files.")
+
+    # set height interval
+    default = common.DEFAULT_SET_HEIGHT_INTERVAL
+    farm_parser.add_argument(
+        "--set_height_interval", default=default,
+        help="Interval at which to set height (default: {0}).".format(default)
+    )
+
+    farm_parser.add_argument(
+        "--delay", default=common.DEFAULT_DELAY,
+        help="Deley between each ping."
+    )
+
+    farm_parser.add_argument(
+        "--limit", default=None, help="Limit poll time in seconds."
     )
 
 
