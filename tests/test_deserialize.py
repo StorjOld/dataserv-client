@@ -92,18 +92,18 @@ class TestByteCount(unittest.TestCase):
 
     def test_decimal(self):
         # test unit boundries base 1024
-        self.assertEqual(deserialize.byte_count("1.0K"), 1024 ** 1 )
-        self.assertEqual(deserialize.byte_count("1.0M"), 1024 ** 2 )
-        self.assertEqual(deserialize.byte_count("1.0G"), 1024 ** 3 )
-        self.assertEqual(deserialize.byte_count("1.0T"), 1024 ** 4 )
-        self.assertEqual(deserialize.byte_count("1.0P"), 1024 ** 5 )
+        self.assertEqual(deserialize.byte_count("1.0K"), 1024 ** 1)
+        self.assertEqual(deserialize.byte_count("1.0M"), 1024 ** 2)
+        self.assertEqual(deserialize.byte_count("1.0G"), 1024 ** 3)
+        self.assertEqual(deserialize.byte_count("1.0T"), 1024 ** 4)
+        self.assertEqual(deserialize.byte_count("1.0P"), 1024 ** 5)
 
         # test unit boundries base 1000
-        self.assertEqual(deserialize.byte_count("1.0KB"), 1000 ** 1 )
-        self.assertEqual(deserialize.byte_count("1.0MB"), 1000 ** 2 )
-        self.assertEqual(deserialize.byte_count("1.0GB"), 1000 ** 3 )
-        self.assertEqual(deserialize.byte_count("1.0TB"), 1000 ** 4 )
-        self.assertEqual(deserialize.byte_count("1.0PB"), 1000 ** 5 )
+        self.assertEqual(deserialize.byte_count("1.0KB"), 1000 ** 1)
+        self.assertEqual(deserialize.byte_count("1.0MB"), 1000 ** 2)
+        self.assertEqual(deserialize.byte_count("1.0GB"), 1000 ** 3)
+        self.assertEqual(deserialize.byte_count("1.0TB"), 1000 ** 4)
+        self.assertEqual(deserialize.byte_count("1.0PB"), 1000 ** 5)
 
         # test between unit boundries base 1024
         self.assertEqual(deserialize.byte_count("0.5K"), (1024 ** 1 / 2))

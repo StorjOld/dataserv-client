@@ -1,4 +1,5 @@
 import os
+import time
 import bisect
 import hashlib
 import binascii
@@ -67,7 +68,13 @@ class Builder:
         # save the shard
         path = self._get_shard_path(store_path, seed,
                                     create_needed_folders=True)
-        RandomIO.RandomIO(seed).genfile(self.shard_size, path)
+        try:
+            RandomIO.RandomIO(seed).genfile(self.shard_size, path)
+        except IOError as e:
+            msg = "Failed to write shard, will try once more! '{0}'"
+            logger.error(msg.format(repr(e)))
+            time.sleep(2)
+            RandomIO.RandomIO(seed).genfile(self.shard_size, path)
 
         # get the file hash
         with open(path, 'rb') as f:

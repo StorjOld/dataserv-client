@@ -4,7 +4,14 @@ import logging
 
 
 DEFAULT_URL = "http://status.driveshare.org"
-DEFAULT_DELAY = 15
+
+
+# read default delay from os environ if available
+if os.environ.get("DATASERV_MAX_PING"):
+    DEFAULT_DELAY = os.environ.get("DATASERV_MAX_PING")
+else:
+    DEFAULT_DELAY = 60  # default seconds
+
 
 DEFAULT_APP_HOME = os.path.join(os.path.expanduser("~"), ".storj")
 DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_APP_HOME, "config.json")
@@ -19,11 +26,16 @@ DEFAULT_STORE_PATH = os.path.join(DEFAULT_APP_HOME, "store")
 
 # connection retry
 DEFAULT_CONNECTION_RETRY_LIMIT = 120  # 120 * 30sec = 1 hour
-DEFAULT_CONNECTION_RETRY_DELAY = 30
+_retry_delay_label = "DATASERV_CLIENT_CONNECTION_RETRY_DELAY"
+if os.environ.get(_retry_delay_label):
+    DEFAULT_CONNECTION_RETRY_DELAY = int(os.environ.get(_retry_delay_label))
+else:
+    DEFAULT_CONNECTION_RETRY_DELAY = 30
+print("DEFAULT_CONNECTION_RETRY_DELAY", DEFAULT_CONNECTION_RETRY_DELAY)
 
 
 # logging
-LOG_FORMAT = "%(levelname)s %(name)s %(lineno)d: %(message)s"      
+LOG_FORMAT = "%(levelname)s %(name)s %(lineno)d: %(message)s"
 if "--debug" in sys.argv:
     logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
 elif "--quiet" in sys.argv:
