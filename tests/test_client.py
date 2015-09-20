@@ -36,7 +36,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         self.assertTrue(client.register())
         
-        time.sleep(5) #wait cause of server caching
+        time.sleep(1.1) #wait cause of server caching
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
