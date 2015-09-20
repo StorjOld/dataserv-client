@@ -8,6 +8,7 @@ import urllib.request
 import btctxstore
 import storjcore
 from dataserv_client import exceptions
+from dataserv_client import logmessages
 from dataserv_client import common
 
 
@@ -54,7 +55,7 @@ class Messaging(object):
             elif e.code == 400:
                 raise exceptions.InvalidAddress(self.auth_address())
             elif e.code == 401:  # auth error (likely clock off)
-                logger.warning(e) #log "HTTP Error 401: UNAUTHORIZED"
+                logger.warning(logmessages.InvalidAuthenticationHeaders()) #log "HTTP Error 401: UNAUTHORIZED"
                 return self._handle_connection_error(api_path, retries, authenticate)
             elif e.code == 500:  # pragma: no cover
                 raise exceptions.ServerError(self._server_url)
