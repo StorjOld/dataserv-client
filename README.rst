@@ -124,7 +124,6 @@ Optional max_size syntax
 
 Farmer Multi Disc Guide
 =======================
------------
 
 In order to farm on multiple discs you will have to run several instances,
 as multiple paths are not yet supported. To do this you will need one config
@@ -150,6 +149,31 @@ Disc n
 
     dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS n>
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
+
+    
+Farmer Setting Custom Height
+============================
+
+
+In order to build a bit faster, you may consider using the --set_height_interval command.
+If you set a high height number though please also consider running another instance of the client with poll.
+Poll will send every 60 sec, farm or build will send only when the height interval is reached.
+
+
+Running the farm command
+------------------------
+
+::
+
+    dataserv-client --url=http://switch.driveshare.org --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm --set_height_interval=(default: 25, max recommended: 199999)
+
+	
+Running the poll command
+------------------------
+
+::
+
+	dataserv-client --url=http://switch.driveshare.org poll    
 
 
 Command Line Interface Usage
