@@ -53,14 +53,18 @@ def validate(btctxstore, cfg):
         raise exceptions.InvalidConfig()
     return True
 
+def exists(path):
+    if os.path.exists(path):
+        return True
+    return False
 
 def get(btctxstore, path, password=None):
-    if os.path.exists(path):
+    if exists(path):
         cfg = read(path, password=password)
         cfg = migrate(btctxstore, path, cfg, password=password)
         validate(btctxstore, cfg)
         return cfg
-    return create(btctxstore, path, password=password)
+    raise exceptions.MissingConfig(path)
 
 
 def _set_version(btctxstore, cfg, new_version):
