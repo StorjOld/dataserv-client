@@ -35,14 +35,17 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         self.assertTrue(client.register())
+        
+        time.sleep(1.1) #wait cause of server caching
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
+        last_seen = result[0]['last_seen']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 0,
                                 'btc_addr': config['payout_address'],
-                                'last_seen': 0,
+                                'last_seen': last_seen,
                                 'payout_addr': config['payout_address']}],
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list

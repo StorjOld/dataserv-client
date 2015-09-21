@@ -22,7 +22,7 @@ Contributing
 ============
 -----------
 
-We welcome contributions if you have a little extra time and Python experience. We ask that you make your pull requests on the `develop <https://github.com/Storj/dataserv-client/tree/develop>`_ branch, as we only use `master <https://github.com/Storj/dataserv-client/tree/master>`_ for releases. Please follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, and make sure you document anything new. If you have any questions, you can find the entire team on `Slack <http://slack.storj.io/>`_. Note: If you plan on running the unit tests for the repo, you will also need to have `dataserv <https://github.com/Storj/dataserv>`_ running locally.
+We welcome contributions if you have a little extra time and Python experience. We ask that you make your pull requests on the `develop <https://github.com/Storj/dataserv-client/tree/develop>`_ branch, as we only use `master <https://github.com/Storj/dataserv-client/tree/master>`_ for releases. Please follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, and make sure you document anything new. If you have any questions, you can find the entire team on `Slack <http://slack.storj.io/>`_. Note: If you plan on running the unit tests for the repo, you will also need to have `dataserv <https://github.com/Storj/dataserv>`_ running locally with a new db.
 
 
 Setup
@@ -124,7 +124,6 @@ Optional max_size syntax
 
 Farmer Multi Disc Guide
 =======================
------------
 
 In order to farm on multiple discs you will have to run several instances,
 as multiple paths are not yet supported. To do this you will need one config
@@ -151,9 +150,33 @@ Disc n
     dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS n>
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
 
+
+Farmer Setting Custom Height
+============================
+
+
+In order to build a bit faster, you may consider using the --set_height_interval command.
+If you set a high height number though please also consider running another instance of the client with poll.
+Poll will send every 60 sec, farm or build will send only when the height interval is reached.
+
+
+Running the farm command
+------------------------
+
+::
+
+    dataserv-client --url=http://switch.driveshare.org --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm --set_height_interval=(default: 25, max recommended: 199999)
+
+	
+Running the poll command
+------------------------
+
+::
+
+	dataserv-client --url=http://switch.driveshare.org poll    
+
 Workers Guide
 ============================
------------
 
 You can start multiple workers by executing farm or buil with the optional argument --workers. It is recomended to start only as many workers as your cpu and hard drive can handle. With a fast hard drive a cpu usage of ~80% is possible.
 
@@ -164,6 +187,7 @@ You can start multiple workers by executing farm or buil with the optional argum
 ::
 
     dataserv-client farm --workers=<number of workers>
+
 
 Command Line Interface Usage
 ============================

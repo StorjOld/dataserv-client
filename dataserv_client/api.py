@@ -57,14 +57,22 @@ class Client(object):
         control.util.ensure_path_exists(self.store_path)
 
         # check for vfat partions
-        fstype = control.util.get_fs_type(self.store_path)
+        try:
+            fstype = control.util.get_fs_type(self.store_path)
+
+        #FileNotFoundError: [Errno 2] No such file or directory: '/etc/mtab'
+        #psutil: https://code.google.com/p/psutil/issues/detail?id=434
+        except FileNotFoundError as e: 
+            logger.warning(e)
+            fstype = None
+
         if fstype == "vfat":
             logger.info("Detected vfat partition, using folder tree.")
             self.use_folder_tree = True
         if fstype is None:
             msg = "Couldn't detected partition type for '{0}'"
             logger.warning(msg.format(self.store_path))
-
+            
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
     @staticmethod
