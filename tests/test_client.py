@@ -121,6 +121,20 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
+    def test_build_invalid_negative_workers(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.build(workers=-1)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_farm_invalid_zero_workers(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.farm(workers=0)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
     def test_build_invalid_negative_set_height_interval(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
@@ -309,6 +323,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--config_path=" + path,
             "--max_size=" + str(1024 * 256),  # 256K
             "build",
+            "--workers=4",
             "--cleanup",
             "--rebuild",
             "--set_height_interval=3"
@@ -321,6 +336,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--config_path=" + tempfile.mktemp(),
             "--max_size=" + str(1024 * 256),  # 256K
             "farm",
+            "--workers=4",
             "--cleanup",
             "--rebuild",
             "--set_height_interval=3",

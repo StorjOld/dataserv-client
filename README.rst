@@ -151,6 +151,19 @@ Disc n
     dataserv-client --config_path=<CONFIG n> config --set_payout_address=<BITCOIN_ADDRESS n>
     dataserv-client --config_path=<CONFIG n> --store_path=<PATH n> --max_size=<SIZE n> farm
 
+Workers Guide
+============================
+-----------
+
+You can start multiple workers by executing farm or buil with the optional argument --workers. It is recomended to start only as many workers as your cpu and hard drive can handle. With a fast hard drive a cpu usage of ~80% is possible.
+
+::
+
+    dataserv-client build --workers=<number of workers>
+    
+::
+
+    dataserv-client farm --workers=<number of workers>
 
 Command Line Interface Usage
 ============================
