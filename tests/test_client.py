@@ -36,8 +36,8 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         self.assertTrue(client.register())
         
-        time.sleep(1.1) #wait cause of server caching
-
+        time.sleep(5)
+        
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
