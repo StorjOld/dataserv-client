@@ -15,6 +15,7 @@ before_script:
 script:
   - export DATASERV_MAX_PING="10"
   - export DATASERV_CLIENT_CONNECTION_RETRY_DELAY="1"
+  - export DATASERV_CACHING_TIME="0"
   - coverage run --source="dataserv_client" setup.py test
 
 # run coverage
