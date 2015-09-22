@@ -67,7 +67,7 @@ test: setup
 
 
 publish: test
-	$(PY) setup.py register sdist upload
+	$(PY) setup.py register bdist_wheel upload
 
 
 # import pudb; pu.db # set break point

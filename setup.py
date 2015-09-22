@@ -19,8 +19,8 @@ if os.name == 'nt' and 'py2exe' in sys.argv:
 
 exec(open('dataserv_client/version.py').read())  # load __version__
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
-DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
-    'baseurl': "https://pypi.python.org/packages/source/a",
+DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s-py2.py3-none-any.whl" % {
+    'baseurl': "https://pypi.python.org/packages/3.4/d",
     'name': 'dataserv-client',
     'version': __version__  # NOQA
 }
