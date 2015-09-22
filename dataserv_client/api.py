@@ -2,6 +2,8 @@
 from future.standard_library import install_aliases
 install_aliases()
 
+import os
+import time
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
@@ -165,7 +167,8 @@ class Client(object):
             time.sleep(int(delay))
 
     def build(self, cleanup=False, rebuild=False,
-              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
+              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
+              num_cores=common.DEFAULT_NUMCORES):
         """Generate test files deterministically based on address.
 
         :param cleanup: Remove files in shard directory.
@@ -178,9 +181,10 @@ class Client(object):
         )
         cleanup = deserialize.flag(cleanup)
         rebuild = deserialize.flag(rebuild)
+        num_cores = deserialize.positive_nonzero_integer(num_cores)
 
         self._init_messenger()
-        logger.info("Starting build")
+        logger.info("Starting build with {} cores".format(num_cores))
 
         def _on_generate_shard(cur_height, cur_seed, cur_file_hash):
             """
@@ -203,7 +207,7 @@ class Client(object):
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
         generated = bldr.build(self.store_path, cleanup=cleanup,
-                               rebuild=rebuild)
+                               rebuild=rebuild, num_cores=num_cores)
 
         logger.info("Build finished")
         return generated

@@ -9,7 +9,6 @@ from datetime import datetime
 from dataserv_client import control
 from dataserv_client import common
 
-
 logger = common.logging.getLogger(__name__)
 
 
@@ -47,7 +46,7 @@ class Builder:
         """Deterministically build a seed."""
         return self._build_all_seeds(height).pop()
 
-    def _get_shard_path(self, store_path, seed, create_needed_folders=False):
+    def _get_shard_path(self, store_path=None, seed=None, create_needed_folders=False):
         if self.use_folder_tree:
             folders = os.path.join(*control.util.chunks(seed, 3))
             store_path = os.path.join(store_path, folders)
@@ -86,7 +85,22 @@ class Builder:
 
         return file_hash
 
-    def filter_to_resume_point(self, store_path, enum_seeds):
+    def generate_shards(self, enum_seeds, store_path, num_cores=1):
+        shard_nums, seeds = zip(*enum_seeds)
+
+        paths = [self._get_shard_path(
+            store_path=store_path,
+            create_needed_folders=True,
+            seed=seed
+        ) for seed in seeds]
+
+        # save the shards
+        batch = RandomIO.BatchRandomIO(seeds, paths, self.shard_size, ncores=num_cores)
+        hashes = batch.genfiles()
+
+        return paths, hashes
+
+    def filter_to_resume_point(self, store_path, enum_seeds, num_cores=1):
         """
         Binary search to find the proper place to resume.
 
@@ -103,38 +117,44 @@ class Builder:
         index = bisect.bisect_left(seeds, HackedCompareObject())
 
         # rebuild last shard, likely corrupt
-        index = index - 1 if index > 0 else index
+        index = index - num_cores if index >= num_cores else index
 
         logger.info("Resuming from height {0}".format(index + 1))
         return enum_seeds[index:]
 
-    def build(self, store_path, cleanup=False, rebuild=False):
+    def build(self, store_path, cleanup=False, rebuild=False, num_cores=1):
         """
         Fill the farmer with data up to their max.
 
         :param store_path: What path to store the file.
         :param cleanup: Delete the file after generation.
         :param rebuild: Re-generate the shards.
+        :param num_cores: Number of cores used to build shards in parallel
         """
 
         generated = {}
 
         enum_seeds = list(enumerate(self.build_seeds(self.target_height)))
         if not rebuild:
-            enum_seeds = self.filter_to_resume_point(store_path, enum_seeds)
+            enum_seeds = self.filter_to_resume_point(store_path, enum_seeds, num_cores)
 
-        for shard_num, seed in enum_seeds:
+        paths, hashes = self.generate_shards(enum_seeds, store_path, num_cores=num_cores)
 
-            file_hash = self.generate_shard(seed, store_path, cleanup=cleanup)
+        for shard_num, (seed, file_hash) in enumerate(zip(list(zip(*enum_seeds))[1], hashes)):
             generated[seed] = file_hash
             logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
                 seed, file_hash
             ))
-
             if self.on_generate_shard:
                 self.on_generate_shard(shard_num + 1, seed, file_hash)
 
+        # remove file if requested
+        if cleanup:
+            for p in paths:
+                os.remove(p)
+
         return generated
+
 
     def clean(self, store_path):
         """
