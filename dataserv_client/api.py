@@ -164,15 +164,19 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def build(self, cleanup=False, rebuild=False,
+    def build(self, workers=1, cleanup=False, rebuild=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
         """Generate test files deterministically based on address.
 
+        :param workers: Number of Number of threadpool workers.
         :param cleanup: Remove files in shard directory.
         :param rebuild: Re-generate any file shards.
         :param set_height_interval: Number of shards to generate before
                                     notifying the server.
         """
+
+        workers = deserialize.positive_nonzero_integer(workers)
+
         set_height_interval = deserialize.positive_nonzero_integer(
             set_height_interval
         )
@@ -202,19 +206,29 @@ class Client(object):
                                common.SHARD_SIZE, self.max_size,
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
-        generated = bldr.build(self.store_path, cleanup=cleanup,
+        generated = bldr.build(self.store_path, workers=workers, cleanup=cleanup,
                                rebuild=rebuild)
 
         logger.info("Build finished")
         return generated
 
-    def farm(self, cleanup=False, rebuild=False,
+    def farm(self, workers=1, cleanup=False, rebuild=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
              delay=common.DEFAULT_DELAY, limit=None):
         """ Fully automatic client for users wishing a simple turnkey solution.
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
+
+        :param workers: Number of Number of threadpool workers.
+        :param cleanup: Remove files in shard directory.
+        :param rebuild: Re-generate any file shards.
+        :param set_height_interval: Number of shards to generate before
+                                    notifying the server.
+        :param delay: Delay in seconds per ping of the server.
+        :param limit: Number of seconds in the future to stop polling.
         """
+        
+        workers = deserialize.positive_nonzero_integer(workers)
 
         set_height_interval = deserialize.positive_nonzero_integer(
             set_height_interval
@@ -230,7 +244,7 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
-        self.build(cleanup=cleanup, rebuild=rebuild,
+        self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
                    set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True

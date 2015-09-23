@@ -96,6 +96,10 @@ def _add_build(command_parser):
     build_parser = command_parser.add_parser(
         "build", help="Fill the farmer with data up to their max."
     )
+    
+    # Threadpool workers
+    build_parser.add_argument('--workers', default=1,
+                              help="Number of threadpool workers.")
 
     # cleanup
     build_parser.add_argument('--cleanup', action='store_true',
@@ -117,6 +121,11 @@ def _add_farm(command_parser):
     farm_parser = command_parser.add_parser(
         "farm", help="Start farmer."
     )
+    
+    # Threadpool workers
+    farm_parser.add_argument('--workers', default=1,
+                              help="Number of threadpool workers.")
+    
     # cleanup
     farm_parser.add_argument('--cleanup', action='store_true',
                              help="Remove generated files.")
