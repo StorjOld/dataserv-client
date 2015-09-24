@@ -42,7 +42,7 @@ class Messaging(object):
                 req.add_header("Date", headers["Date"])
                 req.add_header("Authorization", headers["Authorization"])
             logger.info("Query: {0}".format(query_url))
-            response = urllib.request.urlopen(req)
+            response = urllib.request.urlopen(req, timeout=30)
             if response.code == 200:
                 return response.read()
         except urllib.error.HTTPError as e:
