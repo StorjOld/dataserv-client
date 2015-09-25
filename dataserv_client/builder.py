@@ -125,15 +125,19 @@ class Builder:
             enum_seeds = self.filter_to_resume_point(store_path, enum_seeds)
 
         for shard_num, seed in enum_seeds:
-            file_hash = pool.add_task(self.generate_shard, seed, store_path, cleanup)
+            try:
+                file_hash = pool.add_task(self.generate_shard, seed, store_path, cleanup)
 
-            generated[seed] = file_hash
-            logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
-                seed, file_hash
-            ))
+                generated[seed] = file_hash
+                logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
+                    seed, file_hash
+                ))
 
-            if self.on_generate_shard:
-                self.on_generate_shard(shard_num + 1, seed, file_hash)
+                if self.on_generate_shard:
+                    self.on_generate_shard(shard_num + 1, seed, file_hash)
+            except KeyboardInterrupt:
+                print("Caught KeyboardInterrupt, finishing workers")
+                break
 
         pool.wait_completion()
         return generated
