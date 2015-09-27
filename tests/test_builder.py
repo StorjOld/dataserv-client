@@ -237,6 +237,22 @@ class TestBuilder(unittest.TestCase):
             self.assertTrue(len(files) == 0)
         os.walk(self.store_path, callback, None)
 
+    def test_on_KeyboardInterrupt(self):
+        def _raise(*args):
+            raise KeyboardInterrupt()
+
+        # generate 1 file with KeyboadInterrupt
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, on_generate_shard=_raise)
+        self.assertTrue(bucket.build(store_path=self.store_path))
+        
+        # 1 of 2 files exists and no bad files
+        for shard_num in range(height):
+            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+            if shard_num <= 0:
+                self.assertTrue(os.path.exists(path) and os.path.getsize(path) == my_shard_size)
+            else:
+                self.assertFalse(os.path.exists(path))
+
 if __name__ == '__main__':
     # import pudb; pu.db # set break point
     unittest.main()

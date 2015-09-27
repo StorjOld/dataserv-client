@@ -186,14 +186,17 @@ def _parse_args(args):
 
 
 def main(args):
-    command_name, arguments = _parse_args(args)
-    client = api.Client(
-        url=arguments.pop("url"),
-        debug=arguments.pop("debug"),
-        quiet=arguments.pop("quiet"),
-        use_folder_tree=arguments.pop("use_folder_tree"),
-        max_size=arguments.pop("max_size"),
-        store_path=arguments.pop("store_path"),
-        config_path=arguments.pop("config_path"),
-    )
-    return getattr(client, command_name)(**arguments)
+    try:
+        command_name, arguments = _parse_args(args)
+        client = api.Client(
+            url=arguments.pop("url"),
+            debug=arguments.pop("debug"),
+            quiet=arguments.pop("quiet"),
+            use_folder_tree=arguments.pop("use_folder_tree"),
+            max_size=arguments.pop("max_size"),
+            store_path=arguments.pop("store_path"),
+            config_path=arguments.pop("config_path"),
+        )
+        return getattr(client, command_name)(**arguments)
+    except KeyboardInterrupt:
+        print("Caught KeyboardInterrupt")
