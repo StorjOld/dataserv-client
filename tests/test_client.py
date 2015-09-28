@@ -329,6 +329,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--workers=4",
             "--cleanup",
             "--rebuild",
+            "--repair",
             "--set_height_interval=3"
         ]
         self.assertTrue(cli.main(args))
@@ -342,6 +343,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--workers=4",
             "--cleanup",
             "--rebuild",
+            "--repair",
             "--set_height_interval=3",
             "--delay=0",
             "--limit=0"

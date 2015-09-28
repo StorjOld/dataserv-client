@@ -106,9 +106,9 @@ class Builder:
         index = index - 1 if index > 0 else index
 
         logger.info("Resuming from height {0}".format(index + 1))
-        return enum_seeds[index:]
+        return index
 
-    def build(self, store_path, workers=1, cleanup=False, rebuild=False):
+    def build(self, store_path, workers=1, cleanup=False, rebuild=False, repair=False):
         """
         Fill the farmer with data up to their max.
 
@@ -121,10 +121,20 @@ class Builder:
         pool = control.Thread.ThreadPool(workers)
 
         enum_seeds = list(enumerate(self.build_seeds(self.target_height)))
+        last_height = 0
         if not rebuild:
-            enum_seeds = self.filter_to_resume_point(store_path, enum_seeds)
+            last_height = self.filter_to_resume_point(store_path, enum_seeds)
+            
+            # rebuild bad or missing shards
+            if repair:
+                for shard_num, seed in enum_seeds[:last_height]:
+                    path = self._get_shard_path(store_path, seed)
+                    if not (os.path.exists(path) and os.path.getsize(path) == self.shard_size):
+                        print("Repeair seed {0} height {1}.".format(seed, shard_num))
+                        pool.add_task(self.generate_shard, seed, store_path, cleanup)
+                pool.wait_completion()
 
-        for shard_num, seed in enum_seeds:
+        for shard_num, seed in enum_seeds[last_height:]:
             try:
                 file_hash = pool.add_task(self.generate_shard, seed, store_path, cleanup)
 
