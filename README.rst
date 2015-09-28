@@ -129,7 +129,7 @@ In order to farm on multiple discs you will have to run several instances,
 as multiple paths are not yet supported. To do this you will need one config
 for each disc.
 
-Each instance can share a common payout address, however it is recommended
+Different instances can share a common payout address, however it is recommended
 to use a different payout address for each instance.
 
 
@@ -176,9 +176,9 @@ Running the poll command
 	dataserv-client --url=http://switch.driveshare.org poll    
 
 Workers Guide
-============================
+=============
 
-You can start multiple workers by executing farm or buil with the optional argument --workers. It is recomended to start only as many workers as your cpu and hard drive can handle. With a fast hard drive a cpu usage of ~80% is possible.
+You can start multiple workers by executing farm or build with the optional argument --workers. It is recommended to start only as many workers as your cpu and hard drive can handle. With a fast hard drive a cpu usage of ~80% is possible.
 
 ::
 
