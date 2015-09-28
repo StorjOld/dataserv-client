@@ -109,6 +109,10 @@ def _add_build(command_parser):
     build_parser.add_argument('--rebuild', action='store_true',
                               help="Replace previously files.")
 
+    # repair
+    build_parser.add_argument('--repair', action='store_true',
+                              help="Replace bad and missing files.")
+
     # set height interval
     default = common.DEFAULT_SET_HEIGHT_INTERVAL
     build_parser.add_argument(
@@ -133,6 +137,10 @@ def _add_farm(command_parser):
     # rebuild
     farm_parser.add_argument('--rebuild', action='store_true',
                              help="Replace previously files.")
+
+    # repair
+    farm_parser.add_argument('--repair', action='store_true',
+                              help="Replace bad and missing files.")
 
     # set height interval
     default = common.DEFAULT_SET_HEIGHT_INTERVAL

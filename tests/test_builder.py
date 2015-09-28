@@ -4,6 +4,7 @@ import random
 import shutil
 import unittest
 import tempfile
+from random import randint
 from datetime import datetime
 
 import partialhash
@@ -150,11 +151,6 @@ class TestBuilder(unittest.TestCase):
         # check again, should pass
         self.assertTrue(bucket.checkup(self.store_path))
 
-    def test_build_rebuild_modify(self):
-        # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
-        bucket.build(self.store_path)
-
         # modify one of the files
         o = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
         path = os.path.join(self.store_path, o)
@@ -177,6 +173,47 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path, rebuild=True)
         sha256_mod_file = partialhash.compute(path)
         self.assertEqual(sha256_org_file, sha256_mod_file)
+    
+    def test_build_repair(self):
+        # generate shards for testing
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket.build(self.store_path)
+
+        # remove one of the files
+        r = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        os.remove(os.path.join(self.store_path, r))
+
+        # check again, should fail
+        self.assertFalse(bucket.checkup(self.store_path))
+
+        # repair
+        bucket.build(self.store_path, repair=True)
+
+        # check again, should pass
+        self.assertTrue(bucket.checkup(self.store_path))
+
+        # modify one of the files
+        o = 'baf428097fa601fac185750483fd532abb0e43f9f049398290fac2c049cc2a60'
+        path = os.path.join(self.store_path, o)
+        sha256_org_file = partialhash.compute(path)
+
+        # write some data
+        with open(path, "a") as f:
+            f.write("bad data is bad\n")
+
+        # check their hashes
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
+
+        # build without a repair should fail
+        bucket.build(self.store_path)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertNotEqual(sha256_org_file, sha256_mod_file)
+
+        # build with a repair should pass
+        bucket.build(self.store_path, repair=True)
+        sha256_mod_file = partialhash.compute(path)
+        self.assertEqual(sha256_org_file, sha256_mod_file)
 
     def test_build_cont(self):
         max_size1 = 1024 * 1024 * 384
@@ -195,6 +232,22 @@ class TestBuilder(unittest.TestCase):
         end_delta2 = datetime.utcnow() - start_time2
 
         self.assertTrue(end_delta2 < end_delta)
+
+        # delete 10% random files
+        my_height = int(max_size2 / my_shard_size)
+        for shard_num in range(height):
+            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+            if randint(0,9)==0:
+                os.remove(path)
+
+        # should rebuild missing shards and be slower as skip all but faster as new build
+        start_time3 = datetime.utcnow()
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2)
+        bucket.build(self.store_path, repair=True)
+        end_delta3 = datetime.utcnow() - start_time3
+
+        self.assertTrue(end_delta3 < end_delta) # faster than new build
+        self.assertTrue(end_delta3 > end_delta2) # slower than skip all
 
     def test_on_generate_shard_callback(self):
         # save callback args

@@ -164,7 +164,7 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
-    def build(self, workers=1, cleanup=False, rebuild=False,
+    def build(self, workers=1, cleanup=False, rebuild=False, repair=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
         """Generate test files deterministically based on address.
 
@@ -182,6 +182,7 @@ class Client(object):
         )
         cleanup = deserialize.flag(cleanup)
         rebuild = deserialize.flag(rebuild)
+        repair = deserialize.flag(repair)
 
         self._init_messenger()
         logger.info("Starting build")
@@ -207,12 +208,12 @@ class Client(object):
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
         generated = bldr.build(self.store_path, workers=workers, cleanup=cleanup,
-                               rebuild=rebuild)
+                               rebuild=rebuild, repair=repair)
 
         logger.info("Build finished")
         return generated
 
-    def farm(self, workers=1, cleanup=False, rebuild=False,
+    def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
              delay=common.DEFAULT_DELAY, limit=None):
         """ Fully automatic client for users wishing a simple turnkey solution.
@@ -235,6 +236,7 @@ class Client(object):
         )
         cleanup = deserialize.flag(cleanup)
         rebuild = deserialize.flag(rebuild)
+        repair = deserialize.flag(repair)
 
         # farmer never gives up
         self._init_messenger()
@@ -244,7 +246,7 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
-        self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
+        self.build(workers=workers, cleanup=cleanup, rebuild=rebuild, repair=repair,
                    set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True
