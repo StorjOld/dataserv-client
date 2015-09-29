@@ -193,7 +193,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
-        
+
     def test_retry_invalid_url(self):
         def callback():
             client = api.Client(url="http://127.0.0.257",
@@ -206,6 +206,17 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
+
+    def test_retry_high_retry_limit(self):
+        def callback():
+            client = api.Client(url="http://127.0.0.257",
+                                config_path=tempfile.mktemp(),
+                                connection_retry_limit=2000,
+                                connection_retry_delay=0,
+                                quiet=True)
+            client.register()
+
+        self.assertRaises(exceptions.ConnectionError, callback)
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
