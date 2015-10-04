@@ -33,6 +33,7 @@ class Client(object):
 
     def __init__(self, url=common.DEFAULT_URL, debug=False, quiet=False,
                  use_folder_tree=False, max_size=common.DEFAULT_MAX_SIZE,
+                 min_free_size=common.DEFAULT_MIN_FREE_SIZE,
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
@@ -44,6 +45,7 @@ class Client(object):
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.max_size = deserialize.byte_count(max_size)
+        self.min_free_size = deserialize.byte_count(min_free_size)
 
         self.messenger = None  # lazy
         self.btctxstore = BtcTxStore()
@@ -187,7 +189,7 @@ class Client(object):
         self._init_messenger()
         logger.info("Starting build")
 
-        def _on_generate_shard(cur_height, cur_seed, cur_file_hash):
+        def _on_generate_shard(cur_height, last):
             """
             Because URL requests are slow, only update the server when we are
             at the first height, at some height_interval, or the last height.
@@ -196,15 +198,16 @@ class Client(object):
             """
             first = cur_height == 1
             set_height = (cur_height % int(set_height_interval)) == 0
-            last = int(self.max_size / common.SHARD_SIZE) == cur_height
 
             if first or set_height or last:
                 self.messenger.height(cur_height)
                 logger.info("Current height at {0}.".format(cur_height))
 
         # Initialize builder and generate/re-generate shards
-        bldr = builder.Builder(self.cfg["payout_address"],
-                               common.SHARD_SIZE, self.max_size,
+        bldr = builder.Builder(address=self.cfg["payout_address"],
+                               shard_size=common.SHARD_SIZE, 
+                               max_size=self.max_size,
+                               min_free_size=self.min_free_size,
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
         generated = bldr.build(self.store_path, workers=workers, cleanup=cleanup,
