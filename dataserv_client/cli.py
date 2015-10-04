@@ -18,6 +18,13 @@ def _add_programm_args(parser):
         help="Maximum data size in bytes. (default: {0}).".format(default)
     )
 
+    # min_free_size
+    default = common.DEFAULT_MIN_FREE_SIZE
+    parser.add_argument(
+        "--min_free_size", default=default,
+        help="Minimum free size in bytes. (default: {0}).".format(default)
+    )
+
     # store_path
     default = common.DEFAULT_STORE_PATH
     parser.add_argument(
@@ -202,9 +209,10 @@ def main(args):
             quiet=arguments.pop("quiet"),
             use_folder_tree=arguments.pop("use_folder_tree"),
             max_size=arguments.pop("max_size"),
+            min_free_size=arguments.pop("min_free_size"),
             store_path=arguments.pop("store_path"),
             config_path=arguments.pop("config_path"),
         )
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
-        print("Caught KeyboardInterrupt")
+        logger.warning("Caught KeyboardInterrupt")

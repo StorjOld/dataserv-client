@@ -5,6 +5,7 @@ import hashlib
 import binascii
 import RandomIO
 import partialhash
+import psutil
 from datetime import datetime
 from dataserv_client import control
 from dataserv_client import common
@@ -15,12 +16,13 @@ logger = common.logging.getLogger(__name__)
 
 class Builder:
 
-    def __init__(self, address, shard_size, max_size, on_generate_shard=None,
-                 use_folder_tree=False):
+    def __init__(self, address, shard_size, max_size, min_free_size, 
+                 on_generate_shard=None, use_folder_tree=False):
         self.target_height = int(max_size / shard_size)
         self.address = address
         self.shard_size = shard_size
         self.max_size = max_size
+        self.min_free_size = min_free_size
         self.use_folder_tree = use_folder_tree
         self.on_generate_shard = on_generate_shard
 
@@ -102,10 +104,7 @@ class Builder:
         seeds = [seed for num, seed in enum_seeds]
         index = bisect.bisect_left(seeds, HackedCompareObject())
 
-        # rebuild last shard, likely corrupt
-        index = index - 1 if index > 0 else index
-
-        logger.info("Resuming from height {0}".format(index + 1))
+        logger.info("Resuming from height {0}".format(index))
         return index
 
     def build(self, store_path, workers=1, cleanup=False, rebuild=False, repair=False):
@@ -130,12 +129,18 @@ class Builder:
                 for shard_num, seed in enum_seeds[:last_height]:
                     path = self._get_shard_path(store_path, seed)
                     if not (os.path.exists(path) and os.path.getsize(path) == self.shard_size):
-                        print("Repeair seed {0} height {1}.".format(seed, shard_num))
+                        logger.info("Repeair seed {0} height {1}.".format(seed, shard_num))
                         pool.add_task(self.generate_shard, seed, store_path, cleanup)
                 pool.wait_completion()
 
         for shard_num, seed in enum_seeds[last_height:]:
             try:
+                if psutil.disk_usage(store_path).free - self.shard_size < self.min_free_size:
+                    msg="Minimum free disk space reached ({0}) for '{1}'."
+                    logger.info(msg.format(self.min_free_size, store_path))
+                    last_height = shard_num
+                    break
+
                 file_hash = pool.add_task(self.generate_shard, seed, store_path, cleanup)
 
                 generated[seed] = file_hash
@@ -143,13 +148,19 @@ class Builder:
                     seed, file_hash
                 ))
 
+                last_height = shard_num + 1
                 if self.on_generate_shard:
-                    self.on_generate_shard(shard_num + 1, seed, file_hash)
+                    self.on_generate_shard(shard_num + 1, False)
+
             except KeyboardInterrupt:
-                print("Caught KeyboardInterrupt, finishing workers")
+                last_height = shard_num + 1
+                logger.warning("Caught KeyboardInterrupt, finishing workers")
                 break
 
         pool.wait_completion()
+        if self.on_generate_shard:
+            self.on_generate_shard(last_height, True)
+
         return generated
 
     def clean(self, store_path):

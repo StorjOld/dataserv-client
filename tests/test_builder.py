@@ -11,7 +11,8 @@ import partialhash
 from dataserv_client.builder import Builder
 
 my_shard_size = 1024 * 128  # 128K 
-my_max_size = 1024 * 256  # 256 !
+my_max_size = 1024 * 256  # 256K
+my_min_free_size = 1024 * 256 # 256K
 height = int(my_max_size / my_shard_size)
 fixtures = json.load(open("tests/fixtures.json"))
 addresses = fixtures["addresses"]
@@ -36,7 +37,8 @@ class TestBuilder(unittest.TestCase):
         self.assertNotEqual(Builder.sha256("not storj"), expected)
 
     def test_build_seed(self):
-        bucket = Builder(addresses["alpha"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["alpha"], my_shard_size, my_max_size,
+                         my_min_free_size)
         hash0 = fixtures["test_build_seed"]["hash0"]
         hash3 = fixtures["test_build_seed"]["hash3"]
         self.assertEqual(bucket.build_seed(0), hash0)
@@ -44,7 +46,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_build(self):
         # generate shards for testing
-        bucket = Builder(addresses["beta"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path)
 
         # see if the shards exist
@@ -56,7 +59,8 @@ class TestBuilder(unittest.TestCase):
         bucket.clean(self.store_path)
 
         # generate shards for testing
-        bucket = Builder(addresses["gamma"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["gamma"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path, cleanup=True)
 
         # see if the shards are deleted
@@ -66,7 +70,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_clean(self):
         # generate shards for testing
-        bucket = Builder(addresses["delta"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["delta"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path)
 
         # see if the shards exist
@@ -84,7 +89,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_audit(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path)
 
         # audit
@@ -102,7 +108,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_builder_checkup(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size)
         generated = bucket.build(self.store_path)
 
         # make sure all files are there
@@ -116,7 +123,8 @@ class TestBuilder(unittest.TestCase):
         self.assertFalse(bucket.checkup(self.store_path))
 
     def test_builder_rebuilds(self):
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size)
 
         # generate empty files to be rebuilt
         for shard_num in range(height):
@@ -135,7 +143,8 @@ class TestBuilder(unittest.TestCase):
 
     def test_build_rebuild(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path)
 
         # remove one of the files
@@ -176,7 +185,8 @@ class TestBuilder(unittest.TestCase):
     
     def test_build_repair(self):
         # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size)
         bucket.build(self.store_path)
 
         # remove one of the files
@@ -221,13 +231,15 @@ class TestBuilder(unittest.TestCase):
 
         # generate shards for testing
         start_time = datetime.utcnow()
-        bucket = Builder(addresses["epsilon"], my_shard_size, max_size1)
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size1,
+                         my_min_free_size)
         bucket.build(self.store_path)
         end_delta = datetime.utcnow() - start_time
 
         # should skip all shards and be faster
         start_time2 = datetime.utcnow()
-        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2)
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2,
+                         my_min_free_size)
         bucket.build(self.store_path)
         end_delta2 = datetime.utcnow() - start_time2
 
@@ -240,9 +252,11 @@ class TestBuilder(unittest.TestCase):
             if randint(0,9)==0:
                 os.remove(path)
 
-        # should rebuild missing shards and be slower as skip all but faster as new build
+        # should rebuild missing shards and be slower as skip all 
+        # but faster as new build
         start_time3 = datetime.utcnow()
-        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2)
+        bucket = Builder(addresses["epsilon"], my_shard_size, max_size2,
+                         my_min_free_size)
         bucket.build(self.store_path, repair=True)
         end_delta3 = datetime.utcnow() - start_time3
 
@@ -258,20 +272,22 @@ class TestBuilder(unittest.TestCase):
 
         # generate shards for testing
         bucket = Builder(addresses["omega"], my_shard_size, my_max_size,
+                         my_min_free_size,
                          on_generate_shard=on_generate_shard)
         bucket.build(self.store_path)
 
-        # check correct call count
+        # check correct call count (+1 call for last height)
         calls = len(on_generate_shard_called_with)
-        self.assertEqual(int(my_max_size / my_shard_size), calls)
+        self.assertEqual(int(my_max_size / my_shard_size) + 1, calls)
 
         # check height order
-        for num in range(calls):
+        for num in range(calls - 1):
             height = on_generate_shard_called_with[num][0]
             self.assertEqual(num + 1, height)
 
     def test_use_folder_tree_clean(self):
         bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         my_min_free_size,
                          use_folder_tree=True)
         bucket.build(self.store_path)
         self.assertTrue(bucket.checkup(self.store_path))
@@ -283,6 +299,7 @@ class TestBuilder(unittest.TestCase):
 
     def test_use_folder_tree_cleanup(self):
         bucket = Builder(addresses["beta"], my_shard_size, my_max_size,
+                         my_min_free_size,
                          use_folder_tree=True)
         bucket.build(self.store_path, cleanup=True)
 
@@ -291,18 +308,21 @@ class TestBuilder(unittest.TestCase):
         os.walk(self.store_path, callback, None)
 
     def test_on_KeyboardInterrupt(self):
-        def _raise(*args):
-            raise KeyboardInterrupt()
+        def _raise(height, last):
+            if not last: # only raise 1 of 2 calls
+                raise KeyboardInterrupt()
 
         # generate 1 file with KeyboadInterrupt
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size, on_generate_shard=_raise)
+        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+                         my_min_free_size, on_generate_shard=_raise)
         self.assertTrue(bucket.build(store_path=self.store_path))
         
         # 1 of 2 files exists and no bad files
         for shard_num in range(height):
             path = os.path.join(self.store_path, bucket.build_seed(shard_num))
             if shard_num <= 0:
-                self.assertTrue(os.path.exists(path) and os.path.getsize(path) == my_shard_size)
+                self.assertTrue(os.path.exists(path) 
+                                and os.path.getsize(path) == my_shard_size)
             else:
                 self.assertFalse(os.path.exists(path))
 

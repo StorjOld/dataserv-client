@@ -100,13 +100,13 @@ All configuration must be done before starting the node.
 
 **Start your farmer node**
 
-Optionally specify the path to store data and the available space.
+Optionally specify the path to store data, the available space, and minimum free space.
 
 ::
 
-    dataserv-client --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm
+    dataserv-client --store_path=<PATH> --max_size=<SIZE_IN_BYTES> --min_free_size=<SIZE_IN_BYTES> farm
 
-Optional max_size syntax
+Optional max_size and min_free_size syntax
 
 ::
 

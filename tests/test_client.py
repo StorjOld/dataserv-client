@@ -1,10 +1,12 @@
 from dataserv_client import common
 
+import os
 import time
 import tempfile
 import unittest
 import datetime
 import json
+import psutil
 
 try:
     # For Python 3.0 and later
@@ -19,15 +21,16 @@ from btctxstore import BtcTxStore
 from dataserv_client import exceptions
 
 
+
 url = "http://127.0.0.1:5000"
 common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
-
 
 class AbstractTestSetup(object):
     def setUp(self):
         self.btctxstore = BtcTxStore()
-        time.sleep(2)  # avoid collision
 
+        # debug output the server online list
+        # print(urlopen(url + '/api/online/json').read().decode('utf8'))
 
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
@@ -35,8 +38,6 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         self.assertTrue(client.register())
-        
-        time.sleep(5)
         
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
@@ -124,6 +125,18 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
+    def test_invalid_negativ_min_free_size(self):
+        def callback():
+            api.Client(min_free_size=-1, config_path=tempfile.mktemp())
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_invalid_zero_min_free_size(self):
+        def callback():
+            api.Client(min_free_size=0, config_path=tempfile.mktemp())
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
     def test_build_invalid_negative_workers(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
@@ -193,7 +206,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
-        
+
     def test_retry_invalid_url(self):
         def callback():
             client = api.Client(url="http://127.0.0.257",
@@ -206,6 +219,17 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         self.assertRaises(exceptions.ConnectionError, callback)
         after = datetime.datetime.now()
         self.assertTrue(datetime.timedelta(seconds=4) < (after - before))
+
+    def test_retry_high_retry_limit(self):
+        def callback():
+            client = api.Client(url="http://127.0.0.257",
+                                config_path=tempfile.mktemp(),
+                                connection_retry_limit=2000,
+                                connection_retry_delay=0,
+                                quiet=True)
+            client.register()
+
+        self.assertRaises(exceptions.ConnectionError, callback)
 
 
 class TestClientBuild(AbstractTestSetup, unittest.TestCase):
@@ -237,6 +261,35 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that build send height=4 to the online list
+
+    def test_build_min_free_space(self):
+
+        store_path = tempfile.mktemp()
+        os.mkdir(store_path)
+        my_free_size = psutil.disk_usage(store_path).free - (1024 * 256) # 512
+        client = api.Client(url=url,
+                            config_path=tempfile.mktemp(),
+                            store_path=store_path,
+                            max_size=1024 * 1024,
+                            min_free_size=my_free_size) # 256
+        config = client.config()
+        client.register()
+        generated = client.build()
+        self.assertTrue(len(generated) < 8)
+
+        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = [farmers for farmers in result['farmers']
+                    if farmers['btc_addr'] == config['payout_address']]
+        last_seen = result[0]['last_seen']
+        result = json.dumps(result, sort_keys=True)
+        expected = json.dumps([{'height': len(generated),
+                                'btc_addr': config['payout_address'],
+                                'last_seen': last_seen,
+                                'payout_addr': config['payout_address']}],
+                                sort_keys=True)
+
+        self.assertEqual(result,expected) #check that build send height=2 to the online list
+
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
     def test_farm(self):
@@ -325,6 +378,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "--config_path=" + path,
             "--max_size=" + str(1024 * 256),  # 256K
+            "--min_free_size=" + str(1024 * 256),  # 256K
             "build",
             "--workers=4",
             "--cleanup",
@@ -339,6 +393,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "--max_size=" + str(1024 * 256),  # 256K
+            "--min_free_size=" + str(1024 * 256),  # 256K
             "farm",
             "--workers=4",
             "--cleanup",
