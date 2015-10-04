@@ -135,7 +135,7 @@ class Builder:
 
         for shard_num, seed in enum_seeds[last_height:]:
             try:
-                if psutil.disk_usage(store_path).free - self.shard_size < self.min_free_size:
+                if psutil.disk_usage(store_path).free - (self.shard_size * (pool.active_count() + 1)) < self.min_free_size:
                     msg="Minimum free disk space reached ({0}) for '{1}'."
                     logger.info(msg.format(self.min_free_size, store_path))
                     last_height = shard_num

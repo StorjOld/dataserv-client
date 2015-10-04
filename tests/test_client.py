@@ -275,7 +275,8 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         config = client.config()
         client.register()
         generated = client.build()
-        self.assertTrue(len(generated) < 8)
+        self.assertTrue(len(generated) > 0) # build at least 1 shard
+        self.assertTrue(len(generated) < 8) # stoped cause of free Space
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
