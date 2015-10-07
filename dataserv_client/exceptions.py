@@ -20,21 +20,21 @@ class InvalidConfig(DataservClientException):
 class AddressAlreadyRegistered(DataservClientException):
 
     def __init__(self, address, url):
-        msg = "Address {0} already registered at {1}!".format(address, url)
+        msg = "409 Address {0} already registered at {1}!".format(address, url)
         super(AddressAlreadyRegistered, self).__init__(msg)
 
 
 class ServerNotFound(DataservClientException):
 
     def __init__(self, url):
-        msg = "Server not found at {0}!".format(url)
+        msg = "404 Server not found at {0}!".format(url)
         super(ServerNotFound, self).__init__(msg)
 
 
 class ServerError(DataservClientException):
 
     def __init__(self, url):
-        msg = "Server error at {0}!".format(url)  # pragma: no cover
+        msg = "500 Server error at {0}!".format(url)  # pragma: no cover
         super(ServerError, self).__init__(msg)  # pragma: no cover
 
 
