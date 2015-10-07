@@ -3,6 +3,7 @@ import argparse
 from dataserv_client import api
 from dataserv_client import common
 
+logger = common.logging.getLogger(__name__)
 
 def _add_programm_args(parser):
     # url
@@ -216,3 +217,7 @@ def main(args):
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
         logger.warning("Caught KeyboardInterrupt")
+    except Exception as e:
+        logger.exception(e)
+        raise e
+
