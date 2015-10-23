@@ -4,8 +4,16 @@ import random
 import shutil
 import unittest
 import tempfile
+import json
 from random import randint
 from datetime import datetime
+
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 
 import partialhash
 from dataserv_client.builder import Builder
@@ -92,6 +100,13 @@ class TestBuilder(unittest.TestCase):
         bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
                          my_min_free_size)
         bucket.build(self.store_path)
+
+        # check last bitcoin hash
+        url = 'https://blockchain.info/de/q/latesthash'
+        index = bucket.last_btc_index()
+        hash = urlopen(url).read().decode('utf8')
+        self.assertTrue(hash==bucket.btc_block(index))
+        self.assertFalse(hash==bucket.btc_block(index-1))
 
         # audit
         audit_results = bucket.audit(b"storj", self.store_path, height)

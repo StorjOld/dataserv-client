@@ -6,6 +6,15 @@ import binascii
 import RandomIO
 import partialhash
 import psutil
+import json
+
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+
 from datetime import datetime
 from dataserv_client import control
 from dataserv_client import common
@@ -190,6 +199,18 @@ class Builder:
             if not os.path.exists(path):
                 return False
         return True
+
+    def last_btc_index(self):
+        """last Bitcoin index"""
+        url = 'https://blockexplorer.com/api/status?q=getBlockCount'
+        result = json.loads(urlopen(url).read().decode('utf8'))
+        return result['blockcount']
+
+    def btc_block(self, index):
+        """last Bitcoin hash"""
+        url = 'https://blockexplorer.com/api/block-index/' + str(index)
+        result = json.loads(urlopen(url).read().decode('utf8'))
+        return result['blockHash']
 
     # Unused Audit Code
     def audit(self, seed, store_path, height):
