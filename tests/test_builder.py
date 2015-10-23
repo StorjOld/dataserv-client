@@ -17,6 +17,7 @@ except ImportError:
 
 import partialhash
 from dataserv_client.builder import Builder
+from dataserv_client import common
 
 my_shard_size = 1024 * 128  # 128K 
 my_max_size = 1024 * 256  # 256K
@@ -59,8 +60,9 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path)
 
         # see if the shards exist
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             print("PATH", path)
             self.assertTrue(os.path.exists(path))
 
@@ -72,8 +74,9 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path, cleanup=True)
 
         # see if the shards are deleted
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             self.assertFalse(os.path.exists(path))
 
     def test_builder_clean(self):
@@ -83,23 +86,23 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path)
 
         # see if the shards exist
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             self.assertTrue(os.path.exists(path))
 
         # clean command
         bucket.clean(self.store_path)
 
         # see if the shards are deleted
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             self.assertFalse(os.path.exists(path))
 
     def test_builder_audit(self):
-        # generate shards for testing
-        bucket = Builder(addresses["epsilon"], my_shard_size, my_max_size,
+        bucket = Builder(addresses["epsilon"], my_shard_size, 0,
                          my_min_free_size)
-        bucket.build(self.store_path)
 
         # check last bitcoin hash
         url = 'https://blockchain.info/de/q/latesthash'
@@ -108,18 +111,46 @@ class TestBuilder(unittest.TestCase):
         self.assertTrue(hash==bucket.btc_block(index))
         self.assertFalse(hash==bucket.btc_block(index-1))
 
-        # audit
-        audit_results = bucket.audit(b"storj", self.store_path, height)
-        result0 = fixtures["test_builder_audit"]["result0"]
-        result1 = fixtures["test_builder_audit"]["result1"]
-        self.assertEqual(audit_results[0], _to_bytes(result0))
-        self.assertEqual(audit_results[1], _to_bytes(result1))
+        block_pos = index % 1000
+        block_size = common.DEFAULT_BLOCK_SIZE
+        
+        # create empty files to skip to btc_index
+        seeds = bucket.build_seeds(block_pos * block_size - 1)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
+            open(path,'w').close()
 
-        # audit full
-        expected = fixtures["test_builder_audit"]["expected"]
-        audit_results = bucket.full_audit(b"storj", self.store_path,
-                                          height)
-        self.assertEqual(audit_results, expected)
+        # generate shards for audit
+        shard_size = my_shard_size * (block_pos + 1) * block_size
+        bucket = Builder(addresses["epsilon"], my_shard_size, shard_size,
+                         my_min_free_size)
+        bucket.build(self.store_path)
+
+        # audit possible
+        good_hash = bucket.audit(self.store_path)
+        self.assertTrue(good_hash)
+
+        seeds = bucket.build_seeds((block_pos + 1) * block_size)
+
+        # copy a bad file for a bad audit
+        path1 = os.path.join(self.store_path, seeds[-2])
+        path2 = os.path.join(self.store_path, seeds[-1])
+        shutil.copyfile(path1, path2)
+        bad_hash = bucket.audit(self.store_path)
+        self.assertFalse(good_hash==bad_hash)
+
+        # write some bad data
+        with open(path2, "a") as f:
+            f.write("bad data is bad\n")
+
+        # audit failed because last shard has bad data
+        self.assertFalse(bucket.audit(self.store_path))
+
+        # remove last shard
+        os.remove(path2)
+
+        # audit failed because last shard missing
+        self.assertFalse(bucket.audit(self.store_path))
 
     def test_builder_checkup(self):
         # generate shards for testing
@@ -142,19 +173,14 @@ class TestBuilder(unittest.TestCase):
                          my_min_free_size)
 
         # generate empty files to be rebuilt
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             with open(path, 'a'):
                 os.utime(path, None)
 
         # rebuild all files
         bucket.build(self.store_path, rebuild=True)
-
-        # audit full
-        expected = fixtures["test_builder_audit"]["expected"]
-        audit_results = bucket.full_audit(b"storj", self.store_path,
-                                          height)
-        self.assertEqual(audit_results, expected)
 
     def test_build_rebuild(self):
         # generate shards for testing
@@ -262,8 +288,9 @@ class TestBuilder(unittest.TestCase):
 
         # delete 10% random files
         my_height = int(max_size2 / my_shard_size)
-        for shard_num in range(height):
-            path = os.path.join(self.store_path, bucket.build_seed(shard_num))
+        seeds = bucket.build_seeds(height)
+        for seed in seeds:
+            path = os.path.join(self.store_path, seed)
             if randint(0,9)==0:
                 os.remove(path)
 

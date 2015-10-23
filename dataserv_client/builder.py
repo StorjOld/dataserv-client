@@ -212,30 +212,26 @@ class Builder:
         result = json.loads(urlopen(url).read().decode('utf8'))
         return result['blockHash']
 
-    # Unused Audit Code
-    def audit(self, seed, store_path, height):
-        """Do an audit over the data."""
-        audit_results = []
-        seeds = self.build_seeds(height)
-        for shard_num, seed_hash in enumerate(seeds):
-            seed_path = self._get_shard_path(store_path, seed_hash)
-            digest = partialhash.sample(seed_path, 1024, sample_count=3,
-                                        seed=seed)
-            audit_results.append(binascii.hexlify(digest))
-        return audit_results
+    def audit(self, store_path):
+        """audit one block"""
+        btc_index = self.last_btc_index()
+        btc_hash = self.btc_block(btc_index)
+        block_pos = btc_index % 1000
+        block_size = common.DEFAULT_BLOCK_SIZE
+        
+        seeds = self.build_seeds((block_pos + 1) * block_size)
+        
+        #check if the block is complete
+        for seed in seeds[(block_pos * block_size):]:
+            path = self._get_shard_path(store_path, seed)
+            if not (os.path.exists(path) and os.path.getsize(path) == self.shard_size):
+                logger.info("Audit for block {0} - {1} failed.".format(block_pos * block_size, block_pos * (block_size + 1)))
+                return 0
 
-    def full_audit(self, seed, store_path, height):
-        """Compute one hash from audit."""
-        hash_result = ""
-
-        start_time = datetime.utcnow()
-        audit_results = self.audit(seed, store_path, height)
-        for audit in audit_results:
-            hash_result += str(audit.decode("utf-8"))
-        hash_result = self.sha256(hash_result)
-
-        final_time = (datetime.utcnow() - start_time).seconds
-        msg = "Seed: {0} with Audit Result: {1} in {2} seconds."
-        logger.info(msg.format(str(seed), hash_result, final_time))
-
-        return hash_result
+        #generate audit response
+        audit_hash = ""
+        for seed in seeds[(block_pos * block_size):]:
+            path = self._get_shard_path(store_path, seed)
+            with open(path, 'rb') as file:
+                audit_hash += hashlib.sha256(file.read()).hexdigest()
+        return hashlib.sha256(audit_hash.encode('utf-8')).hexdigest()
