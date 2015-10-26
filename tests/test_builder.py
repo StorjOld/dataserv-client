@@ -104,18 +104,20 @@ class TestBuilder(unittest.TestCase):
         bucket = Builder(addresses["epsilon"], my_shard_size, 0,
                          my_min_free_size)
 
-        # check last bitcoin hash
-        url = 'https://blockchain.info/de/q/latesthash'
-        index = bucket.last_btc_index()
-        hash = urlopen(url).read().decode('utf8')
-        self.assertTrue(hash==bucket.btc_block(index))
-        self.assertFalse(hash==bucket.btc_block(index-1))
+        # check last confirmed bitcoin hash
+        btc_block = bucket.btc_last_confirmed_block()
 
-        block_pos = index % 1000
+        self.assertTrue(btc_block['confirmations']>=
+                        common.DEFAULT_MIN_CONFIRMATIONS)
+        self.assertTrue(btc_block['is_orphan']==False)
+
+        index = btc_block['block_no']
+
+        block_pos = index % common.DEFAULT_FULL_AUDIT
         block_size = common.DEFAULT_BLOCK_SIZE
         
         # create empty files to skip to btc_index
-        seeds = bucket.build_seeds(block_pos * block_size - 1)
+        seeds = bucket.build_seeds(block_pos * block_size)
         for seed in seeds:
             path = os.path.join(self.store_path, seed)
             open(path,'w').close()
@@ -127,7 +129,9 @@ class TestBuilder(unittest.TestCase):
         bucket.build(self.store_path)
 
         # audit possible
-        good_hash = bucket.audit(self.store_path)
+        good_hash = bucket.audit(self.store_path, 
+                                 btc_block['block_no'], 
+                                 btc_block['blockhash'])
         self.assertTrue(good_hash)
 
         seeds = bucket.build_seeds((block_pos + 1) * block_size)
@@ -136,7 +140,10 @@ class TestBuilder(unittest.TestCase):
         path1 = os.path.join(self.store_path, seeds[-2])
         path2 = os.path.join(self.store_path, seeds[-1])
         shutil.copyfile(path1, path2)
-        bad_hash = bucket.audit(self.store_path)
+        bad_hash = bucket.audit(self.store_path,
+                                btc_block['block_no'],
+                                btc_block['blockhash'])
+
         self.assertFalse(good_hash==bad_hash)
 
         # write some bad data
@@ -144,13 +151,37 @@ class TestBuilder(unittest.TestCase):
             f.write("bad data is bad\n")
 
         # audit failed because last shard has bad data
-        self.assertFalse(bucket.audit(self.store_path))
+        self.assertFalse(bucket.audit(self.store_path,
+                                      btc_block['block_no'],
+                                      btc_block['blockhash']))
 
         # remove last shard
         os.remove(path2)
 
         # audit failed because last shard missing
-        self.assertFalse(bucket.audit(self.store_path))
+        self.assertFalse(bucket.audit(self.store_path,
+                                      btc_block['block_no'],
+                                      btc_block['blockhash']))
+
+        # build last shard again
+        bucket = Builder(addresses["epsilon"], my_shard_size, shard_size,
+                         my_min_free_size)
+        bucket.build(self.store_path)
+
+        # audit possible
+        good_hash = bucket.audit(self.store_path,
+                                 btc_block['block_no'],
+                                 btc_block['blockhash'])
+        self.assertTrue(good_hash)
+
+        # remove first shard of that block
+        path1 = os.path.join(self.store_path, seeds[-80])
+        os.remove(path1)
+
+        # audit failed because first shard missing
+        self.assertFalse(bucket.audit(self.store_path,
+                                      btc_block['block_no'],
+                                      btc_block['blockhash']))
 
     def test_builder_checkup(self):
         # generate shards for testing

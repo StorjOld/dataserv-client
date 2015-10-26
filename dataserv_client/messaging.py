@@ -107,6 +107,12 @@ class Messaging(object):
         """Send a heartbeat message for this client address."""
         return self._url_query("/api/ping/%s" % self.auth_address())
 
+    def audit(self, block_height, response):
+        """Send audit response for this client address."""
+        return self._url_query('/api/audit/%s/%s/%s' % (self.auth_address(),
+                                                        block_height,
+                                                        response))
+
     def height(self, height):
         """Set the height claim for this client address."""
         return self._url_query('/api/height/%s/%s' % (self.auth_address(),

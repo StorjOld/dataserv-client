@@ -200,38 +200,61 @@ class Builder:
                 return False
         return True
 
-    def last_btc_index(self):
-        """last Bitcoin index"""
-        url = 'https://blockexplorer.com/api/status?q=getBlockCount'
+    def btc_height(self):
+        """Bitcoin height"""
+        url = 'https://chain.so/api/v2/get_info/BTC'
         result = json.loads(urlopen(url).read().decode('utf8'))
-        return result['blockcount']
+        if result['status']=='success':
+            return result['data']['blocks']
+        else:
+            raise BlockExplorerApiFailed(url)
 
     def btc_block(self, index):
-        """last Bitcoin hash"""
-        url = 'https://blockexplorer.com/api/block-index/' + str(index)
+        """Bitcoin block for given index"""
+        url = 'https://chain.so/api/v2/get_block/BTC/' + str(index)
         result = json.loads(urlopen(url).read().decode('utf8'))
-        return result['blockHash']
+        if result['status']=='success':
+            result['data']['block_no'] = int(result['data']['block_no'])
+            result['data']['confirmations'] = int(result['data']['confirmations'])
+            return result['data']
+        else:
+            raise BlockExplorerApiFailed(url)
 
-    def audit(self, store_path):
-        """audit one block"""
-        btc_index = self.last_btc_index()
-        btc_hash = self.btc_block(btc_index)
-        block_pos = btc_index % 1000
-        block_size = common.DEFAULT_BLOCK_SIZE
+    def btc_last_confirmed_block(self, min_confirmations=
+                                       common.DEFAULT_MIN_CONFIRMATIONS):
+        """last Bitcoin block with given min confirmation"""
+        btc_height = self.btc_height()
         
-        seeds = self.build_seeds((block_pos + 1) * block_size)
+        while True:
+            btc_block = self.btc_block(btc_height)
+            if btc_block['confirmations'] >= min_confirmations and btc_block['is_orphan'] == False:
+                return btc_block
+            btc_height -= 1
+
+    def audit(self, store_path, btc_index, btc_hash, 
+              block_size=common.DEFAULT_BLOCK_SIZE, 
+              full_audit=common.DEFAULT_FULL_AUDIT, 
+              min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS):
+        """audit one block"""
+
+        audit_begin = (btc_index % full_audit) * block_size
+        audit_end = audit_begin + block_size
+        
+        seeds = self.build_seeds(audit_end)[audit_begin:]
         
         #check if the block is complete
-        for seed in seeds[(block_pos * block_size):]:
+        for seed in seeds:
             path = self._get_shard_path(store_path, seed)
-            if not (os.path.exists(path) and os.path.getsize(path) == self.shard_size):
-                logger.info("Audit for block {0} - {1} failed.".format(block_pos * block_size, block_pos * (block_size + 1)))
+            if not (os.path.exists(path) and 
+                    os.path.getsize(path) == self.shard_size):
+                logger.info("Audit for block {0} - {1} failed.".format(
+                    audit_begin, audit_end))
                 return 0
 
         #generate audit response
         audit_hash = ""
-        for seed in seeds[(block_pos * block_size):]:
+        for seed in seeds:
             path = self._get_shard_path(store_path, seed)
-            with open(path, 'rb') as file:
-                audit_hash += hashlib.sha256(file.read()).hexdigest()
-        return hashlib.sha256(audit_hash.encode('utf-8')).hexdigest()
+            digest = partialhash.compute(path, seed=btc_hash.encode('utf8'))
+            audit_hash += str(binascii.hexlify(digest))
+        return str(hashlib.sha256(audit_hash.encode('utf-8')).hexdigest())

@@ -330,6 +330,13 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
 
         self.assertEqual(result,expected) #check that farm send height=2 to online list
 
+class TestClientAudit(AbstractTestSetup, unittest.TestCase):
+    def test_audit(self):
+        client = api.Client(url=url,
+                            config_path=tempfile.mktemp(),
+                            max_size=1024 * 256)  # 256K
+        self.assertTrue(client.audit())
+
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
         args = [

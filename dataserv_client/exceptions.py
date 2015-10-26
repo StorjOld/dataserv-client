@@ -57,3 +57,10 @@ class ConnectionError(DataservClientException):
     def __init__(self, url):
         msg = "Could not connect to server {0}!".format(url)
         super(ConnectionError, self).__init__(msg)
+
+class BlockExplorerApiFailed(DataservClientException):
+
+    def __init__(self, url):
+        msg = "Block explorer api result failed for {0}!".format(url)
+        super(ConnectionError, self).__init__(msg)
+

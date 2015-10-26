@@ -216,6 +216,33 @@ class Client(object):
         logger.info("Build finished")
         return generated
 
+    def audit(self):
+
+        self._init_messenger()
+
+        # Initialize builder and audit shards
+        bldr = builder.Builder(address=self.cfg["payout_address"],
+                               shard_size=common.SHARD_SIZE,
+                               max_size=self.max_size,
+                               min_free_size=self.min_free_size,
+                               use_folder_tree=self.use_folder_tree)
+
+        btc_block = bldr.btc_last_confirmed_block()
+        btc_hash = btc_block['blockhash']
+        btc_index = int(btc_block['block_no'])
+
+        wif = self.btctxstore.get_key(self.cfg["wallet"])
+        address = self.btctxstore.get_address(wif)
+        response_data = address + btc_hash + str(bldr.audit(self.store_path,
+                                                        btc_block['block_no'],
+                                                        btc_block['blockhash']))
+        signature = self.btctxstore.sign_unicode(wif, response_data)
+        response = response_data + str(signature)
+
+        #New Dataserv Server version is needed
+        #self.messenger.audit(btc_block['block_no'],response)
+        return True
+
     def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
              delay=common.DEFAULT_DELAY, limit=None):
