@@ -129,6 +129,19 @@ def _add_build(command_parser):
     )
 
 
+def _add_audit(command_parser):
+    audit_parser = command_parser.add_parser(
+        "audit", help="Audit the generated data."
+    )
+    audit_parser.add_argument(
+        "--delay", default=common.DEFAULT_AUDIT_DELAY,
+        help="Deley between each audit."
+    )
+    audit_parser.add_argument(
+        "--limit", default=None, help="Limit audit time in seconds."
+    )
+
+
 def _add_farm(command_parser):
     farm_parser = command_parser.add_parser(
         "farm", help="Start farmer."
@@ -190,6 +203,7 @@ def _parse_args(args):
     _add_ping(command_parser)
     _add_poll(command_parser)
     _add_build(command_parser)
+    _add_audit(command_parser)
     _add_config(command_parser)
     _add_farm(command_parser)
 

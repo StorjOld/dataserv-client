@@ -216,7 +216,7 @@ class Client(object):
         logger.info("Build finished")
         return generated
 
-    def audit(self):
+    def audit(self, delay=common.DEFAULT_AUDIT_DELAY, limit=None):
 
         self._init_messenger()
 
@@ -227,21 +227,34 @@ class Client(object):
                                min_free_size=self.min_free_size,
                                use_folder_tree=self.use_folder_tree)
 
-        btc_block = bldr.btc_last_confirmed_block()
-        btc_hash = btc_block['blockhash']
-        btc_index = int(btc_block['block_no'])
+        delay = deserialize.positive_integer(delay)
+        stop_time = None
+        if limit is not None:
+            stop_time = datetime.now() + timedelta(seconds=int(limit))
 
-        wif = self.btctxstore.get_key(self.cfg["wallet"])
-        address = self.btctxstore.get_address(wif)
-        response_data = address + btc_hash + str(bldr.audit(self.store_path,
+        btc_index = 0
+        while True:
+            btc_block = bldr.btc_last_confirmed_block(min_confirmations=
+                                          common.DEFAULT_MIN_CONFIRMATIONS)
+            if btc_block['block_no'] != btc_index:
+                btc_hash = btc_block['blockhash']
+                btc_index = btc_block['block_no']
+
+                wif = self.btctxstore.get_key(self.cfg["wallet"])
+                address = self.btctxstore.get_address(wif)
+                response_data = address + btc_hash + str(bldr.audit(
+                                                        self.store_path,
                                                         btc_block['block_no'],
                                                         btc_block['blockhash']))
-        signature = self.btctxstore.sign_unicode(wif, response_data)
-        response = response_data + str(signature)
+                signature = self.btctxstore.sign_unicode(wif, response_data)
+                response = response_data + str(signature)
 
-        #New Dataserv Server version is needed
-        #self.messenger.audit(btc_block['block_no'],response)
-        return True
+                #New Dataserv Server version is needed
+                #self.messenger.audit(btc_block['block_no'],response)
+
+            if stop_time and datetime.now() >= stop_time:
+                return True
+            time.sleep(int(delay))
 
     def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,

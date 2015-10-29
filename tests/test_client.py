@@ -179,6 +179,20 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
+    def test_poll_invalid_negativ_delay(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.poll(delay=-1,limit=0)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+
+    def test_audit_invalid_negativ_delay(self):
+        def callback():
+            client = api.Client(config_path=tempfile.mktemp())
+            client.audit(delay=-1,limit=0)
+
+        self.assertRaises(exceptions.InvalidInput, callback)
+ 
 
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
     def test_no_retry(self):
@@ -335,7 +349,7 @@ class TestClientAudit(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
-        self.assertTrue(client.audit())
+        self.assertTrue(client.audit(delay=1, limit=1))
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
@@ -394,6 +408,25 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--repair",
             "--set_height_interval=3"
         ]
+        self.assertTrue(cli.main(args))
+
+    def test_audit(self):
+        path = tempfile.mktemp()
+
+        args = [
+            "--url=" + url,
+            "--config_path=" + path,
+            "register",
+        ]
+        cli.main(args)
+
+        args = [
+            "--url=" + url,
+            "--config_path=" + path,
+            "audit",
+            "--delay=0",
+            "--limit=0"
+        ] #no audit needed for check args
         self.assertTrue(cli.main(args))
 
     def test_farm(self):
