@@ -16,6 +16,13 @@ if os.name == 'nt' and 'py2exe' in sys.argv:
         "bundle_files": 2,  # This tells py2exe to bundle everything
     }}
 
+# Only load py2app settings when its used, so we can install it first.
+if os.name == 'postix' and 'py2app' in sys.argv:
+    import py2app  # NOQA
+    options = {'py2app': {
+        "optimize": 2,
+    }}
+
 
 exec(open('dataserv_client/version.py').read())  # load __version__
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
@@ -27,6 +34,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s-py2.py3-none-any.whl" 
 
 
 setup(
+    app=['dataserv_client/bin/dataserv-client'],
     name='dataserv-client',
     description="Client for storing and auditing data. http://storj.io",
     long_description=open("README.rst").read(),
