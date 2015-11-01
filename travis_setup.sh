@@ -12,7 +12,7 @@ TMP_SERVER_DIR=/tmp/dataserv_$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c6)
 
 
 # setup server
-git clone https://github.com/Storj/dataserv $TMP_SERVER_DIR
+git clone https://github.com/Storj/dataserv -b develop $TMP_SERVER_DIR
 pip install -r $TMP_SERVER_DIR/requirements.txt
 cd $TMP_SERVER_DIR/dataserv
 python app.py db upgrade

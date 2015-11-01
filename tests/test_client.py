@@ -43,11 +43,14 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
+        reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 0,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
-                                'payout_addr': config['payout_address']}],
+                                'payout_addr': config['payout_address'],
+                                'reg_time': reg_time,
+                                'uptime': 100}],
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list
 
@@ -267,11 +270,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
+        reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 4,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
-                                'payout_addr': config['payout_address']}],
+                                'payout_addr': config['payout_address'],
+                                'reg_time': reg_time,
+                                'uptime': 100}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that build send height=4 to the online list
@@ -296,11 +302,14 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
+        reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': len(generated),
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
-                                'payout_addr': config['payout_address']}],
+                                'payout_addr': config['payout_address'],
+                                'reg_time': reg_time,
+                                'uptime': 100}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that build send height=2 to the online list
@@ -335,11 +344,14 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
+        reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{'height': 2,
                                 'btc_addr': config['payout_address'],
                                 'last_seen': last_seen,
-                                'payout_addr': config['payout_address']}],
+                                'payout_addr': config['payout_address'],
+                                'reg_time': reg_time,
+                                'uptime': 100}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that farm send height=2 to online list

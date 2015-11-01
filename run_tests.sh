@@ -14,7 +14,7 @@ PIP=$BASE_DIR/env/bin/pip
 
 
 # setup server
-git clone https://github.com/Storj/dataserv $TMP_SERVER_DIR
+git clone https://github.com/Storj/dataserv -b develop $TMP_SERVER_DIR
 $PIP install -r $TMP_SERVER_DIR/requirements.txt
 cd $TMP_SERVER_DIR/dataserv
 $PY app.py db upgrade
