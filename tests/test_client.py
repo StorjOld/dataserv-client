@@ -280,17 +280,17 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
 
         store_path = tempfile.mktemp()
         os.mkdir(store_path)
-        my_free_size = psutil.disk_usage(store_path).free - (1024 * 256) # 512
+        my_free_size = psutil.disk_usage(store_path).free - (1024 * 256) # 256
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             store_path=store_path,
-                            max_size=1024 * 1024,
+                            max_size=1024 * 1024 * 2,
                             min_free_size=my_free_size) # 256
         config = client.config()
         client.register()
         generated = client.build()
         self.assertTrue(len(generated) > 0) # build at least 1 shard
-        self.assertTrue(len(generated) < 8) # stoped cause of free Space
+        self.assertTrue(len(generated) < 16) # stoped cause of free Space
 
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
