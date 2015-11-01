@@ -240,6 +240,9 @@ class Client(object):
                 btc_hash = btc_block['blockhash']
                 btc_index = btc_block['block_no']
 
+                logger.debug("Using bitcoin block {0} hash {1}.".format(
+                    btc_index, btc_hash))
+
                 wif = self.btctxstore.get_key(self.cfg["wallet"])
                 address = self.btctxstore.get_address(wif)
                 response_data = address + btc_hash + str(bldr.audit(
@@ -251,6 +254,8 @@ class Client(object):
 
                 #New Dataserv Server version is needed
                 #self.messenger.audit(btc_block['block_no'],response)
+            else:
+                logger.debug("Bitcoin block {0} already used. Waiting for new block.".format(btc_index))
 
             if stop_time and datetime.now() >= stop_time:
                 return True

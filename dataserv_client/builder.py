@@ -239,7 +239,9 @@ class Builder:
 
         audit_begin = (btc_index % full_audit) * block_size
         audit_end = audit_begin + block_size
-        
+
+        logger.info("Audit block {0} - {1}.".format(audit_begin, audit_end))
+ 
         seeds = self.build_seeds(audit_end)[audit_begin:]
         
         #check if the block is complete
@@ -247,8 +249,7 @@ class Builder:
             path = self._get_shard_path(store_path, seed)
             if not (os.path.exists(path) and 
                     os.path.getsize(path) == self.shard_size):
-                logger.info("Audit for block {0} - {1} failed.".format(
-                    audit_begin, audit_end))
+                logger.info("Shard missing or corrupt {0}".format(path))
                 return 0
 
         #generate audit response
