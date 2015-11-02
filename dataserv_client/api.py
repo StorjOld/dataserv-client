@@ -15,6 +15,7 @@ from dataserv_client import __version__
 
 import os
 import time
+import hashlib
 
 logger = common.logging.getLogger(__name__)
 
@@ -249,11 +250,10 @@ class Client(object):
                                                         self.store_path,
                                                         btc_block['block_no'],
                                                         btc_block['blockhash']))
-                signature = self.btctxstore.sign_unicode(wif, response_data)
-                response = response_data + str(signature)
+                response = hashlib.sha256(response_data.encode('utf-8')).hexdigest()
 
                 #New Dataserv Server version is needed
-                #self.messenger.audit(btc_block['block_no'],response)
+                self.messenger.audit(btc_block['block_no'],response)
             else:
                 logger.debug("Bitcoin block {0} already used. Waiting for new block.".format(btc_index))
 
