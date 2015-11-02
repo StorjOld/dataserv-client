@@ -361,6 +361,7 @@ class TestClientAudit(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             max_size=1024 * 256)  # 256K
+        client.register()
         self.assertTrue(client.audit(delay=1, limit=1))
 
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
