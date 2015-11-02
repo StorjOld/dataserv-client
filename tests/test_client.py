@@ -50,7 +50,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address'],
                                 'reg_time': reg_time,
-                                'uptime': 100}],
+                                'uptime': 100.0}],
                                 sort_keys=True)
         self.assertEqual(result, expected) #check that register add height=0 to server list
 
@@ -277,7 +277,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address'],
                                 'reg_time': reg_time,
-                                'uptime': 100}],
+                                'uptime': 100.0}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that build send height=4 to the online list
@@ -309,7 +309,7 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address'],
                                 'reg_time': reg_time,
-                                'uptime': 100}],
+                                'uptime': 100.0}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that build send height=2 to the online list
@@ -351,7 +351,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                                 'last_seen': last_seen,
                                 'payout_addr': config['payout_address'],
                                 'reg_time': reg_time,
-                                'uptime': 100}],
+                                'uptime': 100.0}],
                                 sort_keys=True)
 
         self.assertEqual(result,expected) #check that farm send height=2 to online list
