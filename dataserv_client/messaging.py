@@ -46,7 +46,7 @@ class Messaging(object):
                     req.add_header("Authorization", headers["Authorization"])
                 logger.info("Query: {0}".format(query_url))
                 response = urllib.request.urlopen(req, timeout=30)
-                if response.code == 200:
+                if 200 <= response.code <= 299:
                     return response.read()
             except urllib.error.HTTPError as e:
                 #logger.warning(repr(e)) duplicate log entry
