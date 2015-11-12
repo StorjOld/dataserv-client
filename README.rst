@@ -50,7 +50,7 @@ Install client
 
 ::
 
-    $ sudo apt-get install python3-pip
+    $ sudo apt-get install python3 python3-dev python3-pip gcc
     $ sudo pip3 install dataserv-client
     $ dataserv-client version
 
