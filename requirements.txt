@@ -3,5 +3,5 @@ partialhash >= 1.1.0
 future >= 0.15.0
 btctxstore >= 4.6.0
 psutil >= 3.2.2
-storjcore >= 0.0.5
+storjcore >= 0.0.6
 storjnode >= 0.0.9
