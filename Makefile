@@ -1,23 +1,29 @@
-# Copyright (c) 2015 Fabian Barkhau <fabian.barkhau@gmail.com>
-# License: MIT (see LICENSE file)
-
-
-PYTHON_VERSION = 3
-WHEEL_DIR = /tmp/wheelhouse
-USE_WHEEL = --use-wheel --no-index --find-links=$(WHEEL_DIR)
-PIP = env/bin/pip
-PY = env/bin/python
+PY_VERSION := 3
+WHEEL_DIR := /tmp/wheelhouse
+PIP := env/bin/pip
+PY := env/bin/python
+USE_WHEELS := 0
+ifeq ($(USE_WHEELS), 0)
+  WHEEL_INSTALL_ARGS := # void
+else
+  WHEEL_INSTALL_ARGS := --use-wheel --no-index --find-links=$(WHEEL_DIR)
+endif
 
 
 help:
-	@echo "Some usefull development shortcuts."
-	@echo "  clean      Remove all generated files."
-	@echo "  setup      Setup development environment."
-	@echo "  shell      Open ipython from the development environment."
-	@echo "  test       Run tests and analysis tools."
-	@echo "  wheel      Build package wheel and save in '$(WHEEL_DIR)'."
-	@echo "  wheels     Build dependencie wheels and save in '$(WHEEL_DIR)'."
-	@echo "  publish    Build and upload package to pypi.python.org"
+	@echo "COMMANDS:"
+	@echo "  clean          Remove all generated files."
+	@echo "  setup          Setup development environment."
+	@echo "  shell          Open ipython from the development environment."
+	@echo "  test           Run tests."
+	@echo "  wheel          Build package wheel & save in $(WHEEL_DIR)."
+	@echo "  wheels         Build dependency wheels & save in $(WHEEL_DIR)."
+	@echo "  publish        Build and upload package to pypi.python.org"
+	@echo ""
+	@echo "VARIABLES:"
+	@echo "  PY_VERSION     Version of python to use. 2 or 3"
+	@echo "  WHEEL_DIR      Where you save your wheels. Default: $(WHEEL_DIR)."
+	@echo "  USE_WHEELS     Install packages from wheel dir, off by default."
 
 
 clean:
@@ -31,14 +37,14 @@ clean:
 
 
 virtualenv: clean
-	virtualenv -p /usr/bin/python$(PYTHON_VERSION) env
+	virtualenv -p /usr/bin/python$(PY_VERSION) env
 	$(PIP) install wheel
 
 
 wheels: virtualenv
-	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r requirements.txt
-	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r test_requirements.txt
-	$(PIP) wheel --wheel-dir=$(WHEEL_DIR) -r develop_requirements.txt
+	$(PIP) wheel --find-links=$(WHEEL_DIR) --wheel-dir=$(WHEEL_DIR) -r requirements.txt
+	$(PIP) wheel --find-links=$(WHEEL_DIR) --wheel-dir=$(WHEEL_DIR) -r test_requirements.txt
+	$(PIP) wheel --find-links=$(WHEEL_DIR) --wheel-dir=$(WHEEL_DIR) -r develop_requirements.txt
 
 
 wheel: test
@@ -47,19 +53,14 @@ wheel: test
 
 
 setup: virtualenv
-	$(PIP) install $(USE_WHEEL) -r requirements.txt
-	$(PIP) install $(USE_WHEEL) -r test_requirements.txt
-	$(PIP) install $(USE_WHEEL) -r develop_requirements.txt
+	$(PIP) install $(WHEEL_INSTALL_ARGS) -r requirements.txt
+	$(PIP) install $(WHEEL_INSTALL_ARGS) -r test_requirements.txt
+	$(PIP) install $(WHEEL_INSTALL_ARGS) -r develop_requirements.txt
+	$(PY) setup.py install
 
 
 shell: setup
 	env/bin/ipython
-
-
-test_single:
-	$(PIP) uninstall dataserv-client
-	$(PY) setup.py install
-	$(PY) -m unittest tests.test_client.TestClientRegister
 
 
 test: setup
@@ -70,4 +71,5 @@ publish: test
 	$(PY) setup.py register bdist_wheel upload
 
 
-# import pudb; pu.db # set break point
+# Break in case of bug!
+# import pudb; pu.db

@@ -2,6 +2,9 @@
 from future.standard_library import install_aliases
 install_aliases()
 
+import os
+import hashlib
+import time
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
@@ -13,9 +16,10 @@ from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
 
-import os
-import time
-import hashlib
+import storjnode
+from crochet import setup
+setup()  # start twisted via crochet
+
 
 logger = common.logging.getLogger(__name__)
 
@@ -38,11 +42,13 @@ class Client(object):
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
-                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
+                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY,
+                 run_storjnode=False):
 
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
 
+        self.run_storjnode = run_storjnode
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.max_size = deserialize.byte_count(max_size)
@@ -63,9 +69,9 @@ class Client(object):
         try:
             fstype = control.util.get_fs_type(self.store_path)
 
-        #FileNotFoundError: [Errno 2] No such file or directory: '/etc/mtab'
-        #psutil: https://code.google.com/p/psutil/issues/detail?id=434
-        except FileNotFoundError as e: 
+        # FileNotFoundError: [Errno 2] No such file or directory: '/etc/mtab'
+        # psutil: https://code.google.com/p/psutil/issues/detail?id=434
+        except FileNotFoundError as e:
             logger.warning(e)
             fstype = None
 
@@ -75,7 +81,7 @@ class Client(object):
         if fstype is None:
             msg = "Couldn't detected partition type for '{0}'"
             logger.warning(msg.format(self.store_path))
-            
+
         self.cfg = control.config.get(self.btctxstore, self.cfg_path)
 
     @staticmethod
@@ -206,7 +212,7 @@ class Client(object):
 
         # Initialize builder and generate/re-generate shards
         bldr = builder.Builder(address=self.cfg["payout_address"],
-                               shard_size=common.SHARD_SIZE, 
+                               shard_size=common.SHARD_SIZE,
                                max_size=self.max_size,
                                min_free_size=self.min_free_size,
                                on_generate_shard=_on_generate_shard,
@@ -261,6 +267,9 @@ class Client(object):
                 return True
             time.sleep(int(delay))
 
+
+
+
     def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
              delay=common.DEFAULT_DELAY, limit=None):
@@ -276,7 +285,7 @@ class Client(object):
         :param delay: Delay in seconds per ping of the server.
         :param limit: Number of seconds in the future to stop polling.
         """
-        
+
         workers = deserialize.positive_nonzero_integer(workers)
 
         set_height_interval = deserialize.positive_nonzero_integer(
@@ -286,6 +295,10 @@ class Client(object):
         rebuild = deserialize.flag(rebuild)
         repair = deserialize.flag(repair)
 
+        # start storjnode in background
+        if self.run_storjnode:
+            self._storjnode = storjnode.network.Node(self.cfg["wallet"])
+
         # farmer never gives up
         self._init_messenger()
         self.messenger.retry_limit = 99999999999999999999999999999999999999
@@ -294,7 +307,7 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
-        self.build(workers=workers, cleanup=cleanup, rebuild=rebuild, repair=repair,
-                   set_height_interval=set_height_interval)
+        self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
+                   repair=repair, set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True
