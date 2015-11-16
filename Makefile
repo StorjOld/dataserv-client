@@ -1,4 +1,4 @@
-PY_VERSION := 3
+PY_VERSION := 2
 WHEEL_DIR := /tmp/wheelhouse
 PIP := env/bin/pip
 PY := env/bin/python
