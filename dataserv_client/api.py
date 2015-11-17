@@ -162,6 +162,10 @@ class Client(object):
         if limit is not None:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
 
+        # start storjnode in background
+        if not self.nop2p:
+            self._storjnode = storjnode.network.Node(self.cfg["wallet"])
+
         while True:  # ping the server every X seconds
             self.ping()
 
@@ -291,10 +295,6 @@ class Client(object):
         cleanup = deserialize.flag(cleanup)
         rebuild = deserialize.flag(rebuild)
         repair = deserialize.flag(repair)
-
-        # start storjnode in background
-        if not self.nop2p:
-            self._storjnode = storjnode.network.Node(self.cfg["wallet"])
 
         # farmer never gives up
         self._init_messenger()
