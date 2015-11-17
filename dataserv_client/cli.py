@@ -1,9 +1,11 @@
 import sys
+import signal
 import argparse
 from dataserv_client import api
 from dataserv_client import common
 
 
+signal.signal(signal.SIGINT, signal.default_int_handler)
 logger = common.logging.getLogger(__name__)
 
 
@@ -225,6 +227,7 @@ def _parse_args(args):
 
 
 def main(args):
+    client = None
     try:
         command_name, arguments = _parse_args(args)
         client = api.Client(
@@ -241,6 +244,10 @@ def main(args):
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
         logger.warning("Caught KeyboardInterrupt")
+        if client is not None and client.storjnode is not None:
+            client.storjnode.stop()
+            exit(0)
+
     except Exception as e:
         logger.exception(e)
         raise e

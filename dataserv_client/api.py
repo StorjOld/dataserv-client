@@ -44,6 +44,7 @@ class Client(object):
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
 
+        self.storjnode = None
         self.nop2p = nop2p
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
@@ -164,7 +165,7 @@ class Client(object):
 
         # start storjnode in background
         if not self.nop2p:
-            self._storjnode = storjnode.network.Node(self.cfg["wallet"])
+            self.storjnode = storjnode.network.Node(self.cfg["wallet"])
 
         while True:  # ping the server every X seconds
             self.ping()
