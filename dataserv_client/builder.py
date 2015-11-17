@@ -7,12 +7,10 @@ import RandomIO
 import partialhash
 import psutil
 import json
-from future.moves.urllib.parse import urlparse, urlencode
-from future.moves.urllib.request import urlopen, Request
-from future.moves.urllib.error import HTTPError, URLError
-from datetime import datetime
+from future.moves.urllib.request import urlopen
 from dataserv_client import control
 from dataserv_client import common
+from dataserv_client.exceptions import BlockExplorerApiFailed
 
 
 logger = common.logging.getLogger(__name__)
@@ -111,7 +109,8 @@ class Builder:
         logger.info("Resuming from height {0}".format(index))
         return index
 
-    def build(self, store_path, workers=1, cleanup=False, rebuild=False, repair=False):
+    def build(self, store_path, workers=1, cleanup=False,
+              rebuild=False, repair=False):
         """
         Fill the farmer with data up to their max.
 
@@ -132,20 +131,26 @@ class Builder:
             if repair:
                 for shard_num, seed in enum_seeds[:last_height]:
                     path = self._get_shard_path(store_path, seed)
-                    if not (os.path.exists(path) and os.path.getsize(path) == self.shard_size):
-                        logger.info("Repeair seed {0} height {1}.".format(seed, shard_num))
-                        pool.add_task(self.generate_shard, seed, store_path, cleanup)
+                    if not (os.path.exists(path) and
+                            os.path.getsize(path) == self.shard_size):
+                        msg = "Repeair seed {0} height {1}."
+                        logger.info(msg.format(seed, shard_num))
+                        pool.add_task(self.generate_shard, seed,
+                                      store_path, cleanup)
                 pool.wait_completion()
 
         for shard_num, seed in enum_seeds[last_height:]:
             try:
-                if psutil.disk_usage(store_path).free - (self.shard_size * (pool.active_count() + 1)) < self.min_free_size:
-                    msg="Minimum free disk space reached ({0}) for '{1}'."
+                space_free = psutil.disk_usage(store_path).free
+                space_required = (self.shard_size * (pool.active_count() + 1))
+                if (space_free - space_required < self.min_free_size):
+                    msg = "Minimum free disk space reached ({0}) for '{1}'."
                     logger.info(msg.format(self.min_free_size, store_path))
                     last_height = shard_num
                     break
 
-                file_hash = pool.add_task(self.generate_shard, seed, store_path, cleanup)
+                file_hash = pool.add_task(self.generate_shard, seed,
+                                          store_path, cleanup)
 
                 generated[seed] = file_hash
                 logger.info("Saving seed {0} with SHA-256 hash {1}.".format(
@@ -199,7 +204,7 @@ class Builder:
         """Bitcoin height"""
         url = 'https://chain.so/api/v2/get_info/BTC'
         result = json.loads(urlopen(url).read().decode('utf8'))
-        if result['status']=='success':
+        if result['status'] == 'success':
             return result['data']['blocks']
         else:
             raise BlockExplorerApiFailed(url)
@@ -208,21 +213,23 @@ class Builder:
         """Bitcoin block for given index"""
         url = 'https://chain.so/api/v2/get_block/BTC/' + str(index)
         result = json.loads(urlopen(url).read().decode('utf8'))
-        if result['status']=='success':
+        if result['status'] == 'success':
             result['data']['block_no'] = int(result['data']['block_no'])
-            result['data']['confirmations'] = int(result['data']['confirmations'])
+            result['data']['confirmations'] = int(
+                result['data']['confirmations']
+            )
             return result['data']
         else:
             raise BlockExplorerApiFailed(url)
 
-    def btc_last_confirmed_block(self, min_confirmations=
-                                       common.DEFAULT_MIN_CONFIRMATIONS):
+    def btc_last_confirmed_block(self, min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS):
         """last Bitcoin block with given min confirmation"""
         btc_height = self.btc_height()
 
         while True:
             btc_block = self.btc_block(btc_height)
-            if btc_block['confirmations'] >= min_confirmations and btc_block['is_orphan'] == False:
+            enough_confirms = btc_block['confirmations'] >= min_confirmations
+            if (enough_confirms and btc_block['is_orphan'] == False):
                 return btc_block
             btc_height -= 1
 

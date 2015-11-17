@@ -1,24 +1,20 @@
 from dataserv_client import common
-
 import os
-import time
 import tempfile
 import unittest
 import datetime
 import json
 import psutil
-from future.moves.urllib.parse import urlparse, urlencode
-from future.moves.urllib.request import urlopen, Request
-from future.moves.urllib.error import HTTPError, URLError
+from future.moves.urllib.request import urlopen
 from dataserv_client import cli
 from dataserv_client import api
 from btctxstore import BtcTxStore
 from dataserv_client import exceptions
 
 
-
 url = "http://127.0.0.1:5000"
 common.SHARD_SIZE = 1024 * 128  # monkey patch shard size to 128K
+
 
 class AbstractTestSetup(object):
     def setUp(self):
@@ -27,29 +23,32 @@ class AbstractTestSetup(object):
         # debug output the server online list
         # print(urlopen(url + '/api/online/json').read().decode('utf8'))
 
+
 class TestClientRegister(AbstractTestSetup, unittest.TestCase):
 
     def test_register_payout(self):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         self.assertTrue(client.register())
-
-        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = json.loads(
+            urlopen(url + '/api/online/json').read().decode('utf8')
+        )
         result = [farmers for farmers in result['farmers']
-                    if farmers['btc_addr'] == config['payout_address']]
+                  if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': 0,
-                                'btc_addr': config['payout_address'],
-                                'last_seen': last_seen,
-                                'payout_addr': config['payout_address'],
-                                'reg_time': reg_time,
-                                'uptime': 100.0}],
-                                sort_keys=True)
-        self.assertEqual(result, expected) #check that register add height=0 to server list
+        expected = json.dumps([{
+            'height': 0,
+            'btc_addr': config['payout_address'],
+            'last_seen': last_seen,
+            'payout_addr': config['payout_address'],
+            'reg_time': reg_time,
+            'uptime': 100.0
+        }], sort_keys=True)
+        self.assertEqual(result, expected)
 
-    def test_register(self): #register without createing a config
+    def test_register(self):  # register without createing a config
         client = api.Client(url=url)
         self.assertTrue(client.register())
 
@@ -94,7 +93,9 @@ class TestClientPoll(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(client.poll(delay=2, limit=2))
         after = datetime.datetime.now()
 
-        self.assertTrue(datetime.timedelta(seconds=2) <= (after - before)) #check that poll did 2 pings with 2 sec delay
+        # check that poll did 2 pings with 2 sec delay
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - before))
+
 
 class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_invalid_retry_limit(self):
@@ -180,14 +181,14 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
     def test_poll_invalid_negativ_delay(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
-            client.poll(delay=-1,limit=0)
+            client.poll(delay=-1, limit=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
     def test_audit_invalid_negativ_delay(self):
         def callback():
             client = api.Client(config_path=tempfile.mktemp())
-            client.audit(delay=-1,limit=0)
+            client.audit(delay=-1, limit=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
 
@@ -261,53 +262,58 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         generated = client.build(cleanup=True)
         self.assertTrue(len(generated) == 4)
 
-        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = json.loads(
+            urlopen(url + '/api/online/json').read().decode('utf8')
+        )
         result = [farmers for farmers in result['farmers']
-                    if farmers['btc_addr'] == config['payout_address']]
+                  if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': 4,
-                                'btc_addr': config['payout_address'],
-                                'last_seen': last_seen,
-                                'payout_addr': config['payout_address'],
-                                'reg_time': reg_time,
-                                'uptime': 100.0}],
-                                sort_keys=True)
-
-        self.assertEqual(result,expected) #check that build send height=4 to the online list
+        expected = json.dumps([{
+            'height': 4,
+            'btc_addr': config['payout_address'],
+            'last_seen': last_seen,
+            'payout_addr': config['payout_address'],
+            'reg_time': reg_time,
+            'uptime': 100.0
+        }], sort_keys=True)
+        self.assertEqual(result, expected)
 
     def test_build_min_free_space(self):
 
         store_path = tempfile.mktemp()
         os.mkdir(store_path)
-        my_free_size = psutil.disk_usage(store_path).free - (1024 * 256) # 256
+        my_free_size = psutil.disk_usage(store_path).free - (1024 * 256)  # 256
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
                             store_path=store_path,
                             max_size=1024 * 1024 * 2,
-                            min_free_size=my_free_size) # 256
+                            min_free_size=my_free_size)  # 256
         config = client.config()
         client.register()
         generated = client.build()
-        self.assertTrue(len(generated) > 0) # build at least 1 shard
-        self.assertTrue(len(generated) < 16) # stoped cause of free Space
+        self.assertTrue(len(generated) > 0)  # build at least 1 shard
+        self.assertTrue(len(generated) < 16)  # stoped cause of free Space
 
-        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = json.loads(
+            urlopen(url + '/api/online/json').read().decode('utf8')
+        )
         result = [farmers for farmers in result['farmers']
-                    if farmers['btc_addr'] == config['payout_address']]
+                  if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': len(generated),
-                                'btc_addr': config['payout_address'],
-                                'last_seen': last_seen,
-                                'payout_addr': config['payout_address'],
-                                'reg_time': reg_time,
-                                'uptime': 100.0}],
-                                sort_keys=True)
+        expected = json.dumps([{
+            'height': len(generated),
+            'btc_addr': config['payout_address'],
+            'last_seen': last_seen,
+            'payout_addr': config['payout_address'],
+            'reg_time': reg_time,
+            'uptime': 100.0
+        }], sort_keys=True)
 
-        self.assertEqual(result,expected) #check that build send height=2 to the online list
+        self.assertEqual(result, expected)
 
 
 class TestClientFarm(AbstractTestSetup, unittest.TestCase):
@@ -317,10 +323,11 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                             max_size=1024 * 256)  # 256K
 
         befor = datetime.datetime.now()
-        self.assertTrue(client.farm(delay=2,limit=2)) #check farm return true
+        self.assertTrue(client.farm(delay=2, limit=2))  # check farm return true
         after = datetime.datetime.now()
 
-        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor)) # check that farm did 2 pings with 2 sec delay
+        # check that farm did 2 pings with 2 sec delay
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor))
 
     def test_farm_registered(self):
         client = api.Client(url=url,
@@ -330,26 +337,31 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         client.register()
 
         befor = datetime.datetime.now()
-        self.assertTrue(client.farm(delay=2,limit=2)) #check farm return true
+        self.assertTrue(client.farm(delay=2, limit=2))  # check farm return true
         after = datetime.datetime.now()
 
-        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor)) # check that farm did 2 pings with 2 sec delay
+        # check that farm did 2 pings with 2 sec delay
+        self.assertTrue(datetime.timedelta(seconds=2) <= (after - befor))
 
-        result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
+        result = json.loads(
+            urlopen(url + '/api/online/json').read().decode('utf8')
+        )
         result = [farmers for farmers in result['farmers']
-                    if farmers['btc_addr'] == config['payout_address']]
+                  if farmers['btc_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
-        expected = json.dumps([{'height': 2,
-                                'btc_addr': config['payout_address'],
-                                'last_seen': last_seen,
-                                'payout_addr': config['payout_address'],
-                                'reg_time': reg_time,
-                                'uptime': 100.0}],
-                                sort_keys=True)
+        expected = json.dumps([{
+            'height': 2,
+            'btc_addr': config['payout_address'],
+            'last_seen': last_seen,
+            'payout_addr': config['payout_address'],
+            'reg_time': reg_time,
+            'uptime': 100.0
+        }], sort_keys=True)
 
-        self.assertEqual(result,expected) #check that farm send height=2 to online list
+        self.assertEqual(result, expected)
+
 
 class TestClientAudit(AbstractTestSetup, unittest.TestCase):
     def test_audit(self):
@@ -359,9 +371,11 @@ class TestClientAudit(AbstractTestSetup, unittest.TestCase):
         client.register()
         self.assertTrue(client.audit(delay=1, limit=1))
 
+
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
         args = [
+            "--nop2p",
             "--config_path=" + tempfile.mktemp(),
             "version"
         ]
@@ -371,6 +385,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -378,16 +393,18 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "poll",
             "--delay=0",
             "--limit=0"
-        ] #no pings needed for check args
+        ]  # no pings needed for check args
         self.assertTrue(cli.main(args))
 
     def test_register(self):
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "register"
@@ -398,6 +415,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -405,6 +423,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "--max_size=" + str(1024 * 256),  # 256K
@@ -422,6 +441,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -429,16 +449,18 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "audit",
             "--delay=0",
             "--limit=0"
-        ] #no audit needed for check args
+        ]  # no audit needed for check args
         self.assertTrue(cli.main(args))
 
     def test_farm(self):
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "--max_size=" + str(1024 * 256),  # 256K
@@ -451,12 +473,13 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--set_height_interval=3",
             "--delay=0",
             "--limit=0"
-        ] #no pings needed for check args
+        ]  # no pings needed for check args
         self.assertTrue(cli.main(args))
 
     def test_ping(self):
         config_path = tempfile.mktemp()
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "register"
@@ -464,6 +487,7 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
         args = [
+            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "ping"
@@ -480,11 +504,13 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         def callback():
             path = tempfile.mktemp()
             cli.main([
+                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "register",
             ])
             cli.main([
+                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "poll",

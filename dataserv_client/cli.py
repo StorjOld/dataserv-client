@@ -3,7 +3,9 @@ import argparse
 from dataserv_client import api
 from dataserv_client import common
 
+
 logger = common.logging.getLogger(__name__)
+
 
 def _add_programm_args(parser):
     # url
@@ -38,6 +40,13 @@ def _add_programm_args(parser):
     parser.add_argument(
         "--config_path", default=default,
         help="Config path. (default: {0}).".format(default)
+    )
+
+    # run storj node
+    default = False
+    parser.add_argument(
+        "--nop2p", action='store_true',
+        help="Disable the p2p node that runs in the background."
     )
 
     # debug
@@ -104,7 +113,7 @@ def _add_build(command_parser):
     build_parser = command_parser.add_parser(
         "build", help="Fill the farmer with data up to their max."
     )
-    
+
     # Threadpool workers
     build_parser.add_argument('--workers', default=1,
                               help="Number of threadpool workers.")
@@ -146,11 +155,11 @@ def _add_farm(command_parser):
     farm_parser = command_parser.add_parser(
         "farm", help="Start farmer."
     )
-    
+
     # Threadpool workers
     farm_parser.add_argument('--workers', default=1,
-                              help="Number of threadpool workers.")
-    
+                             help="Number of threadpool workers.")
+
     # cleanup
     farm_parser.add_argument('--cleanup', action='store_true',
                              help="Remove generated files.")
@@ -161,7 +170,7 @@ def _add_farm(command_parser):
 
     # repair
     farm_parser.add_argument('--repair', action='store_true',
-                              help="Replace bad and missing files.")
+                             help="Replace bad and missing files.")
 
     # set height interval
     default = common.DEFAULT_SET_HEIGHT_INTERVAL
@@ -227,6 +236,7 @@ def main(args):
             min_free_size=arguments.pop("min_free_size"),
             store_path=arguments.pop("store_path"),
             config_path=arguments.pop("config_path"),
+            nop2p=arguments.pop("nop2p"),
         )
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
@@ -234,4 +244,3 @@ def main(args):
     except Exception as e:
         logger.exception(e)
         raise e
-

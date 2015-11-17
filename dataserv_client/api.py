@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-from future.standard_library import install_aliases
-install_aliases()
-
 import os
 import hashlib
 import time
@@ -15,7 +12,6 @@ from dataserv_client import exceptions
 from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
-
 import storjnode
 from crochet import setup
 setup()  # start twisted via crochet
@@ -43,12 +39,12 @@ class Client(object):
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY,
-                 run_storjnode=False):
+                 nop2p=True):
 
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
 
-        self.run_storjnode = run_storjnode
+        self.nop2p = nop2p
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.max_size = deserialize.byte_count(max_size)
@@ -217,8 +213,8 @@ class Client(object):
                                min_free_size=self.min_free_size,
                                on_generate_shard=_on_generate_shard,
                                use_folder_tree=self.use_folder_tree)
-        generated = bldr.build(self.store_path, workers=workers, cleanup=cleanup,
-                               rebuild=rebuild, repair=repair)
+        generated = bldr.build(self.store_path, workers=workers,
+                               cleanup=cleanup, rebuild=rebuild, repair=repair)
 
         logger.info("Build finished")
         return generated
@@ -241,8 +237,9 @@ class Client(object):
 
         btc_index = 0
         while True:
-            btc_block = bldr.btc_last_confirmed_block(min_confirmations=
-                                          common.DEFAULT_MIN_CONFIRMATIONS)
+            btc_block = bldr.btc_last_confirmed_block(
+                min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS
+            )
             if btc_block['block_no'] != btc_index:
                 btc_hash = btc_block['blockhash']
                 btc_index = btc_block['block_no']
@@ -256,19 +253,19 @@ class Client(object):
                                                         self.store_path,
                                                         btc_block['block_no'],
                                                         btc_block['blockhash']))
-                response = hashlib.sha256(response_data.encode('utf-8')).hexdigest()
+                response = hashlib.sha256(
+                    response_data.encode('utf-8')
+                ).hexdigest()
 
-                #New Dataserv Server version is needed
-                self.messenger.audit(btc_block['block_no'],response)
+                # New Dataserv Server version is needed
+                self.messenger.audit(btc_block['block_no'], response)
             else:
-                logger.debug("Bitcoin block {0} already used. Waiting for new block.".format(btc_index))
+                msg = "Bitcoin block {0} already used. Waiting for new block."
+                logger.debug(msg.format(btc_index))
 
             if stop_time and datetime.now() >= stop_time:
                 return True
             time.sleep(int(delay))
-
-
-
 
     def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
@@ -296,7 +293,7 @@ class Client(object):
         repair = deserialize.flag(repair)
 
         # start storjnode in background
-        if self.run_storjnode:
+        if not self.nop2p:
             self._storjnode = storjnode.network.Node(self.cfg["wallet"])
 
         # farmer never gives up

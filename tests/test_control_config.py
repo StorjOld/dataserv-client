@@ -9,7 +9,7 @@ from dataserv_client import __version__
 from dataserv_client import exceptions
 
 
-class TestConfig(unittest.TestCase):
+class TestControlConfig(unittest.TestCase):
 
     def setUp(self):
         self.btctxstore = BtcTxStore()

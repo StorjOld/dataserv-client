@@ -4,7 +4,7 @@ import tempfile
 from dataserv_client.control import encryptedio
 
 
-class TestConfig(unittest.TestCase):
+class TestControlEncryptedIO(unittest.TestCase):
 
     def test_roundtrip(self):
         input_path = "tests/fixtures.json"
