@@ -17,8 +17,8 @@ from dataserv_client import deserialize
 from dataserv_client import __version__
 
 import storjnode
-#from crochet import setup
-#setup()  # start twisted via crochet
+from crochet import setup
+setup()  # start twisted via crochet
 
 
 logger = common.logging.getLogger(__name__)

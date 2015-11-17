@@ -25,7 +25,7 @@ screen -S testserver -d -m $PY app.py runserver
 
 # run tests
 cd $BASE_DIR
-$PY setup.py test
+$PY -m unittest --quiet tests
 
 
 # clean up
