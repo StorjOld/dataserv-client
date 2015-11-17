@@ -2,9 +2,9 @@ import json
 import http.client
 import socket
 import time
-import urllib
-import urllib.error
-import urllib.request
+from future.moves.urllib.parse import urlparse, urlencode
+from future.moves.urllib.request import urlopen, Request
+from future.moves.urllib.error import HTTPError, URLError
 import btctxstore
 import storjcore
 from dataserv_client import exceptions
@@ -37,7 +37,7 @@ class Messaging(object):
             i += 1
             try:
                 query_url = self._server_url + api_path
-                req = urllib.request.Request(query_url)
+                req = Request(query_url)
                 if self.wif and authenticate:
                     headers = storjcore.auth.create_headers(
                         self.btctxstore, self._get_server_address(), self.wif
@@ -45,10 +45,10 @@ class Messaging(object):
                     req.add_header("Date", headers["Date"])
                     req.add_header("Authorization", headers["Authorization"])
                 logger.info("Query: {0}".format(query_url))
-                response = urllib.request.urlopen(req, timeout=30)
+                response = urlopen(req, timeout=30)
                 if 200 <= response.code <= 299:
                     return response.read()
-            except urllib.error.HTTPError as e:
+            except HTTPError as e:
                 #logger.warning(repr(e)) duplicate log entry
                 if e.code == 409:
                     raise exceptions.AddressAlreadyRegistered(self.auth_address(),
@@ -65,19 +65,19 @@ class Messaging(object):
                     raise e  # pragma: no cover
             except http.client.HTTPException as e:
                 logger.warning(repr(e))
-            except urllib.error.URLError as e:
+            except URLError as e:
                 logger.warning(repr(e))
             except socket.error as e:
                 logger.warning(repr(e))
 
-            # retry    
+            # retry
             delay = self.retry_delay
             logger.info("Query retry in {0} seconds.".format(delay))
             time.sleep(delay)
 
         # retry limit
         logger.error("Failed to connect to {0}".format(self._server_url))
-        raise exceptions.ConnectionError(self._server_url)        
+        raise exceptions.ConnectionError(self._server_url)
 
     def _get_server_address(self):
         if not self._server_address:

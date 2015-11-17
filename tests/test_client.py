@@ -7,14 +7,9 @@ import unittest
 import datetime
 import json
 import psutil
-
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-except ImportError:
-    # Fall back to Python 2's urllib2
-    from urllib2 import urlopen
-
+from future.moves.urllib.parse import urlparse, urlencode
+from future.moves.urllib.request import urlopen, Request
+from future.moves.urllib.error import HTTPError, URLError
 from dataserv_client import cli
 from dataserv_client import api
 from btctxstore import BtcTxStore
@@ -38,7 +33,7 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         client = api.Client(url=url, config_path=tempfile.mktemp())
         config = client.config()
         self.assertTrue(client.register())
-        
+
         result = json.loads(urlopen(url + '/api/online/json').read().decode('utf8'))
         result = [farmers for farmers in result['farmers']
                     if farmers['btc_addr'] == config['payout_address']]
@@ -195,7 +190,7 @@ class TestInvalidArgument(AbstractTestSetup, unittest.TestCase):
             client.audit(delay=-1,limit=0)
 
         self.assertRaises(exceptions.InvalidInput, callback)
- 
+
 
 class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
     def test_no_retry(self):

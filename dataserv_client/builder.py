@@ -7,14 +7,9 @@ import RandomIO
 import partialhash
 import psutil
 import json
-
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-except ImportError:
-    # Fall back to Python 2's urllib2
-    from urllib2 import urlopen
-
+from future.moves.urllib.parse import urlparse, urlencode
+from future.moves.urllib.request import urlopen, Request
+from future.moves.urllib.error import HTTPError, URLError
 from datetime import datetime
 from dataserv_client import control
 from dataserv_client import common
@@ -25,7 +20,7 @@ logger = common.logging.getLogger(__name__)
 
 class Builder:
 
-    def __init__(self, address, shard_size, max_size, min_free_size, 
+    def __init__(self, address, shard_size, max_size, min_free_size,
                  on_generate_shard=None, use_folder_tree=False):
         self.target_height = int(max_size / shard_size)
         self.address = address
@@ -132,7 +127,7 @@ class Builder:
         last_height = 0
         if not rebuild:
             last_height = self.filter_to_resume_point(store_path, enum_seeds)
-            
+
             # rebuild bad or missing shards
             if repair:
                 for shard_num, seed in enum_seeds[:last_height]:
@@ -224,16 +219,16 @@ class Builder:
                                        common.DEFAULT_MIN_CONFIRMATIONS):
         """last Bitcoin block with given min confirmation"""
         btc_height = self.btc_height()
-        
+
         while True:
             btc_block = self.btc_block(btc_height)
             if btc_block['confirmations'] >= min_confirmations and btc_block['is_orphan'] == False:
                 return btc_block
             btc_height -= 1
 
-    def audit(self, store_path, btc_index, btc_hash, 
-              block_size=common.DEFAULT_BLOCK_SIZE, 
-              full_audit=common.DEFAULT_FULL_AUDIT, 
+    def audit(self, store_path, btc_index, btc_hash,
+              block_size=common.DEFAULT_BLOCK_SIZE,
+              full_audit=common.DEFAULT_FULL_AUDIT,
               min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS):
         """audit one block"""
 
@@ -241,13 +236,13 @@ class Builder:
         audit_end = audit_begin + block_size
 
         logger.info("Audit block {0} - {1}.".format(audit_begin, audit_end))
- 
+
         seeds = self.build_seeds(audit_end)[audit_begin:]
-        
+
         #check if the block is complete
         for seed in seeds:
             path = self._get_shard_path(store_path, seed)
-            if not (os.path.exists(path) and 
+            if not (os.path.exists(path) and
                     os.path.getsize(path) == self.shard_size):
                 logger.info("Shard missing or corrupt {0}".format(path))
                 return 0
