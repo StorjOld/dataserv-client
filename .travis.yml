@@ -8,6 +8,7 @@ addons:
   apt:                                                                          
     packages:                                                                   
     - graphviz  
+    - libpq-dev
 
 install:
   - pip install -r requirements.txt
