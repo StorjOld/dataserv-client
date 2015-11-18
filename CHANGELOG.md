@@ -1,3 +1,7 @@
+v2.1.8
+
+ * Minor bug fix
+
 v2.1.7
 
  * Minor bug fix

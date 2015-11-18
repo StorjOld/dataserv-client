@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!python
+# coding: utf-8
 
 
 import sys
-import os
 from dataserv_client import cli
 
 
