@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import hashlib
 import time
@@ -68,7 +69,7 @@ class Client(object):
 
         # FileNotFoundError: [Errno 2] No such file or directory: '/etc/mtab'
         # psutil: https://code.google.com/p/psutil/issues/detail?id=434
-        except FileNotFoundError as e:
+        except EnvironmentError as e:
             logger.warning(e)
             fstype = None
 
@@ -166,6 +167,10 @@ class Client(object):
         # start storjnode in background
         if not self.nop2p:
             self.storjnode = storjnode.network.Node(self.cfg["wallet"])
+
+            def message_handler(source, message):
+                print("Received message: %s" % json.dumps(message))
+            self.storjnode.add_message_handler(message_handler)
 
         while True:  # ping the server every X seconds
             self.ping()
