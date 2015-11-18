@@ -1,3 +1,7 @@
+#!python
+# coding: utf-8
+
+
 import sys
 from dataserv_client import cli
 
