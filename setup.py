@@ -26,11 +26,6 @@ if os.name == 'postix' and 'py2app' in sys.argv:
 
 exec(open('dataserv_client/version.py').read())  # load __version__
 SCRIPT = os.path.join('dataserv_client', 'bin', 'dataserv-client')
-DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s-py2.py3-none-any.whl" % {
-    'baseurl': "https://pypi.python.org/packages/3.4/d",
-    'name': 'dataserv-client',
-    'version': __version__  # NOQA
-}
 
 
 setup(
@@ -50,7 +45,6 @@ setup(
     dependency_links=[],
     install_requires=open("requirements.txt").readlines(),
     tests_require=open("test_requirements.txt").readlines(),
-    download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
     classifiers=[
         # "Development Status :: 1 - Planning",
