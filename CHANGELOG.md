@@ -1,3 +1,7 @@
+v2.1.6
+
+ * Minor bug fix
+
 v2.1.5
 
  * Added audit
