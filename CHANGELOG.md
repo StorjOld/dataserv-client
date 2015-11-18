@@ -1,3 +1,11 @@
+v2.1.5
+
+ * Added audit
+ * Added background p2p storjnode
+ * Added --repair option
+ * Better multithreading
+ * Added --min_free_size option
+
 v2.1.4
 
  * Increased default ping interval.
