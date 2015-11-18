@@ -5,7 +5,7 @@ from dataserv_client import api
 from dataserv_client import common
 
 
-signal.signal(signal.SIGINT, signal.default_int_handler)
+signal.signal(signal.SIGINT, signal.default_int_handler)  # rm twisted handler
 logger = common.logging.getLogger(__name__)
 
 
