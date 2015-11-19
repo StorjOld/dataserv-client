@@ -1,3 +1,8 @@
+v2.1.9
+
+ * Updated readme
+ * Show storj dht node id and prot on startup.
+
 v2.1.8
 
  * Minor bug fix
