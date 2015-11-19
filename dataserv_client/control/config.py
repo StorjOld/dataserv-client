@@ -95,6 +95,7 @@ _MIGRATIONS = {
     "2.1.7": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.8'),
     "2.1.8": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.9'),
     "2.1.9": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.10'),
+    "2.1.10": lambda btctxstore, cfg: _set_version(btctxstore, cfg, '2.1.11'),
     # TODO add smarter version ranges so no new line needed for every version
 }
 
