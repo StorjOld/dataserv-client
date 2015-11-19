@@ -4,4 +4,4 @@ future >= 0.15.0
 btctxstore >= 4.6.0
 psutil >= 3.2.2
 storjcore >= 0.0.6
-storjnode >= 0.0.15
+storjnode >= 0.0.17
