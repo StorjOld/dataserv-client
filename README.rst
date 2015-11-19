@@ -20,14 +20,12 @@ dataserv-client
 
 Contributing
 ============
------------
 
 We welcome contributions if you have a little extra time and Python experience. We ask that you make your pull requests on the `develop <https://github.com/Storj/dataserv-client/tree/develop>`_ branch, as we only use `master <https://github.com/Storj/dataserv-client/tree/master>`_ for releases. Please follow `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_, and make sure you document anything new. If you have any questions, you can find the entire team on `Slack <http://slack.storj.io/>`_. Note: If you plan on running the unit tests for the repo, you will also need to have `dataserv <https://github.com/Storj/dataserv>`_ running locally with a new db.
 
 
 Setup
 =====
------------
 
 Windows
 -------
@@ -43,22 +41,28 @@ Extract the zip file to the folder where you wish to have it installed.
 The dataserv-client will automatically update when new releases are made.
 
 
-Ubuntu Linux
-------------
+Linux (Ubuntu/Mint/Debian)
+--------------------------
 
 Install client
 
 ::
 
-    $ sudo apt-get install python3 python3-dev python3-pip gcc
-    $ sudo pip3 install dataserv-client
+    # install apt dependencies
+    $ sudo apt-get install python python-pip graphviz
+    $ sudo apt-get install python-dev libgraphviz-dev pkg-config gcc
+
+    # If you are using virtualenv you may need to instal graphviz from the system package.
+    $ sudo pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
+
+    $ sudo pip install dataserv-client
     $ dataserv-client version
 
 Update client
 
 ::
 
-    $ sudo pip3 install dataserv-client --upgrade
+    $ sudo pip install dataserv-client --upgrade
     $ dataserv-client version
 
 
@@ -69,22 +73,21 @@ Install client
 
 ::
 
-    $ brew install python3
+    $ brew install python
     $ rehash
-    $ pip3 install dataserv-client
+    $ pip install dataserv-client
     $ dataserv-client version
 
 Update client
 
 ::
 
-    $ pip3 install dataserv-client --upgrade
+    $ pip install dataserv-client --upgrade
     $ dataserv-client version
 
 
 Farmer Quickstart Guide
 =======================
------------
 
 **Configure your farmer node**
 
@@ -167,13 +170,13 @@ Running the farm command
 
     dataserv-client --url=http://switch.driveshare.org --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm --set_height_interval=(default: 25, max recommended: 199999)
 
-	
+
 Running the poll command
 ------------------------
 
 ::
 
-	dataserv-client --url=http://switch.driveshare.org poll    
+	dataserv-client --url=http://switch.driveshare.org poll
 
 Workers Guide
 =============
@@ -183,7 +186,7 @@ You can start multiple workers by executing farm or build with the optional argu
 ::
 
     dataserv-client build --workers=<number of workers>
-    
+
 ::
 
     dataserv-client farm --workers=<number of workers>
@@ -191,7 +194,6 @@ You can start multiple workers by executing farm or build with the optional argu
 
 Command Line Interface Usage
 ============================
------------
 
 Argument ordering
 -----------------
