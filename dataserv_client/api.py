@@ -2,6 +2,7 @@
 import json
 import os
 import hashlib
+import binascii
 import time
 from datetime import datetime
 from datetime import timedelta
@@ -166,8 +167,14 @@ class Client(object):
 
         # start storjnode in background
         if not self.nop2p:
+            # start node
             self.storjnode = storjnode.network.Node(self.cfg["wallet"])
+            print("Running storj dht node on port {port} with id {id}".format(
+                id=binascii.hexlify(self.storjnode.get_id()),
+                port=self.storjnode.port
+            ))
 
+            # add message handler (prints to stdout)
             def message_handler(source, message):
                 print("Received message: %s" % json.dumps(message))
             self.storjnode.add_message_handler(message_handler)
