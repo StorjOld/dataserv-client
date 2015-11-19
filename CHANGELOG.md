@@ -1,3 +1,7 @@
+v2.1.10
+
+ * Minor bug fix
+
 v2.1.9
 
  * Updated readme
