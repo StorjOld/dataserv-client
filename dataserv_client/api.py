@@ -4,17 +4,16 @@ import os
 import hashlib
 import binascii
 import time
+import storjnode
 from datetime import datetime
 from datetime import timedelta
 from btctxstore import BtcTxStore
-from dataserv_client import control
 from dataserv_client import common
 from dataserv_client import builder
 from dataserv_client import exceptions
 from dataserv_client import messaging
 from dataserv_client import deserialize
 from dataserv_client import __version__
-import storjnode
 from crochet import setup
 setup()  # start twisted via crochet
 
@@ -60,13 +59,13 @@ class Client(object):
 
         # paths
         self.cfg_path = os.path.realpath(config_path)
-        control.util.ensure_path_exists(os.path.dirname(self.cfg_path))
+        storjnode.util.ensure_path_exists(os.path.dirname(self.cfg_path))
         self.store_path = os.path.realpath(store_path)
-        control.util.ensure_path_exists(self.store_path)
+        storjnode.util.ensure_path_exists(self.store_path)
 
         # check for vfat partions
         try:
-            fstype = control.util.get_fs_type(self.store_path)
+            fstype = storjnode.util.get_fs_type(self.store_path)
 
         # FileNotFoundError: [Errno 2] No such file or directory: '/etc/mtab'
         # psutil: https://code.google.com/p/psutil/issues/detail?id=434
@@ -81,7 +80,7 @@ class Client(object):
             msg = "Couldn't detected partition type for '{0}'"
             logger.warning(msg.format(self.store_path))
 
-        self.cfg = control.config.get(self.btctxstore, self.cfg_path)
+        self.cfg = storjnode.config.get(self.btctxstore, self.cfg_path)
 
     @staticmethod
     def version():
@@ -134,7 +133,7 @@ class Client(object):
 
         # save config if updated
         if config_updated:
-            control.config.save(self.btctxstore, self.cfg_path, self.cfg)
+            storjnode.config.save(self.btctxstore, self.cfg_path, self.cfg)
 
         # display config
         print(SHOW_CONFIG_TEMPLATE.format(

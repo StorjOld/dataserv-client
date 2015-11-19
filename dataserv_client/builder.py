@@ -7,9 +7,11 @@ import RandomIO
 import partialhash
 import psutil
 import json
+import storjnode
 from future.moves.urllib.request import urlopen
 from dataserv_client import control
 from dataserv_client import common
+from dataserv_client.common import DEFAULT_MIN_CONFIRMATIONS
 from dataserv_client.exceptions import BlockExplorerApiFailed
 
 
@@ -53,10 +55,10 @@ class Builder:
 
     def _get_shard_path(self, store_path, seed, create_needed_folders=False):
         if self.use_folder_tree:
-            folders = os.path.join(*control.util.chunks(seed, 3))
+            folders = os.path.join(*storjnode.util.chunks(seed, 3))
             store_path = os.path.join(store_path, folders)
             if create_needed_folders:
-                control.util.ensure_path_exists(store_path)
+                storjnode.util.ensure_path_exists(store_path)
         return os.path.join(store_path, seed)
 
     def generate_shard(self, seed, store_path, cleanup=False):
@@ -222,7 +224,8 @@ class Builder:
         else:
             raise BlockExplorerApiFailed(url)
 
-    def btc_last_confirmed_block(self, min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS):
+    def btc_last_confirmed_block(self,
+                                 min_confirmations=DEFAULT_MIN_CONFIRMATIONS):
         """last Bitcoin block with given min confirmation"""
         btc_height = self.btc_height()
 
@@ -236,7 +239,7 @@ class Builder:
     def audit(self, store_path, btc_index, btc_hash,
               block_size=common.DEFAULT_BLOCK_SIZE,
               full_audit=common.DEFAULT_FULL_AUDIT,
-              min_confirmations=common.DEFAULT_MIN_CONFIRMATIONS):
+              min_confirmations=DEFAULT_MIN_CONFIRMATIONS):
         """audit one block"""
 
         audit_begin = (btc_index % full_audit) * block_size
@@ -246,7 +249,7 @@ class Builder:
 
         seeds = self.build_seeds(audit_end)[audit_begin:]
 
-        #check if the block is complete
+        # check if the block is complete
         for seed in seeds:
             path = self._get_shard_path(store_path, seed)
             if not (os.path.exists(path) and
@@ -254,7 +257,7 @@ class Builder:
                 logger.info("Shard missing or corrupt {0}".format(path))
                 return 0
 
-        #generate audit response
+        # generate audit response
         audit_hash = ""
         for seed in seeds:
             path = self._get_shard_path(store_path, seed)
