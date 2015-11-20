@@ -1,3 +1,11 @@
+v2.1.12
+
+ * Use util and config from storjnode.
+
+v2.1.11
+
+ * Minor bug fix
+
 v2.1.10
 
  * Minor bug fix
