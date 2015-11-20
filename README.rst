@@ -229,6 +229,8 @@ Show program help, optional arguments and commands
       --url URL             Url of the farmer (default:
                             http://status.driveshare.org).
       --max_size MAX_SIZE   Maximum data size in bytes. (default: 1073741824).
+      --min_free_size MIN_FREE_SIZE
+                            Minimum free size in bytes. (default: 1073741824).
       --store_path STORE_PATH
                             Storage path. (default: /home/user/.storj/store).
       --config_path CONFIG_PATH
@@ -244,6 +246,7 @@ Show program help, optional arguments and commands
         ping                Ping master node.
         poll                Let the network know your are online.
         build               Fill the farmer with data up to their max.
+        audit               Audit the generated data.
         config              Edit and display config.
         farm                Start farmer.
 
