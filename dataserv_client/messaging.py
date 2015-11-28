@@ -2,6 +2,7 @@ import json
 import http.client
 import socket
 import time
+from datetime import datetime
 from future.moves.urllib.parse import urlparse, urlencode
 from future.moves.urllib.request import urlopen, Request
 from future.moves.urllib.error import HTTPError, URLError
@@ -38,13 +39,15 @@ class Messaging(object):
             try:
                 query_url = self._server_url + api_path
                 req = Request(query_url)
+                starttime = datetime.utcnow()
                 if self.wif and authenticate:
                     headers = storjcore.auth.create_headers(
                         self.btctxstore, self._get_server_address(), self.wif
                     )
                     req.add_header("Date", headers["Date"])
                     req.add_header("Authorization", headers["Authorization"])
-                logger.info("Query: {0}".format(query_url))
+                logger.info("Query: {0} generated in {1}".format(
+                                    query_url,datetime.utcnow()-starttime))
                 response = urlopen(req, timeout=30)
                 if 200 <= response.code <= 299:
                     return response.read()
