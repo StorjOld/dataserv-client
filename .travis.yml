@@ -11,8 +11,8 @@ addons:
     - libpq-dev
 
 install:
-  - pip install -r requirements.txt
-  - pip install -r test_requirements.txt
+  - pip -q install -r requirements.txt
+  - pip -q install -r test_requirements.txt
 
 before_script:
   - bash travis_setup.sh
