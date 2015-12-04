@@ -73,8 +73,9 @@ Install client
 
 ::
 
-    $ brew install python
+    $ brew install python graphviz
     $ rehash
+    $ sudo pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
     $ pip install dataserv-client
     $ dataserv-client version
 
