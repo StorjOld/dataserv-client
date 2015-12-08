@@ -10,7 +10,7 @@ dataserv-client
 .. |CoverageLink| image:: https://img.shields.io/coveralls/Storj/dataserv-client/master.svg?label=Coverage-Master
 .. _CoverageLink: https://coveralls.io/r/Storj/dataserv-client
 
-.. |BuildLink2| image:: https://img.shields.io/travis/Storj/sdataserv-client/develop.svg?label=Build-Develop
+.. |BuildLink2| image:: https://img.shields.io/travis/Storj/dataserv-client/develop.svg?label=Build-Develop
 .. _BuildLink2: https://travis-ci.org/Storj/dataserv-client
 
 .. |CoverageLink2| image:: https://img.shields.io/coveralls/Storj/dataserv-client/develop.svg?label=Coverage-Develop
