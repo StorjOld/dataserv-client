@@ -2,20 +2,22 @@
 dataserv-client
 ===============
 
-|BuildLink|_ |CoverageLink|_ |LicenseLink|_ |IssuesLink|_
+|BuildLink|_ |CoverageLink|_ |BuildLink2|_ |CoverageLink2|_ |LicenseLink|_
 
-
-.. |BuildLink| image:: https://travis-ci.org/Storj/dataserv-client.svg?branch=master
+.. |BuildLink| image:: https://img.shields.io/travis/Storj/dataserv-client/master.svg?label=Build-Master
 .. _BuildLink: https://travis-ci.org/Storj/dataserv-client
 
-.. |CoverageLink| image:: https://coveralls.io/repos/Storj/dataserv-client/badge.svg
+.. |CoverageLink| image:: https://img.shields.io/coveralls/Storj/dataserv-client/master.svg?label=Coverage-Master
 .. _CoverageLink: https://coveralls.io/r/Storj/dataserv-client
+
+.. |BuildLink2| image:: https://img.shields.io/travis/Storj/sdataserv-client/develop.svg?label=Build-Develop
+.. _BuildLink2: https://travis-ci.org/Storj/dataserv-client
+
+.. |CoverageLink2| image:: https://img.shields.io/coveralls/Storj/dataserv-client/develop.svg?label=Coverage-Develop
+.. _CoverageLink2: https://coveralls.io/r/Storj/dataserv-client
 
 .. |LicenseLink| image:: https://img.shields.io/badge/license-MIT-blue.svg
 .. _LicenseLink: https://raw.githubusercontent.com/Storj/dataserv-client
-
-.. |IssuesLink| image:: https://img.shields.io/github/issues/Storj/dataserv-client.svg
-.. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
 Contributing
