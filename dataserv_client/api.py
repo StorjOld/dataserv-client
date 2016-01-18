@@ -4,6 +4,7 @@ import os
 import hashlib
 import binascii
 import time
+import psutil
 import storjnode
 from datetime import datetime
 from datetime import timedelta
@@ -184,6 +185,11 @@ class Client(object):
             if stop_time and datetime.now() >= stop_time:
                 return True
             time.sleep(int(delay))
+
+    def freespace(self):
+        freespace = psutil.disk_usage(self.store_path).free
+        print(freespace)
+        return freespace
 
     def build(self, workers=1, cleanup=False, rebuild=False, repair=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):

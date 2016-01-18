@@ -110,6 +110,10 @@ def _add_poll(command_parser):
         "--limit", default=None, help="Limit poll time in seconds."
     )
 
+def _add_freespace(command_parser):
+    freespace_parser = command_parser.add_parser(  # NOQA
+        "freespace", help="Return free disk space."
+    )
 
 def _add_build(command_parser):
     build_parser = command_parser.add_parser(
@@ -213,6 +217,7 @@ def _parse_args(args):
     _add_register(command_parser)
     _add_ping(command_parser)
     _add_poll(command_parser)
+    _add_freespace(command_parser)
     _add_build(command_parser)
     _add_audit(command_parser)
     _add_config(command_parser)
