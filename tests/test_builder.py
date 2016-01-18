@@ -100,7 +100,6 @@ class TestBuilder(unittest.TestCase):
             path = os.path.join(self.store_path, seed)
             self.assertFalse(os.path.exists(path))
 
-    @unittest.skip("to many blockchain api requests")
     def test_builder_audit(self):
         bucket = Builder(addresses["epsilon"], my_shard_size, 0,
                          my_min_free_size)
