@@ -4,6 +4,7 @@
 export DATASERV_MAX_PING="10"
 export DATASERV_CLIENT_CONNECTION_RETRY_DELAY="1"
 export DATASERV_CACHING_TIME="0"
+export PYCOIN_NATIVE="openssl"
 
 
 # get paths
