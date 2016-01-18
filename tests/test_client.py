@@ -364,6 +364,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
 
 
 class TestClientAudit(AbstractTestSetup, unittest.TestCase):
+    @unittest.skip("to many blockchain api requests")
     def test_audit(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
@@ -378,6 +379,14 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--nop2p",
             "--config_path=" + tempfile.mktemp(),
             "version"
+        ]
+        self.assertTrue(cli.main(args))
+
+    def test_freespace(self):
+        args = [
+            "--nop2p",
+            "--config_path=" + tempfile.mktemp(),
+            "freespace"
         ]
         self.assertTrue(cli.main(args))
 
