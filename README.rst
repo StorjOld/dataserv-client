@@ -167,7 +167,7 @@ Running the farm command
 
 ::
 
-    dataserv-client --url=http://switch.driveshare.org --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm --set_height_interval=(default: 25, max recommended: 199999)
+    dataserv-client --url=http://status.driveshare.org --store_path=<PATH> --max_size=<SIZE_IN_BYTES> farm --set_height_interval=(default: 25, max recommended: 199999)
 
 
 Running the poll command
@@ -175,7 +175,7 @@ Running the poll command
 
 ::
 
-	dataserv-client --url=http://switch.driveshare.org poll
+	dataserv-client --url=http://status.driveshare.org poll
 
 Workers Guide
 =============
