@@ -110,10 +110,12 @@ def _add_poll(command_parser):
         "--limit", default=None, help="Limit poll time in seconds."
     )
 
+
 def _add_freespace(command_parser):
     freespace_parser = command_parser.add_parser(  # NOQA
         "freespace", help="Return free disk space."
     )
+
 
 def _add_build(command_parser):
     build_parser = command_parser.add_parser(
@@ -249,8 +251,8 @@ def main(args):
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
         logger.warning("Caught KeyboardInterrupt")
-        if client is not None and client.storjnode is not None:
-            client.storjnode.stop()
+        # if client is not None and client.storjnode is not None:
+        #     client.storjnode.stop()
 
     except Exception as e:
         logger.exception(e)

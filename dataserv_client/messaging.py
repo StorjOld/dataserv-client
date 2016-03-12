@@ -2,8 +2,9 @@ import json
 import http.client
 import socket
 import time
+import binascii
 from datetime import datetime
-from future.moves.urllib.parse import urlparse, urlencode
+from future.moves.urllib.parse import urlparse, urlencode  # NOQA
 from future.moves.urllib.request import urlopen, Request
 from future.moves.urllib.error import HTTPError, URLError
 import btctxstore
@@ -11,9 +12,22 @@ import storjcore
 from dataserv_client import exceptions
 from dataserv_client import logmessages
 from dataserv_client import common
+from pycoin.encoding import b2a_hashed_base58
+from pycoin.encoding import a2b_hashed_base58
 
 
 logger = common.logging.getLogger(__name__)
+
+
+def nodeid2address(hexnodeid):
+    """Convert a node id to a bitcoin address."""
+    nodeid = binascii.unhexlify(hexnodeid)
+    return b2a_hashed_base58(b'\0' + nodeid)
+
+
+def address2nodeid(address):
+    """Convert a bitcoin address to a node id."""
+    return binascii.hexlify(a2b_hashed_base58(address)[1:]).decode("utf-8")
 
 
 class Messaging(object):
@@ -32,7 +46,10 @@ class Messaging(object):
     def auth_address(self):
         return self.btctxstore.get_address(self.wif)
 
-    def _url_query(self, api_path, authenticate=True):
+    def get_nodeid(self):
+        return address2nodeid(self.auth_address())
+
+    def _url_query(self, api_path, authenticate=True):  # NOQA
         i = 0
         while i <= self.retry_limit:
             i += 1
@@ -47,21 +64,22 @@ class Messaging(object):
                     req.add_header("Date", headers["Date"])
                     req.add_header("Authorization", headers["Authorization"])
                 logger.info("Query: {0} generated in {1}".format(
-                                    query_url,datetime.utcnow()-starttime))
+                                    query_url, datetime.utcnow()-starttime))
                 response = urlopen(req, timeout=30)
                 if 200 <= response.code <= 299:
                     return response.read()
             except HTTPError as e:
-                #logger.warning(repr(e)) duplicate log entry
                 if e.code == 409:
-                    raise exceptions.AddressAlreadyRegistered(self.auth_address(),
-                                                              self._server_url)
+                    raise exceptions.AddressAlreadyRegistered(
+                        self.auth_address(), self._server_url
+                    )
                 elif e.code == 404:
                     raise exceptions.ServerNotFound(self._server_url)
                 elif e.code == 400:
                     raise exceptions.InvalidAddress(self.auth_address())
                 elif e.code == 401:  # auth error (likely clock off)
-                    logger.warning(logmessages.InvalidAuthenticationHeaders()) #log "HTTP Error 401: UNAUTHORIZED"
+                    # log "HTTP Error 401: UNAUTHORIZED"
+                    logger.warning(logmessages.InvalidAuthenticationHeaders())
                 elif e.code == 500:  # pragma: no cover
                     raise exceptions.ServerError(self._server_url)
                 else:
@@ -103,20 +121,20 @@ class Messaging(object):
             raise exceptions.InvalidAddress(payout_addr)
         if payout_addr:
             return self._url_query("/api/register/{0}/{1}".format(
-                self.auth_address(), payout_addr
+                self.get_nodeid(), payout_addr
             ))
 
     def ping(self):
         """Send a heartbeat message for this client address."""
-        return self._url_query("/api/ping/%s" % self.auth_address())
+        return self._url_query("/api/ping/%s" % self.get_nodeid())
 
     def audit(self, block_height, response):
         """Send audit response for this client address."""
-        return self._url_query('/api/audit/%s/%s/%s' % (self.auth_address(),
+        return self._url_query('/api/audit/%s/%s/%s' % (self.get_nodeid(),
                                                         block_height,
                                                         response))
 
     def height(self, height):
         """Set the height claim for this client address."""
-        return self._url_query('/api/height/%s/%s' % (self.auth_address(),
+        return self._url_query('/api/height/%s/%s' % (self.get_nodeid(),
                                                       height))
