@@ -40,14 +40,11 @@ class Client(object):
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
-                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY,
-                 nop2p=True):
+                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY
 
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
 
-        self.storjnode = None
-        self.nop2p = nop2p
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.max_size = deserialize.byte_count(max_size)
@@ -164,20 +161,6 @@ class Client(object):
         stop_time = None
         if limit is not None:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
-
-        # start storjnode in background
-        if not self.nop2p:
-            # start node
-            self.storjnode = storjnode.network.Node(self.cfg["wallet"])
-            print("Running storj dht node on port {port} with id {id}".format(
-                id=binascii.hexlify(self.storjnode.get_id()),
-                port=self.storjnode.port
-            ))
-
-            # add message handler (prints to stdout)
-            def message_handler(source, message):
-                print("Received message: %s" % json.dumps(message))
-            self.storjnode.add_message_handler(message_handler)
 
         while True:  # ping the server every X seconds
             self.ping()

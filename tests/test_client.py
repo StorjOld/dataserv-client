@@ -33,8 +33,8 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
@@ -267,8 +267,9 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
+
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
@@ -301,8 +302,8 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
@@ -348,8 +349,8 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
