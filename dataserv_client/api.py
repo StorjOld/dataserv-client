@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import json
 import os
 import hashlib
-import binascii
 import time
 import psutil
 import storjnode
@@ -40,7 +38,7 @@ class Client(object):
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
-                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY
+                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
