@@ -40,10 +40,13 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 0,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
         self.assertEqual(result, expected)
@@ -275,10 +278,13 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 4,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
         self.assertEqual(result, expected)
@@ -309,10 +315,13 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': len(generated),
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
 
@@ -356,10 +365,13 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 2,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
 

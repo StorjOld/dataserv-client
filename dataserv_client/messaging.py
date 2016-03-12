@@ -2,7 +2,6 @@ import json
 import http.client
 import socket
 import time
-import binascii
 from datetime import datetime
 from future.moves.urllib.parse import urlparse, urlencode  # NOQA
 from future.moves.urllib.request import urlopen, Request
@@ -12,22 +11,9 @@ import storjcore
 from dataserv_client import exceptions
 from dataserv_client import logmessages
 from dataserv_client import common
-from pycoin.encoding import b2a_hashed_base58
-from pycoin.encoding import a2b_hashed_base58
 
 
 logger = common.logging.getLogger(__name__)
-
-
-def nodeid2address(hexnodeid):
-    """Convert a node id to a bitcoin address."""
-    nodeid = binascii.unhexlify(hexnodeid)
-    return b2a_hashed_base58(b'\0' + nodeid)
-
-
-def address2nodeid(address):
-    """Convert a bitcoin address to a node id."""
-    return binascii.hexlify(a2b_hashed_base58(address)[1:]).decode("utf-8")
 
 
 class Messaging(object):
@@ -47,7 +33,7 @@ class Messaging(object):
         return self.btctxstore.get_address(self.wif)
 
     def get_nodeid(self):
-        return address2nodeid(self.auth_address())
+        return common.address2nodeid(self.auth_address())
 
     def _url_query(self, api_path, authenticate=True):  # NOQA
         i = 0

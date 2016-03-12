@@ -1,5 +1,8 @@
 import os
+import binascii
 from storjnode.log import logging  # NOQA
+from pycoin.encoding import b2a_hashed_base58
+from pycoin.encoding import a2b_hashed_base58
 
 
 DEFAULT_URL = "http://status.driveshare.org"
@@ -37,3 +40,14 @@ if os.environ.get(_retry_delay_label):
     DEFAULT_CONNECTION_RETRY_DELAY = int(os.environ.get(_retry_delay_label))
 else:
     DEFAULT_CONNECTION_RETRY_DELAY = 30
+
+
+def nodeid2address(hexnodeid):
+    """Convert a node id to a bitcoin address."""
+    nodeid = binascii.unhexlify(hexnodeid)
+    return b2a_hashed_base58(b'\0' + nodeid)
+
+
+def address2nodeid(address):
+    """Convert a bitcoin address to a node id."""
+    return binascii.hexlify(a2b_hashed_base58(address)[1:]).decode("utf-8")
