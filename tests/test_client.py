@@ -360,6 +360,12 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
                   if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
+
+        bandwidth_upload = result.pop('bandwidth_upload')
+        bandwidth_download = result.pop('bandwidth_download')
+        self.assertGreater(bandwidth_upload, 0)
+        self.assertGreater(bandwidth_download, 0)
+
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 2,
@@ -367,8 +373,6 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
-            'bandwidth_upload': 0,
-            'bandwidth_download': 0,
             "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
