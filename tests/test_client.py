@@ -379,7 +379,6 @@ class TestClientAudit(AbstractTestSetup, unittest.TestCase):
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
         args = [
-            "--nop2p",
             "--config_path=" + tempfile.mktemp(),
             "version"
         ]
@@ -387,7 +386,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_freespace(self):
         args = [
-            "--nop2p",
             "--config_path=" + tempfile.mktemp(),
             "freespace"
         ]
@@ -397,7 +395,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -405,7 +402,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "poll",
@@ -416,7 +412,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "register"
@@ -427,7 +422,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -435,7 +429,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "--max_size=" + str(1024 * 256),  # 256K
@@ -453,7 +446,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -461,7 +453,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "audit",
@@ -472,7 +463,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_farm(self):
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "--max_size=" + str(1024 * 256),  # 256K
@@ -491,7 +481,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_ping(self):
         config_path = tempfile.mktemp()
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "register"
@@ -499,7 +488,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "ping"
@@ -516,13 +504,11 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         def callback():
             path = tempfile.mktemp()
             cli.main([
-                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "register",
             ])
             cli.main([
-                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "poll",
