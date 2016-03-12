@@ -110,9 +110,16 @@ class Messaging(object):
                 self.get_nodeid(), payout_addr
             ))
 
+    def set_bandwidth(self, upload, download):
+        """Attempt to set bandwidth values for this client."""
+        url = "/api/bandwidth/{nodeid}/{upload}/{download}"
+        return self._url_query(url.format(
+            nodeid=self.get_nodeid(), upload=upload, download=download
+        ))
+
     def ping(self):
         """Send a heartbeat message for this client address."""
-        return self._url_query("/api/ping/%s" % self.get_nodeid())
+        return self._url_query("/api/ping/{0}".format(self.get_nodeid()))
 
     def audit(self, block_height, response):
         """Send audit response for this client address."""

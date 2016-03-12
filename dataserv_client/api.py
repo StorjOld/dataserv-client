@@ -12,6 +12,7 @@ from dataserv_client import builder
 from dataserv_client import exceptions
 from dataserv_client import messaging
 from dataserv_client import deserialize
+from dataserv_client.bandwidth_test import speedtest
 from dataserv_client import __version__
 from crochet import setup
 setup()  # start twisted via crochet
@@ -303,7 +304,14 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
+
+        self.set_bandwidth()
+
         self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
                    repair=repair, set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True
+
+    def set_bandwidth(self):
+        results = speedtest()
+        self.messenger.set_bandwidth(results["upload"], results["download"])
