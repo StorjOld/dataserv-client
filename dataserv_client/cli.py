@@ -44,13 +44,6 @@ def _add_programm_args(parser):
         help="Config path. (default: {0}).".format(default)
     )
 
-    # run storj node
-    default = False
-    parser.add_argument(
-        "--nop2p", action='store_true',
-        help="Disable the p2p node that runs in the background."
-    )
-
     # debug
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
@@ -246,7 +239,6 @@ def main(args):
             min_free_size=arguments.pop("min_free_size"),
             store_path=arguments.pop("store_path"),
             config_path=arguments.pop("config_path"),
-            nop2p=arguments.pop("nop2p"),
         )
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:

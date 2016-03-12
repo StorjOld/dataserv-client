@@ -234,7 +234,6 @@ Show program help, optional arguments and commands
                             Storage path. (default: /home/user/.storj/store).
       --config_path CONFIG_PATH
                             Config path. (default: /home/user/.storj/config.json).
-      --nop2p               Disable the p2p node that runs in the background.
       --debug               Show debug information.
       --quiet               Only show warning and error information.
       --use_folder_tree     Use folder tree to store files (always on for fat32
