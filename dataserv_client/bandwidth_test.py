@@ -576,9 +576,11 @@ def speedtest():
     return test_results
 
 
-def speed_test_cached():
+def speed_test_cached(cache_path=None):
+
     # Find cache file.
-    cache_path = os.path.join(os.getcwd(), "speed_test")
+    if cache_path is None:
+        cache_path = os.path.join(os.getcwd(), "speed_test")
 
     # Load results.
     results = {}
