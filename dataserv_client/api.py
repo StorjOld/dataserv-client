@@ -134,7 +134,7 @@ class Client(object):
 
         # display config
         print(SHOW_CONFIG_TEMPLATE.format(
-            self.messenger.auth_address(),
+            self.messenger.get_nodeid(),
             self.cfg["payout_address"]
         ))
         return self.cfg
