@@ -57,12 +57,12 @@ class Messaging(object):
             except HTTPError as e:
                 if e.code == 409:
                     raise exceptions.AddressAlreadyRegistered(
-                        self.auth_address(), self._server_url
+                        self.get_nodeid(), self._server_url
                     )
                 elif e.code == 404:
                     raise exceptions.ServerNotFound(self._server_url + api_path)
                 elif e.code == 400:
-                    raise exceptions.InvalidAddress(self.auth_address())
+                    raise exceptions.InvalidAddress(self.get_nodeid())
                 elif e.code == 401:  # auth error (likely clock off)
                     # log "HTTP Error 401: UNAUTHORIZED"
                     logger.warning(logmessages.InvalidAuthenticationHeaders())
