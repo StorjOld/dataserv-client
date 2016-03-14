@@ -60,7 +60,7 @@ class Messaging(object):
                         self.auth_address(), self._server_url
                     )
                 elif e.code == 404:
-                    raise exceptions.ServerNotFound(self._server_url)
+                    raise exceptions.ServerNotFound(self._server_url + api_path)
                 elif e.code == 400:
                     raise exceptions.InvalidAddress(self.auth_address())
                 elif e.code == 401:  # auth error (likely clock off)
