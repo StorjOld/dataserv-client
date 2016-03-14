@@ -245,7 +245,3 @@ def main(args):
         logger.warning("Caught KeyboardInterrupt")
         # if client is not None and client.storjnode is not None:
         #     client.storjnode.stop()
-
-    except Exception as e:
-        logger.exception(e)
-        raise e
