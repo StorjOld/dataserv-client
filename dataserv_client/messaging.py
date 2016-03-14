@@ -114,7 +114,7 @@ class Messaging(object):
         """Attempt to set bandwidth values for this client."""
         url = "/api/bandwidth/{nodeid}/{upload}/{download}"
         return self._url_query(url.format(
-            nodeid=self.get_nodeid(), upload=upload, download=download
+            nodeid=self.get_nodeid(), upload=int(upload), download=int(download)
         ))
 
     def ping(self):

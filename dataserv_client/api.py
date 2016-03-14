@@ -314,4 +314,5 @@ class Client(object):
 
     def set_bandwidth(self):
         results = speedtest()
-        self.messenger.set_bandwidth(results["upload"], results["download"])
+        self.messenger.set_bandwidth(results["upload"],
+                                     results["download"])
