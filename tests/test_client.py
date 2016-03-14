@@ -361,8 +361,9 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
 
-        bandwidth_upload = result.pop('bandwidth_upload')
-        bandwidth_download = result.pop('bandwidth_download')
+        # check bandwidth and pop as expected result cannot be know
+        bandwidth_upload = result[0].pop('bandwidth_upload')
+        bandwidth_download = result[0].pop('bandwidth_download')
         self.assertGreater(bandwidth_upload, 0)
         self.assertGreater(bandwidth_download, 0)
 
