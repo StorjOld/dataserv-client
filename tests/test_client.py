@@ -240,7 +240,7 @@ class TestConnectionRetry(AbstractTestSetup, unittest.TestCase):
         def callback():
             client = api.Client(url="http://127.0.0.257",
                                 config_path=tempfile.mktemp(),
-                                connection_retry_limit=2000,
+                                connection_retry_limit=1000,
                                 connection_retry_delay=0,
                                 quiet=True)
             client.register()
