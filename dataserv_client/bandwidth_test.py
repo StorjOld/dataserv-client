@@ -205,11 +205,13 @@ def build_request(url, data=None, headers={}):
     This function automatically adds a User-Agent header to all requests
 
     """
-
-    if url[0] == ':':
-        schemed_url = '%s%s' % (scheme, url)
-    else:
-        schemed_url = url
+    
+    schemed_url = ''
+    if len(url):
+        if url[0] == ':':
+            schemed_url = '%s%s' % (scheme, url)
+        else:
+            schemed_url = url
 
     headers['User-Agent'] = user_agent
     return Request(schemed_url, data=data, headers=headers)
@@ -234,7 +236,7 @@ class FileGetter(threading.Thread):
 
     def __init__(self, url, start):
         self.url = url
-        self.result = None
+        self.result = 0
         self.starttime = start
         threading.Thread.__init__(self)
 
@@ -249,7 +251,7 @@ class FileGetter(threading.Thread):
                     if self.result[-1] == 0:
                         break
                 f.close()
-        except IOError:
+        except (IOError, ValueError) as e:
             pass
 
 
@@ -263,9 +265,6 @@ def downloadSpeed(files, quiet=False):
             thread = FileGetter(file, start)
             thread.start()
             q.put(thread, True)
-            if not quiet and not shutdown_event.isSet():
-                sys.stdout.write('.')
-                sys.stdout.flush()
 
     finished = []
 
@@ -299,7 +298,7 @@ class FilePutter(threading.Thread):
         data = chars * (int(round(int(size) / 36.0)))
         self.data = ('content1=%s' % data[0:int(size) - 9]).encode()
         del data
-        self.result = None
+        self.result = 0
         self.starttime = start
         threading.Thread.__init__(self)
 
@@ -314,7 +313,7 @@ class FilePutter(threading.Thread):
                 self.result = len(self.data)
             else:
                 self.result = 0
-        except IOError:
+        except (IOError, ValueError) as e:
             self.result = 0
 
 
@@ -328,9 +327,6 @@ def uploadSpeed(url, sizes, quiet=False):
             thread = FilePutter(url, start, size)
             thread.start()
             q.put(thread, True)
-            if not quiet and not shutdown_event.isSet():
-                sys.stdout.write('.')
-                sys.stdout.flush()
 
     finished = []
 
@@ -352,7 +348,9 @@ def uploadSpeed(url, sizes, quiet=False):
         prod_thread.join(timeout=0.1)
     while cons_thread.isAlive():
         cons_thread.join(timeout=0.1)
-    return (sum(finished) / (timeit.default_timer() - start))
+        
+    duration = timeit.default_timer() - start
+    return (sum(finished) / duration)
 
 
 def getAttributesByTagName(dom, tagName):
@@ -366,24 +364,27 @@ def getAttributesByTagName(dom, tagName):
     return dict(list(elem.attributes.items()))
 
 
-def getConfig():
+def getConfig(url='://www.speedtest.net/speedtest-config.php', configxml=None):
     """Download the speedtest.net configuration and return only the data
     we are interested in
     """
 
-    request = build_request('://www.speedtest.net/speedtest-config.php')
-    uh, e = catch_request(request)
-    if e:
-        print_('Could not retrieve speedtest.net configuration: %s' % e)
-        sys.exit(1)
-    configxml = []
-    while 1:
-        configxml.append(uh.read(10240))
-        if len(configxml[-1]) == 0:
-            break
-    if int(uh.code) != 200:
-        return None
-    uh.close()
+    if configxml is None:
+        request = build_request(url)
+        uh, e = catch_request(request)
+        if e:
+            print_('Could not retrieve speedtest.net configuration: %s' % e)
+            sys.exit(1)
+        configxml = []
+        while 1:
+            configxml.append(uh.read(10240))
+            if len(configxml[-1]) == 0:
+                break
+        if int(uh.code) != 200:
+            return None
+        uh.close()
+    
+    
     try:
         try:
             root = ET.fromstring(''.encode().join(configxml))
@@ -399,7 +400,7 @@ def getConfig():
                 'times': getAttributesByTagName(root, 'times'),
                 'download': getAttributesByTagName(root, 'download'),
                 'upload': getAttributesByTagName(root, 'upload')}
-    except SyntaxError:
+    except SyntaxError as e:
         print_('Failed to parse speedtest.net configuration')
         sys.exit(1)
     del root
