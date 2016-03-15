@@ -1,6 +1,5 @@
 import os
 import glob
-import jsonschema
 import lib2to3
 from py2exe.build_exe import py2exe as build_exe
 
