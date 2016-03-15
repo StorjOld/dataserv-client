@@ -16,7 +16,6 @@
 #    under the License.
 
 import os
-import re
 import sys
 import math
 import signal
@@ -75,19 +74,6 @@ try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
-
-try:
-    from urlparse import parse_qs
-except ImportError:
-    try:
-        from urllib.parse import parse_qs
-    except ImportError:
-        from cgi import parse_qs
-
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
 
 try:
     import builtins
@@ -552,13 +538,6 @@ def speedtest():
 
     signal.signal(signal.SIGINT, ctrl_c)
 
-    description = (
-        'Command line interface for testing internet bandwidth using '
-        'speedtest.net.\n'
-        '------------------------------------------------------------'
-        '--------------\n'
-        'https://github.com/sivel/speedtest-cli')
-
     socket.setdefaulttimeout(10)
 
     # Pre-cache the user agent string
@@ -598,9 +577,11 @@ def speedtest():
     return test_results
 
 
-def speed_test_cached():
+def speed_test_cached(cache_path=None):
+
     # Find cache file.
-    cache_path = os.path.join(os.getcwd(), "speed_test")
+    if cache_path is None:
+        cache_path = os.path.join(os.getcwd(), "speed_test")
 
     # Load results.
     results = {}
@@ -626,6 +607,6 @@ def speed_test_cached():
 
     return results
 
+
 if __name__ == "__main__":
     print(speed_test_cached())
-# vim:ts=4:sw=4:expandtab

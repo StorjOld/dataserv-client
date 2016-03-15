@@ -44,13 +44,6 @@ def _add_programm_args(parser):
         help="Config path. (default: {0}).".format(default)
     )
 
-    # run storj node
-    default = False
-    parser.add_argument(
-        "--nop2p", action='store_true',
-        help="Disable the p2p node that runs in the background."
-    )
-
     # debug
     parser.add_argument('--debug', action='store_true',
                         help="Show debug information.")
@@ -108,6 +101,12 @@ def _add_poll(command_parser):
     )
     poll_parser.add_argument(
         "--limit", default=None, help="Limit poll time in seconds."
+    )
+
+
+def _add_freespace(command_parser):
+    freespace_parser = command_parser.add_parser(  # NOQA
+        "freespace", help="Return free disk space."
     )
 
 
@@ -213,6 +212,7 @@ def _parse_args(args):
     _add_register(command_parser)
     _add_ping(command_parser)
     _add_poll(command_parser)
+    _add_freespace(command_parser)
     _add_build(command_parser)
     _add_audit(command_parser)
     _add_config(command_parser)
@@ -239,14 +239,9 @@ def main(args):
             min_free_size=arguments.pop("min_free_size"),
             store_path=arguments.pop("store_path"),
             config_path=arguments.pop("config_path"),
-            nop2p=arguments.pop("nop2p"),
         )
         return getattr(client, command_name)(**arguments)
     except KeyboardInterrupt:
         logger.warning("Caught KeyboardInterrupt")
-        if client is not None and client.storjnode is not None:
-            client.storjnode.stop()
-
-    except Exception as e:
-        logger.exception(e)
-        raise e
+        # if client is not None and client.storjnode is not None:
+        #     client.storjnode.stop()

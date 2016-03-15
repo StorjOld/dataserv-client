@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-import json
 import os
 import hashlib
-import binascii
 import time
+import psutil
 import storjnode
 from datetime import datetime
 from datetime import timedelta
@@ -13,6 +12,7 @@ from dataserv_client import builder
 from dataserv_client import exceptions
 from dataserv_client import messaging
 from dataserv_client import deserialize
+from dataserv_client.bandwidth_test import speedtest
 from dataserv_client import __version__
 from crochet import setup
 setup()  # start twisted via crochet
@@ -39,14 +39,11 @@ class Client(object):
                  store_path=common.DEFAULT_STORE_PATH,
                  config_path=common.DEFAULT_CONFIG_PATH,
                  connection_retry_limit=common.DEFAULT_CONNECTION_RETRY_LIMIT,
-                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY,
-                 nop2p=True):
+                 connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
         debug = deserialize.flag(debug)
         quiet = deserialize.flag(quiet)
 
-        self.storjnode = None
-        self.nop2p = nop2p
         self.url = deserialize.url(url)
         self.use_folder_tree = deserialize.flag(use_folder_tree)
         self.max_size = deserialize.byte_count(max_size)
@@ -137,7 +134,7 @@ class Client(object):
 
         # display config
         print(SHOW_CONFIG_TEMPLATE.format(
-            self.messenger.auth_address(),
+            self.messenger.get_nodeid(),
             self.cfg["payout_address"]
         ))
         return self.cfg
@@ -164,26 +161,17 @@ class Client(object):
         if limit is not None:
             stop_time = datetime.now() + timedelta(seconds=int(limit))
 
-        # start storjnode in background
-        if not self.nop2p:
-            # start node
-            self.storjnode = storjnode.network.Node(self.cfg["wallet"])
-            print("Running storj dht node on port {port} with id {id}".format(
-                id=binascii.hexlify(self.storjnode.get_id()),
-                port=self.storjnode.port
-            ))
-
-            # add message handler (prints to stdout)
-            def message_handler(source, message):
-                print("Received message: %s" % json.dumps(message))
-            self.storjnode.add_message_handler(message_handler)
-
         while True:  # ping the server every X seconds
             self.ping()
 
             if stop_time and datetime.now() >= stop_time:
                 return True
             time.sleep(int(delay))
+
+    def freespace(self):
+        freespace = psutil.disk_usage(self.store_path).free
+        print(freespace)
+        return freespace
 
     def build(self, workers=1, cleanup=False, rebuild=False, repair=False,
               set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL):
@@ -316,7 +304,15 @@ class Client(object):
             self.register()
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
+
+        self.set_bandwidth()
+
         self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
                    repair=repair, set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True
+
+    def set_bandwidth(self):
+        results = speedtest()
+        self.messenger.set_bandwidth(results["upload"],
+                                     results["download"])

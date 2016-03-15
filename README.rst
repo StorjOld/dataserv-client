@@ -2,20 +2,22 @@
 dataserv-client
 ===============
 
-|BuildLink|_ |CoverageLink|_ |LicenseLink|_ |IssuesLink|_
+|BuildLink|_ |CoverageLink|_ |BuildLink2|_ |CoverageLink2|_ |LicenseLink|_
 
-
-.. |BuildLink| image:: https://travis-ci.org/Storj/dataserv-client.svg?branch=master
+.. |BuildLink| image:: https://img.shields.io/travis/Storj/dataserv-client/master.svg?label=Build-Master
 .. _BuildLink: https://travis-ci.org/Storj/dataserv-client
 
-.. |CoverageLink| image:: https://coveralls.io/repos/Storj/dataserv-client/badge.svg
+.. |CoverageLink| image:: https://img.shields.io/coveralls/Storj/dataserv-client/master.svg?label=Coverage-Master
 .. _CoverageLink: https://coveralls.io/r/Storj/dataserv-client
+
+.. |BuildLink2| image:: https://img.shields.io/travis/Storj/dataserv-client/develop.svg?label=Build-Develop
+.. _BuildLink2: https://travis-ci.org/Storj/dataserv-client
+
+.. |CoverageLink2| image:: https://img.shields.io/coveralls/Storj/dataserv-client/develop.svg?label=Coverage-Develop
+.. _CoverageLink2: https://coveralls.io/r/Storj/dataserv-client
 
 .. |LicenseLink| image:: https://img.shields.io/badge/license-MIT-blue.svg
 .. _LicenseLink: https://raw.githubusercontent.com/Storj/dataserv-client
-
-.. |IssuesLink| image:: https://img.shields.io/github/issues/Storj/dataserv-client.svg
-.. _IssuesLink: https://github.com/Storj/dataserv-client/issues
 
 
 Contributing
@@ -49,11 +51,7 @@ Install client
 ::
 
     # install apt dependencies
-    $ sudo apt-get install python python-pip graphviz
-    $ sudo apt-get install python-dev libgraphviz-dev pkg-config gcc
-
-    # Some systems may need to install graphviz from the system package first.
-    $ sudo pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
+    $ sudo apt-get install python python-pip python-dev gcc
 
     $ sudo pip install dataserv-client
     $ dataserv-client version
@@ -236,6 +234,7 @@ Show program help, optional arguments and commands
       --config_path CONFIG_PATH
                             Config path. (default: /home/user/.storj/config.json).
       --debug               Show debug information.
+      --quiet               Only show warning and error information.
       --use_folder_tree     Use folder tree to store files (always on for fat32
                             store_path).
 

@@ -33,17 +33,20 @@ class TestClientRegister(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 0,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
         self.assertEqual(result, expected)
@@ -265,17 +268,21 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
+
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 4,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
         self.assertEqual(result, expected)
@@ -299,17 +306,20 @@ class TestClientBuild(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': len(generated),
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            'bandwidth_upload': 0,
+            'bandwidth_download': 0,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
 
@@ -346,17 +356,25 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
         result = json.loads(
             urlopen(url + '/api/online/json').read().decode('utf8')
         )
-        result = [farmers for farmers in result['farmers']
-                  if farmers['btc_addr'] == config['payout_address']]
+        result = [farmer for farmer in result['farmers']
+                  if farmer['payout_addr'] == config['payout_address']]
         last_seen = result[0]['last_seen']
         reg_time = result[0]['reg_time']
+
+        # check bandwidth and pop as expected result cannot be know
+        bandwidth_upload = result[0].pop('bandwidth_upload')
+        bandwidth_download = result[0].pop('bandwidth_download')
+        self.assertGreater(bandwidth_upload, 0)
+        self.assertGreater(bandwidth_download, 0)
+
         result = json.dumps(result, sort_keys=True)
         expected = json.dumps([{
             'height': 2,
-            'btc_addr': config['payout_address'],
+            'nodeid': common.address2nodeid(config['payout_address']),
             'last_seen': last_seen,
             'payout_addr': config['payout_address'],
             'reg_time': reg_time,
+            "ip": "",
             'uptime': 100.0
         }], sort_keys=True)
 
@@ -364,6 +382,7 @@ class TestClientFarm(AbstractTestSetup, unittest.TestCase):
 
 
 class TestClientAudit(AbstractTestSetup, unittest.TestCase):
+    @unittest.skip("to many blockchain api requests")
     def test_audit(self):
         client = api.Client(url=url,
                             config_path=tempfile.mktemp(),
@@ -375,9 +394,15 @@ class TestClientAudit(AbstractTestSetup, unittest.TestCase):
 class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_version(self):
         args = [
-            "--nop2p",
             "--config_path=" + tempfile.mktemp(),
             "version"
+        ]
+        self.assertTrue(cli.main(args))
+
+    def test_freespace(self):
+        args = [
+            "--config_path=" + tempfile.mktemp(),
+            "freespace"
         ]
         self.assertTrue(cli.main(args))
 
@@ -385,7 +410,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -393,7 +417,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "poll",
@@ -404,7 +427,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_register(self):
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "register"
@@ -415,7 +437,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -423,7 +444,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "--max_size=" + str(1024 * 256),  # 256K
@@ -441,7 +461,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         path = tempfile.mktemp()
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "register",
@@ -449,7 +468,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         cli.main(args)
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + path,
             "audit",
@@ -460,7 +478,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
 
     def test_farm(self):
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + tempfile.mktemp(),
             "--max_size=" + str(1024 * 256),  # 256K
@@ -479,7 +496,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
     def test_ping(self):
         config_path = tempfile.mktemp()
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "register"
@@ -487,7 +503,6 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         self.assertTrue(cli.main(args))
 
         args = [
-            "--nop2p",
             "--url=" + url,
             "--config_path=" + config_path,
             "ping"
@@ -504,13 +519,11 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
         def callback():
             path = tempfile.mktemp()
             cli.main([
-                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "register",
             ])
             cli.main([
-                "--nop2p",
                 "--url=" + url,
                 "--config_path=" + path,
                 "poll",
