@@ -67,7 +67,7 @@ class Messaging(object):
                     # log "HTTP Error 401: UNAUTHORIZED"
                     logger.warning(logmessages.InvalidAuthenticationHeaders())
                 elif e.code == 500:  # pragma: no cover
-                    raise exceptions.ServerError(self._server_url)
+                    logger.warning(repr(e))
                 else:
                     raise e  # pragma: no cover
             except http.client.HTTPException as e:
