@@ -489,7 +489,8 @@ class TestClientCliArgs(AbstractTestSetup, unittest.TestCase):
             "--repair",
             "--set_height_interval=3",
             "--delay=0",
-            "--limit=0"
+            "--limit=0",
+            "--speedtesturl=" + common.DEFAULT_SPEEDTEST_URL
         ]  # no pings needed for check args
         self.assertTrue(cli.main(args))
 

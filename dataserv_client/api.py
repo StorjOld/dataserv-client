@@ -273,7 +273,8 @@ class Client(object):
 
     def farm(self, workers=1, cleanup=False, rebuild=False, repair=False,
              set_height_interval=common.DEFAULT_SET_HEIGHT_INTERVAL,
-             delay=common.DEFAULT_DELAY, limit=None):
+             delay=common.DEFAULT_DELAY, limit=None,
+             speedtesturl=common.DEFAULT_SPEEDTEST_URL):
         """ Fully automatic client for users wishing a simple turnkey solution.
         This will run all functions automatically with the most sane defaults
         and as little user interface as possible.
@@ -296,6 +297,8 @@ class Client(object):
         rebuild = deserialize.flag(rebuild)
         repair = deserialize.flag(repair)
 
+        speedtesturl = deserialize.url(speedtesturl)
+
         # farmer never gives up
         self._init_messenger()
         self.messenger.retry_limit = 99999999999999999999999999999999999999
@@ -305,14 +308,14 @@ class Client(object):
         except exceptions.AddressAlreadyRegistered:
             pass  # already registered ...
 
-        self.set_bandwidth()
+        self.set_bandwidth(speedtesturl)
 
         self.build(workers=workers, cleanup=cleanup, rebuild=rebuild,
                    repair=repair, set_height_interval=set_height_interval)
         self.poll(delay=delay, limit=limit)
         return True
 
-    def set_bandwidth(self):
-        results = speedtest()
+    def set_bandwidth(self, speedtesturl):
+        results = speedtest(speedtesturl=speedtesturl)
         self.messenger.set_bandwidth(results["upload"],
                                      results["download"])

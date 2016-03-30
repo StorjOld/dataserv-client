@@ -350,7 +350,7 @@ def getAttributesByTagName(dom, tagName):
     return dict(list(elem.attributes.items()))
 
 
-def getConfig(url='://www.speedtest.net/speedtest-config.php', configxml=None):
+def getConfig(url, configxml=None):
     """Download the speedtest.net configuration and return only the data
     we are interested in
     """
@@ -530,7 +530,7 @@ def version():
     raise SystemExit(__version__)
 
 
-def speedtest():
+def speedtest(speedtesturl):
     """Run the full speedtest.net test"""
 
     global shutdown_event, source, scheme
@@ -544,7 +544,7 @@ def speedtest():
     build_user_agent()
 
     try:
-        config = getConfig()
+        config = getConfig(url=speedtesturl)
     except URLError:
         print_('Cannot retrieve speedtest configuration')
         sys.exit(1)

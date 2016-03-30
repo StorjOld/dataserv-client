@@ -189,6 +189,11 @@ def _add_farm(command_parser):
         "--limit", default=None, help="Limit poll time in seconds."
     )
 
+    farm_parser.add_argument(
+        "--speedtesturl", default=common.DEFAULT_SPEEDTEST_URL,
+        help="URL of the speedtest (default: {0}).".format(common.DEFAULT_SPEEDTEST_URL)
+    )
+
 
 def _parse_args(args):
     class ArgumentParser(argparse.ArgumentParser):

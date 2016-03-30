@@ -1,4 +1,5 @@
 import dataserv_client.bandwidth_test as bt
+from dataserv_client import common
 import unittest
 import socket
 import time
@@ -116,10 +117,10 @@ class TestBandwidthTest(unittest.TestCase):
 <upload testlength="10" ratio="5" initialtest="0" mintestsize="32K" threads="2" maxchunksize="512K" maxchunkcount="50" threadsperurl="4" />
 </settings>
         """
-        self.assertTrue(type(bt.getConfig(configxml=configxml)) is dict)
+        self.assertTrue(type(bt.getConfig(url=common.DEFAULT_SPEEDTEST_URL, configxml=configxml)) is dict)
         
     def test_closest_servers(self):
-        configxml = bt.getConfig()
+        configxml = bt.getConfig(url=common.DEFAULT_SPEEDTEST_URL)
         servers = bt.closestServers(configxml["client"])
         self.assertTrue(len(servers))
         self.assertTrue(type(bt.getBestServer(servers)) is dict)

@@ -6,6 +6,7 @@ from pycoin.encoding import a2b_hashed_base58
 
 
 DEFAULT_URL = "http://status.driveshare.org"
+DEFAULT_SPEEDTEST_URL = "http://www.speedtest.net/speedtest-config.php"
 
 
 # read default delay from os environ if available
